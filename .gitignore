@@ -21,6 +21,7 @@
 /build
 
 # misc
+.idea/
 .DS_Store
 *.pem
 
@@ -41,3 +42,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 *.old
+
+# python
+/.venv
+uv.lock
+__pycache__

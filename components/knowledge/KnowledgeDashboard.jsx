@@ -1,5 +1,9 @@
 import Card from '../ui/Card';
 import Button from '../ui/Button';
+import EditCellButton from "@/components/ui/EditCellButton";
+import DeleteCellButton from "@/components/ui/DeleteCellButton";
+import React from "react";
+import SparqlCodeEditor from "@/components/ui/SparqlCodeEditor";
 
 const kpis = [
     { title: "Total Facts", value: "12,456", description: "Number of unique facts indexed." },
@@ -54,7 +58,13 @@ export default function KnowledgeDashboard({ setActiveTab }) {
                                 <td className="p-4">{source.type}</td>
                                 <td className="p-4 text-green-500">{source.status}</td>
                                 <td className="p-4 text-right">
+                                    {/*
                                     <button className="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</button>
+                                    */}
+                                    <div className="flex-shrink-0 ml-4 flex items-center space-x-8">
+                                        <EditCellButton onClick={() => onEdit(knowledgeSources)} />
+                                        <DeleteCellButton onClick={() => onDelete(knowledgeSources.id)} />
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -65,6 +75,8 @@ export default function KnowledgeDashboard({ setActiveTab }) {
 
             <div className="mt-8 space-y-4">
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">SPARQL Query Interface</h3>
+                <SparqlCodeEditor />
+                {/*
                 <textarea
                     rows="10"
                     className="flex w-full rounded-md border border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-950 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -75,7 +87,7 @@ WHERE {
         trl:value ?value .
 }
 "
-                ></textarea>
+                ></textarea>*/}
                 <div className="flex justify-end space-x-2">
                     <Button variant="outline">Clear</Button>
                     <Button>Run Query</Button>

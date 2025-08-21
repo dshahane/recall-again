@@ -1,51 +1,87 @@
 import { useState } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import AddAgentForm from './AddAgentForm';
+import AgentForm from './AgentForm'; // Import the unified form
 import AgentCard from './AgentCard';
+import useResource from '../../hooks/useResource';
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
-const agentData = [
-    {
-        id: 1,
-        name: 'Sales Agent',
-        description: 'Specialized in lead generation and customer outreach. Optimizes sales funnels.',
-        status: 'online',
-        imageUrl: 'https://placehold.co/60x60/34D399/FFFFFF?text=SA',
-    },
-    {
-        id: 2,
-        name: 'Support Bot',
-        description: 'Provides 24/7 customer support and handles common queries. Reduces ticket load.',
-        status: 'online',
-        imageUrl: 'https://placehold.co/60x60/60A5FA/FFFFFF?text=SB',
-    },
-    {
-        id: 3,
-        name: 'Marketing Bot',
-        description: 'Creates and schedules social media posts, analyzes engagement metrics.',
-        status: 'offline',
-        imageUrl: 'https://placehold.co/60x60/FCD34D/FFFFFF?text=MB',
-    },
-    {
-        id: 4,
-        name: 'Data Scraper',
-        description: 'Collects and processes data from various web sources for market analysis.',
-        status: 'online',
-        imageUrl: 'https://placehold.co/60x60/F87171/FFFFFF?text=DS',
-    },
-];
-
-export default function AgentsPage({ setActiveTab }) {
+export default function AgentsPage() {
+    const [agentToEdit, setAgentToEdit] = useState(null);
     const [isAddingAgent, setIsAddingAgent] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [resourceToDeleteId, setResourceToDeleteId] = useState(null);
 
-    if (isAddingAgent) {
-        return <AddAgentForm onCancel={() => setIsAddingAgent(false)} setActiveTab={setActiveTab} />;
+    const { data: agents, isLoading, error, createResource, updateResource, deleteResource }
+        = useResource('agents');
+
+    // These handlers manage the state for rendering the form
+    const handleAdd = () => {
+        setIsAddingAgent(true);
+        setAgentToEdit(null);
+    };
+
+    const handleEdit = (agent) => {
+        setIsAddingAgent(false);
+        setAgentToEdit(agent);
+    };
+
+    const handleCancel = () => {
+        setIsAddingAgent(false);
+        setAgentToEdit(null);
+    };
+
+    const handleDeleteClick = (id) => {
+        setResourceToDeleteId(id);
+        setShowConfirmModal(true);
+    };
+
+    const handleCancelDelete = () => {
+        setShowConfirmModal(false);
+        setResourceToDeleteId(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (resourceToDeleteId) {
+            try {
+                await deleteResource(resourceToDeleteId);
+                console.log('Resource deleted successfully.');
+            } catch (err) {
+                console.error('Failed to delete resource:', err);
+            }
+        }
+        // Close the modal and reset the state
+        setShowConfirmModal(false);
+        setResourceToDeleteId(null);
+    };
+
+    // --- Conditional Rendering ---
+    if (isLoading) {
+        return <div className="p-4 text-center text-gray-500">Loading agents...</div>;
     }
 
+    if (error) {
+        return <div className="p-4 text-center text-red-500">Failed to fetch agents. Please try again.</div>;
+    }
+
+    // Render the form if we are in 'add' mode (agentToEdit is null)
+    // or 'edit' mode (agentToEdit is an object)
+    if (isAddingAgent || agentToEdit) {
+        return (
+            <AgentForm
+                agent={agentToEdit} // This will be null for 'add' mode
+                onCancel={handleCancel}
+                onCreate={createResource}
+                onSave={updateResource}
+            />
+        );
+    }
+
+    // Default view: list of agents
     return (
         <Card title="Agents" description="Manage your AI and human agents.">
             <div className="flex justify-end mb-4">
-                <Button onClick={() => setIsAddingAgent(true)}>
+                <Button onClick={handleAdd}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 5L12 19" /><path d="M5 12L19 12" />
                     </svg>
@@ -53,15 +89,20 @@ export default function AgentsPage({ setActiveTab }) {
                 </Button>
             </div>
             <div className="space-y-4">
-                {agentData.map((agent) => (
-                    <AgentCard
-                        key={agent.id}
-                        title={agent.name}
-                        description={agent.description}
-                        imageUrl={agent.imageUrl}
-                        status={agent.status}
-                    />
-                ))}
+                {agents.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">No agents found. Add a new agent to get started.</div>
+                ) : (
+                    agents.map((agent) => (
+                        <AgentCard
+                            key={agent.id}
+                            agent={agent}
+                            onEdit={handleEdit}
+                            showConfirmModal={showConfirmModal}
+                            onDelete={handleConfirmDelete}
+                            onCancelDelete={handleCancelDelete}
+                        />
+                    ))
+                )}
             </div>
         </Card>
     );

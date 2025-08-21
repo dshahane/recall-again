@@ -4,8 +4,11 @@ export default function Button({ children, className, onClick, type = "button", 
         variantClasses = "border border-gray-300 dark:border-gray-700 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300";
     } else if (variant === "success") {
         variantClasses = "bg-green-600 text-white hover:bg-green-700";
-    } else {
-        variantClasses = "bg-blue-600 text-white hover:bg-blue-700";
+    } else if (variant === "abstract") {
+        variantClasses = "bg-transparent hover:bg-gray-300 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300";
+    }
+    else {
+        variantClasses = "border border-gray-300 dark:border-gray-700 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300";
     }
 
     return (

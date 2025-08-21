@@ -1,11 +1,10 @@
-// components/Sidebar.jsx
 'use client';
 
 import React from 'react';
-import { useTab } from '../app/context/TabContext';
+import { useTab } from '@/app/context/TabContext';
 import Button from './ui/Button';
 import SidebarButton from './ui/SidebarButton';
-import IconButton from './ui/IconButton'; // Import the new IconButton
+import IconButton from './ui/IconButton';
 
 // SVG Icons as constants
 const trlIcon = (
@@ -39,6 +38,15 @@ const collapseIconRight = (
 );
 
 const mainTabs = [
+    {
+        name: 'knowledge',
+        label: 'Knowledge',
+        icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 17a2 2 0 0 0 2-2.5v-2a2 2 0 0 0-2-2.5h-1a2 2 0 0 1-2-2.5V7a2 2 0 0 1 2-2.5h1a2 2 0 0 0 2-2.5M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
+            </svg>
+        ),
+    },
     {
         name: 'agents',
         label: 'Agents',
@@ -75,7 +83,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, theme, toggleThem
     const toggleCollapse = () => setIsCollapsed(prev => !prev);
 
     return (
-        <div className={`bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 flex-shrink-0 flex flex-col ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className={`bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 flex-shrink-0 flex flex-col h-screen ${isCollapsed ? 'w-20' : 'w-64'}`}>
             {/* Top Section */}
             <div className="flex items-center justify-between p-4 flex-shrink-0">
                 {!isCollapsed && (
@@ -96,8 +104,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, theme, toggleThem
                 </div>
             </div>
 
-            {/* Main Navigation */}
-            <nav className="flex flex-col p-4 space-y-2 flex-grow">
+            {/* Main Navigation (Scrollable) */}
+            <div className="flex flex-col flex-grow p-4 space-y-2 overflow-y-auto">
                 {mainTabs.map((tab) => (
                     <SidebarButton
                         key={tab.name}
@@ -109,10 +117,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, theme, toggleThem
                         {!isCollapsed && <span className="ml-4">{tab.label}</span>}
                     </SidebarButton>
                 ))}
-            </nav>
+            </div>
 
-            {/* Settings at the bottom */}
-            <div className="p-4 mt-auto">
+            {/* Settings at the bottom (Fixed) */}
+            <div className="p-4 flex flex-col space-y-2 flex-shrink-0">
                 <SidebarButton
                     onClick={() => setActiveTab(settingsTab.name)}
                     active={activeTab.startsWith(settingsTab.name)}

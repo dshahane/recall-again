@@ -5,6 +5,9 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { usePageInfo } from "@/app/context/page-context"
 import { LayoutDashboard } from "lucide-react"
+import {NavUser} from "@/components/nav/nav-user";
+
+const user = { name: 'dinesh', email: 'dinesh@trl.com', avatar: '/avatars/shadcn.jpg' };
 
 export function SiteHeader() {
   const { title } = usePageInfo()
@@ -20,7 +23,7 @@ export function SiteHeader() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <h2 className="text-base font-medium text-muted-foreground">{title}</h2>
+            <h2 className="text-base font-medium text-muted-foreground"><NavUser user={user}/></h2>
           </div>
         </div>
       </header>

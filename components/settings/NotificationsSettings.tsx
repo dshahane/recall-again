@@ -1,10 +1,10 @@
-import Card from '../ui/Card';
-import Label from '../ui/Label';
-import Button from '../ui/Button';
-import Switch from '../ui/Switch';
-import Separator from '../ui/Separator';
+import { Card } from '@/components//ui/card';
+import { Label } from '@/components//ui/label';
+import { Button } from '@/components//ui/button';
+import Switch from '@/components//ui/Switch';
+import { Separator } from '@/components//ui/separator';
 
-export default function NotificationsSettings({ setActiveTab }) {
+export default function NotificationsSettings() {
     return (
         <Card
             title="Notifications"

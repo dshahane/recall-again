@@ -1,33 +1,14 @@
-// app/page.jsx
-'use client';
+'use client'
 
-import { useTab } from './context/TabContext';
-import ChatPanel from '../components/ChatPanel';
-import SettingsRouter from '../components/SettingsRouter';
-import AgentsRouter from "@/components/AgentsRouter";
-import KnowledgeRouter from "@/components/KnowledgeRouter";
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default function Page() {
-    // @ts-ignore
-    const { activeTab } = useTab();
+export default function Page2() {
+    const router = useRouter()
 
-    if (activeTab.startsWith('settings/')) {
-        return <SettingsRouter />;
-    }
-    else if (activeTab.startsWith('agents/')) {
-        return <AgentsRouter />;
-    }
+    useEffect(() => {
+        router.replace('/projects')
+    }, [router])
 
-    switch (activeTab) {
-        case 'knowledge':
-            return <KnowledgeRouter/>;
-        case 'agents':
-            return <AgentsRouter />;
-        case 'chat':
-            return <ChatPanel />;
-        case 'settings':
-            return <SettingsRouter />;
-        default:
-            return <AgentsRouter />;
-    }
+    return null
 }

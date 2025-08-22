@@ -76,7 +76,12 @@ const NamespaceGroupNode: React.FC<{ data: any }> = ({ data }) => {
 
     return (
         <div
-            className={`w-64 rounded-xl border p-2 shadow-sm ${color || "bg-gray-50"}`}
+            className={`w-64 rounded-xl border p-2 shadow-sm bg-gray-800`}
+            style={{
+                backgroundColor: '#1f2937', // dark slate gray
+                color: '#f9fafb', // light text
+                borderColor: '#374151', // darker border
+            }}
         >
             <div
                 className="flex justify-between items-center mb-1 cursor-pointer"
@@ -86,7 +91,7 @@ const NamespaceGroupNode: React.FC<{ data: any }> = ({ data }) => {
                     {label} {data.version ? `(v${data.version})` : ""}
                 </div>
                 <Button size="xs" variant="outline">
-                    {collapsed ? "Expand" : "Collapse"}
+                    {collapsed ? "+" : "-"}
                 </Button>
             </div>
             {!collapsed && (
@@ -159,6 +164,11 @@ const FunctionNode: React.FC<{ id: string; data: any }> = ({ id, data }) => {
     return (
         <div
             className={`w-48 rounded-2xl border p-2 text-xs shadow-sm ${catHue[meta.category]}`}
+            style={{
+                backgroundColor: '#111827', // dark background
+                color: '#f9fafb',           // light text
+                borderColor: '#374151',
+            }}
         >
             <div className="mb-1 flex items-center justify-between">
                 <div className="font-semibold">{meta.label}</div>

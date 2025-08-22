@@ -29,13 +29,8 @@ export default function AgentsPage({ params }: { params: { slug: string } }) {
             break;
     }
     return (
-        <div className="py-8 px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
-                {slug ? `Settings for: ${slug.replace(/-/g, ' ')}` : 'Settings'}
-            </h2>
             <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 {pageContent}
             </div>
-        </div>
     );
 }

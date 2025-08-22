@@ -1,6 +1,6 @@
 'use client';
 import React, {useEffect} from 'react';
-import { useRouter} from "next/router";
+import { useRouter } from "next/navigation";
 import { SchemaSpec } from '@/app/types/mapper';
 import { SchemaMapper } from '@/components/schema-mapper/mapper';
 import ProfileSettings from "@/components/settings/ProfileSettings";
@@ -27,26 +27,20 @@ const destinationSchema: SchemaSpec = {
 
 export default function SettingsPage({ params } : {params: {slug: string}}) {
     const { slug } = params;
-    const { setPageInfo } = usePageInfo()
+    const { setPageInfo } = usePageInfo();
 
     useEffect(() => {
-        async function fetchSettings() {
-            try {
-                // Example of an async operation
-                const response = await fetch(`/api/settings/${slug}`);
-                const data = await response.json();
+        // Define a stable title and breadcrumbs based on the slug
+        const pageTitle = `Settings: ${slug}`;
+        const pageBreadcrumbs = [
+            { children: 'Home', href: '/' },
+            { children: 'Settings', href: '/settings' },
+            { children: slug },
+        ];
 
-                // You can then use the fetched data here
-                setPageInfo({
-                    pageName: `Settings: ${data.name}`,
-                    pageDescription: `Settings for ${slug}`
-                });
-            } catch (error) {
-                console.error('Failed to fetch settings:', error);
-            }
-        }
+        // Call setPageInfo with the correct arguments
+        setPageInfo(pageTitle, pageBreadcrumbs);
 
-        fetchSettings();
     }, [slug, setPageInfo]);
 
     let pageContent;
@@ -86,7 +80,6 @@ export default function SettingsPage({ params } : {params: {slug: string}}) {
 
     return (
         <div className="py-8 px-4 sm:px-6 lg:px-8">
-            <BackButton/>
             {pageContent}
         </div>
     );

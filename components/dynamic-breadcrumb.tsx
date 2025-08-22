@@ -1,6 +1,7 @@
-// src/components/dynamic-breadcrumb.tsx
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { FaArrowLeft } from 'react-icons/fa'
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -12,13 +13,18 @@ import {
 import { usePageInfo } from '@/app/context/page-context'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button' // <-- Import the Button component
 
 export function DynamicBreadcrumb() {
     const { breadcrumbs } = usePageInfo()
+    const router = useRouter()
 
     return (
         <div className="flex items-center">
-            <SidebarTrigger className="-ml-1" />
+            {/* Using Shadcn's Button for the back button */}
+            <Button onClick={() => router.back()} variant="ghost" size="icon" className="-ml-1">
+                <FaArrowLeft className="h-4 w-4" />
+            </Button>
             <Separator
                 orientation="vertical"
                 className="mr-2 data-[orientation=vertical]:h-4"

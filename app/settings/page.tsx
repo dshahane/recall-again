@@ -42,15 +42,15 @@ const settings = [
 
 export default function SettingsApp() {
   // We're keeping the mock hook here, but the onClick now uses direct navigation.
-  const {setActiveTab} = useTab();
-  const { setPageInfo } = usePageInfo();
+  //const {setActiveTab} = useTab();
+  const { setPageInfo } = usePageInfo()
 
   useEffect(() => {
-    setPageInfo('Settings Page', [
+    setPageInfo('Settings', [
       { children: 'Home', href: '/' },
       { children: 'Settings', href: '/settings' },
     ])
-  }, [setPageInfo]);
+  }, [setPageInfo])
 
   const gridClasses = "grid gap-4 mt-4";
   const listClasses = "space-y-4 mt-4";

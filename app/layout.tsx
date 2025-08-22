@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
         <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <PageProvider> {/* Wrap the entire content in the PageProvider */}
+            <PageProvider>
                 <SidebarProvider
                     style={
                         {
@@ -32,7 +32,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <AppSidebar />
                     <SidebarInset>
                         <div className="main gap-2 px-4">
-                            {/* Use the new dynamic breadcrumb component here */}
                             <SiteHeader />
                             <DynamicBreadcrumb />
                             <div className="flex flex-1 flex-col py-4">

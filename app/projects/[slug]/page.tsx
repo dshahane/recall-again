@@ -8,7 +8,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     const { setPageInfo } = usePageInfo()
 
     useEffect(() => {
-        setPageInfo('Settings Page', [
+        setPageInfo(slug.toUpperCase(), [
             { children: 'Home', href: '/' },
             { children: 'Projects', href: '/projects' },
         ])

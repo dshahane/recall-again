@@ -1,7 +1,7 @@
 // src/context/page-context.tsx
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import {createContext, useContext, useState, type ReactNode, useCallback} from 'react'
 
 // Define your own type for a breadcrumb item
 interface BreadcrumbItem {
@@ -21,10 +21,11 @@ export function PageProvider({ children }: { children: ReactNode }) {
     const [title, setTitle] = useState('AI Search System')
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
 
-    const setPageInfo = (newTitle: string, newBreadcrumbs: BreadcrumbItem[]) => {
+    // Wrap setPageInfo in useCallback to stabilize the function reference
+    const setPageInfo = useCallback((newTitle: string, newBreadcrumbs: BreadcrumbItem[]) => {
         setTitle(newTitle)
         setBreadcrumbs(newBreadcrumbs)
-    }
+    }, []) // Empty dependency array means this function reference is stable
 
     return (
         <PageContext.Provider value={{ title, breadcrumbs, setPageInfo }}>

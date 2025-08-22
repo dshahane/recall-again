@@ -1,4 +1,4 @@
-import Card from "./Card";
+import {Card} from "@/components/ui/card";
 
 /**
  * Renders a horizontally scrollable carousel of cards.

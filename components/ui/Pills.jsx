@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import {Button} from "@/components/ui/button";
 
 /**
  * A reusable component for rendering clickable pills.

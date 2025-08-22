@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import Card from '../ui/Card';
-import Button from '../ui/Button';
+import { Card } from '@/components//ui/card';
+import { Button } from '@/components//ui/button';
 import AssetList from "@/components/settings/dataplane/AssetList";
 
-export default function IngestionSettings({ setActiveTab }) {
+export default function IngestionSettings() {
     const [dataAssets, setDataAssets] = useState([]);
     // Optional: fetch data from an API
     useEffect(() => {

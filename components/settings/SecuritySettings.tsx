@@ -82,11 +82,6 @@ export default function SecuritySettings() {
                 </Form>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                {setActiveTab && (
-                    <Button type="button" variant="outline" onClick={() => setActiveTab('settings')}>
-                        Back
-                    </Button>
-                )}
                 <Button type="submit">Change Password</Button>
             </CardFooter>
         </Card>

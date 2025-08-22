@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '../common/Basic';
-import { DataRepository } from '../../types/app';
+import { Card } from '@/components/ui/card';
+import { DataRepository } from '@/app/types/app';
 import {
   Table,
   TableHeader,

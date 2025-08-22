@@ -1,32 +1,41 @@
 'use client';
 import React from 'react';
-import Link from 'next/link';
-import SchemaMapper, { SchemaSpec } from '@/components/schema-mapper/mapper';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { Folder, Settings, Grid } from 'lucide-react';
+import {SchemaMapper} from '@/components/schema-mapper/mapper';
+import {SchemaSpec} from "@/app/types/mapper";
+import ChatPanel from "@/components/chat/ChatPanel";
 
-export function ProjectPage({ params }: { params: { slug: string } }) {
+const sourceSchemas: SchemaSpec[] = [
+    { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
+//    { label: 'Orders', fields: ['price', 'tax'], version: '2.1.0', color: 'bg-green-50' },
+];
+const destinationSchema: SchemaSpec = { label: 'Target', fields: ['full_name', 'order_total'], version: '3.0.0', color: 'bg-slate-50' };
+
+
+export default function AgentsPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
+    let pageContent;
 
-
-// Fetch or dynamically load schemas per project
-    const sourceSchemas: SchemaSpec[] = [
-        { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
-        { label: 'Orders', fields: ['price', 'tax'], version: '2.1.0', color: 'bg-green-50' },
-    ];
-
-
-    const destinationSchema: SchemaSpec = { label: 'Target', fields: ['full_name', 'order_total'], version: '3.0.0', color: 'bg-slate-50' };
-
-
-    return (
-        <div>
-            <h2 className="mb-4 text-lg font-semibold">Project: {slug}</h2>
-            <SchemaMapper
+    /* 'agent', 'chat', or 'search' */
+    switch (slug) {
+        case 'chat':
+            pageContent = <ChatPanel/>;
+            break;
+        default:
+            pageContent = <SchemaMapper
                 sourceSchemas={sourceSchemas}
                 destinationSchema={destinationSchema}
                 onChange={(state) => console.log('Mapping JSON for', slug, state)}
             />
+            break;
+    }
+    return (
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
+                {slug ? `Settings for: ${slug.replace(/-/g, ' ')}` : 'Settings'}
+            </h2>
+            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                {pageContent}
+            </div>
         </div>
     );
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Search, PlusCircle } from 'lucide-react';
 import { DataRepository } from '@/app/types/app';
-import Button from '../../ui/Button';
-import Input from '../../ui/Input';
-import Card from '../../ui/Card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components//ui/input';
+import { Card } from '@/components//ui/card';
 import EditCellButton from "@/components/ui/EditCellButton";
 import DeleteCellButton from "@/components/ui/DeleteCellButton";
 

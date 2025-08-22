@@ -1,14 +1,10 @@
-'use client'
+import {DashboardPage} from "@/app/dashboard/page";
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-
-export default function Page2() {
-    const router = useRouter()
-
-    useEffect(() => {
-        router.replace('/projects')
-    }, [router])
-
-    return null
+export default function Page() {
+    return (
+        <div>
+            <h1 className="text-xl font-bold">Dashboard</h1>
+            <DashboardPage/>
+        </div>
+    )
 }

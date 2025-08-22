@@ -1,6 +1,6 @@
 // components/ui/SidebarButton.jsx
 import React from 'react';
-import Button from './Button';
+import { Button } from './button';
 
 export default function SidebarButton({ active, isCollapsed, children, ...props }) {
     return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 // Import the new components from the Basic library
 import { Card, Input, Label, CancelButton, SubmitButton, TagPills, JsonEditor } from '../common/Basic';
-import { DataRepository } from '../../types/app';
+import { DataRepository } from '@/app/types/app';
 
 interface ImportModalProps {
   isOpen: boolean;

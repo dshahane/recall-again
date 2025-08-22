@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Card from '../ui/Card';
-import Button from '../ui/Button';
+import { Card } from '../ui/card';
+import { Button } from '../ui/button';
 import AgentForm from './AgentForm'; // Import the unified form
 import AgentCard from './AgentCard';
 import useResource from '../../hooks/useResource';

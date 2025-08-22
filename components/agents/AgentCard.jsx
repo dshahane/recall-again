@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../ui/Button';
+import Button from '../ui/button';
 import EditCellButton from "@/components/ui/EditCellButton";
 import DeleteCellButton from "@/components/ui/DeleteCellButton";
 import OnlineOfflineButton from "@/components/ui/OnlineOfflineButton";

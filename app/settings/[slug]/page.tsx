@@ -1,32 +1,71 @@
 'use client';
 import React from 'react';
-import Link from 'next/link';
-import SchemaMapper, { SchemaSpec } from '@/components/schema-mapper/mapper';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { Folder, Settings, Grid } from 'lucide-react';
+import { useRouter} from "next/router";
+import { SchemaSpec } from '@/app/types/mapper';
+import { SchemaMapper } from '@/components/schema-mapper/mapper';
+import ProfileSettings from "@/components/settings/ProfileSettings";
+import SecuritySettings from "@/components/settings/SecuritySettings";
+import NotificationsSettings from "@/components/settings/NotificationsSettings";
+import KnowledgeDashboard from "@/components/knowledge/KnowledgeDashboard";
+import IntegrationsSettings from "@/components/settings/IntegrationsSettings";
+import IngestionSettings from "@/components/settings/IngestionSettings";
+import Workbench from "@/components/settings/ingestion/Workbench";
 
-export function ProjectPage({ params }: { params: { slug: string } }) {
+const sourceSchemas: SchemaSpec[] = [
+    { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
+    { label: 'Orders', fields: ['price', 'tax'], version: '2.1.0', color: 'bg-green-50' },
+];
+
+const destinationSchema: SchemaSpec = {
+    label: 'Target',
+    fields: ['full_name', 'order_total'],
+    version: '3.0.0',
+    color: 'bg-slate-50'
+};
+
+export default function SettingsPage({ params } : {params: {slug: string}}) {
     const { slug } = params;
 
-
-// Fetch or dynamically load schemas per project
-    const sourceSchemas: SchemaSpec[] = [
-        { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
-        { label: 'Orders', fields: ['price', 'tax'], version: '2.1.0', color: 'bg-green-50' },
-    ];
-
-
-    const destinationSchema: SchemaSpec = { label: 'Target', fields: ['full_name', 'order_total'], version: '3.0.0', color: 'bg-slate-50' };
-
-
-    return (
-        <div>
-            <h2 className="mb-4 text-lg font-semibold">Project: {slug}</h2>
-            <SchemaMapper
+    let pageContent;
+    switch (slug) {
+        case 'profile':
+            pageContent = <ProfileSettings />;
+            break;
+        case 'security':
+            pageContent =  <SecuritySettings />;
+            break;
+        case 'notifications':
+            pageContent =  <NotificationsSettings />;
+            break;
+        case 'knowledge':
+            pageContent = <KnowledgeDashboard />;
+            break;
+        case 'integrations':
+            pageContent = <IntegrationsSettings />;
+            break;
+        case 'ingestion':
+            pageContent =  <IngestionSettings />;
+            break;
+        case 'metadata':
+            pageContent =  <Workbench />;
+            break;
+        default:
+            pageContent =  <SchemaMapper
                 sourceSchemas={sourceSchemas}
                 destinationSchema={destinationSchema}
                 onChange={(state) => console.log('Mapping JSON for', slug, state)}
             />
+            break;
+    }
+
+    return (
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
+                {slug ? `Settings for: ${slug.replace(/-/g, ' ')}` : 'Settings'}
+            </h2>
+            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                {pageContent}
+            </div>
         </div>
     );
 }

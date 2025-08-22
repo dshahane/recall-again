@@ -1,5 +1,5 @@
-import Card from '../ui/Card';
-import Button from '../ui/Button';
+import { Card } from '@/components//ui/card';
+import { Button } from '@/components//ui/button';
 
 const integrations = [
     {
@@ -16,7 +16,7 @@ const integrations = [
     }
 ];
 
-export default function IntegrationsSettings({ setActiveTab }) {
+export default function IntegrationsSettings() {
     return (
         <Card title="Integrations" description="Connect to third-party services to enhance your experience.">
             <div className="space-y-4 mt-4">

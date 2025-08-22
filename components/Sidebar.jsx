@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useTab } from '@/app/context/TabContext';
-import Button from './ui/Button';
 import SidebarButton from './ui/SidebarButton';
 import IconButton from './ui/IconButton';
 

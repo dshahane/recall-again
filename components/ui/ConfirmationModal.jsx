@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './Button'; // Assuming you have a reusable Button component
+import { Button } from './button'; // Assuming you have a reusable Button component
 
 /**
  * A reusable modal component for user confirmations.

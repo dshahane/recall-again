@@ -1,5 +1,5 @@
 import React, { useState, ReactNode } from 'react';
-import Button from './Button';
+import { Button } from './button';
 
 // Defines the shape of the data for each tab.
 interface TabConfig {

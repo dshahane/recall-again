@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DataIngestionProps, IngestionProcess } from '../../types/app';
+import { DataIngestionProps, IngestionProcess } from '@/app/types/app';
 
 const DataIngestion: React.FC<DataIngestionProps> = ({ isOpen, onClose, onSave, initialData }) => {
   const [name, setName] = useState('');

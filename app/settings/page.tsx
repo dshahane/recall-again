@@ -36,6 +36,7 @@ const settings = [
   { name: 'ingestion', title: 'Data Assets', description: 'Import critical data assets (RDF, Tabular, and unstructured).', icon: <Database className="h-6 w-6" /> },
   { name: 'metadata', title: 'Metadata', description: 'Schema, metadata, and mappings', icon: <FileEdit className="h-6 w-6" /> },
   { name: 'mapper', title: 'Mapper', description: 'Schema mappings', icon: <Map className="h-6 w-6" /> },
+  { name: 'workbench', title: 'Data Workbench', description: 'Edit and enrich data', icon: <Database className="h-6 w-6" /> },
 ];
 
 export default function SettingsApp() {

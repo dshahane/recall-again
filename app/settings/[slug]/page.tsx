@@ -8,8 +8,8 @@ import SecuritySettings from "@/components/settings/SecuritySettings";
 import NotificationsSettings from "@/components/settings/NotificationsSettings";
 import KnowledgeDashboard from "@/components/knowledge/KnowledgeDashboard";
 import IntegrationsSettings from "@/components/settings/IntegrationsSettings";
-import IngestionSettings from "@/components/settings/IngestionSettings";
 import Workbench from "@/components/settings/ingestion/Workbench";
+import AssetManager from "@/components/settings/dataplane/AssetManager";
 
 const sourceSchemas: SchemaSpec[] = [
     { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
@@ -44,9 +44,12 @@ export default function SettingsPage({ params } : {params: {slug: string}}) {
             pageContent = <IntegrationsSettings />;
             break;
         case 'ingestion':
-            pageContent =  <IngestionSettings />;
+            pageContent =  <AssetManager />;
             break;
         case 'metadata':
+            pageContent =  <Workbench />;
+            break;
+        case 'workbench':
             pageContent =  <Workbench />;
             break;
         default:

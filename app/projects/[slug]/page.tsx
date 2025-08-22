@@ -1,8 +1,18 @@
 import { AppBreadcrumbs } from '@/components/nav/app-breadcrumbs'
 import SchemaMapper, {SchemaSpec} from "@/components/schema-mapper/mapper";
+import {usePageInfo} from "@/app/context/page-context";
+import {useEffect} from "react";
 
 export default function ProjectPage({ params }: { params: { slug: string } }) {
     const { slug } = params
+    const { setPageInfo } = usePageInfo()
+
+    useEffect(() => {
+        setPageInfo('Settings Page', [
+            { children: 'Home', href: '/' },
+            { children: 'Projects', href: '/projects' },
+        ])
+    }, [setPageInfo])
 
     // Example schemas
     const sourceSchemas: SchemaSpec[] = [
@@ -17,16 +27,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     ]
 
     return (
-        <div className="flex flex-col gap-4">
-            <AppBreadcrumbs crumbs={breadcrumbs} />
-            <div className="p-4 bg-muted/50 rounded-xl flex-1 min-h-[60vh]">
-                <h2 className="text-lg font-semibold mb-4">Project: {slug}</h2>
-                <SchemaMapper
-                    sourceSchemas={sourceSchemas}
-                    destinationSchema={destinationSchema}
-                    onChange={(state) => console.log('Mapping JSON for', slug, state)}
-                />
-            </div>
-        </div>
+        <SchemaMapper
+            sourceSchemas={sourceSchemas}
+            destinationSchema={destinationSchema}
+            onChange={(state) => console.log('Mapping JSON for', slug, state)}
+        />
     )
 }

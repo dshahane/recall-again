@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useRouter} from "next/router";
 import { SchemaSpec } from '@/app/types/mapper';
 import { SchemaMapper } from '@/components/schema-mapper/mapper';
@@ -10,6 +10,8 @@ import KnowledgeDashboard from "@/components/knowledge/KnowledgeDashboard";
 import IntegrationsSettings from "@/components/settings/IntegrationsSettings";
 import Workbench from "@/components/settings/ingestion/Workbench";
 import AssetManager from "@/components/settings/dataplane/AssetManager";
+import {usePageInfo} from "@/app/context/page-context";
+import BackButton from "@/components/ui/BackButton";
 
 const sourceSchemas: SchemaSpec[] = [
     { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
@@ -25,6 +27,27 @@ const destinationSchema: SchemaSpec = {
 
 export default function SettingsPage({ params } : {params: {slug: string}}) {
     const { slug } = params;
+    const { setPageInfo } = usePageInfo()
+
+    useEffect(() => {
+        async function fetchSettings() {
+            try {
+                // Example of an async operation
+                const response = await fetch(`/api/settings/${slug}`);
+                const data = await response.json();
+
+                // You can then use the fetched data here
+                setPageInfo({
+                    pageName: `Settings: ${data.name}`,
+                    pageDescription: `Settings for ${slug}`
+                });
+            } catch (error) {
+                console.error('Failed to fetch settings:', error);
+            }
+        }
+
+        fetchSettings();
+    }, [slug, setPageInfo]);
 
     let pageContent;
     switch (slug) {
@@ -63,12 +86,8 @@ export default function SettingsPage({ params } : {params: {slug: string}}) {
 
     return (
         <div className="py-8 px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize">
-                {slug ? `Settings for: ${slug.replace(/-/g, ' ')}` : 'Settings'}
-            </h2>
-            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                {pageContent}
-            </div>
+            <BackButton/>
+            {pageContent}
         </div>
     );
 }

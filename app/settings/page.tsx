@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
   FileEdit,
   Map
 } from 'lucide-react';
+import {usePageInfo} from "@/app/context/page-context";
 
 // This is a mock context hook for demonstration purposes,
 // as the original code uses a context not available here.
@@ -42,6 +43,14 @@ const settings = [
 export default function SettingsApp() {
   // We're keeping the mock hook here, but the onClick now uses direct navigation.
   const {setActiveTab} = useTab();
+  const { setPageInfo } = usePageInfo();
+
+  useEffect(() => {
+    setPageInfo('Settings Page', [
+      { children: 'Home', href: '/' },
+      { children: 'Settings', href: '/settings' },
+    ])
+  }, [setPageInfo]);
 
   const gridClasses = "grid gap-4 mt-4";
   const listClasses = "space-y-4 mt-4";

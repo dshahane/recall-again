@@ -63,6 +63,7 @@ const data = {
       ],
     },
   ] satisfies NavItem[],
+
   navBottom: [
     {
       title: 'Documentation',
@@ -101,6 +102,7 @@ export function AppSidebar({ className }: { className?: string }) {
           <NavSettings settings={navSettings} />
           <SidebarNavList sections={data.navBottom} direction="up" />
           <NavUser user={data.user} />
+          <SidebarNavList sections={data.navBottom} direction="up" />
         </SidebarFooter>
 
         <SidebarRail />

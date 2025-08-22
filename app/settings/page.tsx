@@ -57,7 +57,6 @@ export default function SettingsApp() {
 
   return (
       <div className="p-4 sm:p-6 lg:p-8">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">Settings</h2>
         <div className={gridClasses}>
           <div className="grid grid-cols-4 sm:grid-cols-3 gap-4 mt-4">
             {settings.map((setting) => (

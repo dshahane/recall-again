@@ -30,17 +30,14 @@ export default function SettingsPage({ params } : {params: {slug: string}}) {
     const { setPageInfo } = usePageInfo();
 
     useEffect(() => {
-        // Define a stable title and breadcrumbs based on the slug
-        const pageTitle = `Settings: ${slug}`;
+        const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
         const pageBreadcrumbs = [
             { children: 'Home', href: '/' },
             { children: 'Settings', href: '/settings' },
-            { children: slug },
+            { children: pageTitle },
         ];
 
-        // Call setPageInfo with the correct arguments
         setPageInfo(pageTitle, pageBreadcrumbs);
-
     }, [slug, setPageInfo]);
 
     let pageContent;

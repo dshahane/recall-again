@@ -23,9 +23,6 @@ export function NavSettings({ settings,}: {
   const { isMobile } = useSidebar();
 
   return (
-      <>
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarMenu>
               <SidebarMenuItem key={settings.title}>
                 <SidebarMenuButton>
@@ -40,7 +37,5 @@ export function NavSettings({ settings,}: {
                 </SidebarMenuButton>
               </SidebarMenuItem>
           </SidebarMenu>
-        </SidebarGroup>
-      </>
   );
 }

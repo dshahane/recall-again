@@ -6,7 +6,7 @@ import {SchemaMapper} from "@/components/schema-mapper/mapper";
 import {SchemaSpec} from "@/app/types/mapper"
 import {ModelTraining} from "@/components/models/training";
 import ModelSkills from "@/components/models/skills";
-import {ModelActions} from "@/components/models/actions";
+import WorkflowBuilder from "@/components/models/actions";
 import {ModelTeacher} from "@/components/models/yoda";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
@@ -39,7 +39,7 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
     let pageContent;
     switch (slug) {
         case 'actions':
-            pageContent = <ModelActions/>;
+            pageContent = <WorkflowBuilder/>;
             break;
         case 'skills':
             pageContent = <ModelSkills/>;

@@ -42,7 +42,6 @@ const data = {
         { title: 'Browse Information', url: '/agents/browse' },
         { title: 'Discover and Search', url: '/agents/search' },
         { title: 'Insights', url: '/agents/analytics' },
-        { title: 'Map Schema', url: '/agents/schema' },
       ],
     },
     {
@@ -50,10 +49,11 @@ const data = {
       url: '#',
       icon: Bot,
       items: [
-        { title: 'Taxonomy', url: '/knowledge' },
-        { title: 'Skills', url: '/knowledge' },
-        { title: 'Teachers', url: '/knowledge' },
-        { title: 'Training', url: '/docs' },
+        { title: 'Taxonomy', url: '/models/schema' },
+        { title: 'Skills', url: '/models/skills' },
+        { title: 'Actions', url: '/models/actions' },
+        { title: 'Teachers', url: '/models/yoda' },
+        { title: 'Training', url: '/models/training' },
       ],
     },
   ] satisfies NavItem[],
@@ -98,8 +98,9 @@ export function AppSidebar({ className }: { className?: string }) {
         <SidebarContent>
           {/* Top sections */}
           <SidebarNavList sections={data.navMain} />
-          {/* Projects */}
+          {/* Projects
           <SidebarNavList sections={data.projects} />
+          */}
         </SidebarContent>
 
         <SidebarFooter>

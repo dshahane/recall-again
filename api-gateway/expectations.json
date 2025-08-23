@@ -1,0 +1,503 @@
+[
+  {
+    "httpRequest": {
+      "path": "/v1/agents",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "1",
+          "name": "Agent-1",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 1",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "2",
+          "name": "Agent-2",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 2",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "3",
+          "name": "Agent-3",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 3",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "4",
+          "name": "Agent-4",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 4",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "5",
+          "name": "Agent-5",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 5",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "6",
+          "name": "Agent-6",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 6",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "7",
+          "name": "Agent-7",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 7",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "8",
+          "name": "Agent-8",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 8",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "9",
+          "name": "Agent-9",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 9",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        },
+        {
+          "id": "10",
+          "name": "Agent-10",
+          "developer": "dss@iname.com",
+          "description": "This agent keeps track of customers and is agent number 10",
+          "icon": "customers",
+          "specialty": [
+            "revenue",
+            "support",
+            "returns"
+          ],
+          "usage": {
+            "label": null,
+            "data": null
+          },
+          "accuracy": {
+            "value": null,
+            "label": null
+          }
+        }
+      ]
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/1",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "1",
+        "name": "Agent-1",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 1",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/2",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "2",
+        "name": "Agent-2",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 2",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/3",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "3",
+        "name": "Agent-3",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 3",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/4",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "4",
+        "name": "Agent-4",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 4",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/5",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "5",
+        "name": "Agent-5",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 5",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/6",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "6",
+        "name": "Agent-6",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 6",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/7",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "7",
+        "name": "Agent-7",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 7",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/8",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "8",
+        "name": "Agent-8",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 8",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/9",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "9",
+        "name": "Agent-9",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 9",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/v1/agents/10",
+      "method": "GET"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "id": "10",
+        "name": "Agent-10",
+        "developer": "dss@iname.com",
+        "description": "This agent keeps track of customers and is agent number 10",
+        "icon": "customers",
+        "specialty": [
+          "revenue",
+          "support",
+          "returns"
+        ],
+        "usage": {
+          "label": null,
+          "data": null
+        },
+        "accuracy": {
+          "value": null,
+          "label": null
+        }
+      }
+    }
+  }
+]

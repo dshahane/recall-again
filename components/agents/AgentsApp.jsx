@@ -6,7 +6,7 @@ import AgentCard from './AgentCard';
 import useResource from '../../hooks/useResource';
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
-export default function AgentsPage() {
+export default function AgentsApp() {
     const [agentToEdit, setAgentToEdit] = useState(null);
     const [isAddingAgent, setIsAddingAgent] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);

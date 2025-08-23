@@ -4,6 +4,11 @@ import {SchemaMapper} from '@/components/schema-mapper/mapper';
 import {SchemaSpec} from "@/app/types/mapper";
 import ChatPanel from "@/components/chat/ChatPanel";
 import {usePageInfo} from "@/app/context/page-context";
+import SearchApp from "@/components/search/SearchApp";
+import AgentsAppNew from "@/components/agents/AgentsAppNew";
+import ChatAppNew from "@/components/chat/ChatAppNew";
+import SellerAnalyticsAppNew from "@/components/analytics/SellerAnalyticsAppNew";
+import BrowseAppNew from "@/components/analytics/BrowseAppNew";
 
 const sourceSchemas: SchemaSpec[] = [
     { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
@@ -14,22 +19,37 @@ const destinationSchema: SchemaSpec = { label: 'Target', fields: ['full_name', '
 
 export default function AgentsPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
-    /*
-    const { setPageInfo } = usePageInfo()
+    const { setPageInfo } = usePageInfo();
 
     useEffect(() => {
-        setPageInfo('Settings Page', [
+        const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
+        const pageBreadcrumbs = [
             { children: 'Home', href: '/' },
             { children: 'Settings', href: '/settings' },
-        ])
-    }, [setPageInfo])*/
+            { children: pageTitle },
+        ];
+
+        setPageInfo(pageTitle, pageBreadcrumbs);
+    }, [slug, setPageInfo]);
 
     let pageContent;
 
-    /* 'agent', 'chat', or 'search' */
+    /* 'browse', 'chat', or 'search' */
     switch (slug) {
+        case 'search':
+            pageContent = <SearchApp />
+            break;
         case 'chat':
-            pageContent = <ChatPanel/>;
+            pageContent = <ChatAppNew/>;
+            break;
+        case 'agents':
+            pageContent = <AgentsAppNew/>;
+            break;
+        case 'browse':
+            pageContent = <BrowseAppNew/>;
+            break;
+        case 'analytics':
+            pageContent = <SellerAnalyticsAppNew/>;
             break;
         default:
             pageContent = <SchemaMapper

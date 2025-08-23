@@ -47,3 +47,4 @@ next-env.d.ts
 /.venv
 uv.lock
 __pycache__
+api-gateway/fastapi-stubs/

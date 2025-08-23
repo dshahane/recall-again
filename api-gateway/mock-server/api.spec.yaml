@@ -1,0 +1,236 @@
+openapi: 3.0.0
+info:
+  title: Agent Directory API
+  version: 1.0.0
+  description: A RESTful API for creating and managing specialized AI agents in a retail marketplace.
+
+servers:
+  - url: https://api.agentcatalog.com/v1
+    description: Production server
+  - url: http://localhost:3000/v1
+    description: Local development server
+
+paths:
+  /agents:
+    get:
+      summary: List all agents
+      description: Retrieves a list of all available AI agents in the catalog.
+      operationId: getAgents
+      responses:
+        '200':
+          description: A list of agents.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agent'
+        '500':
+          description: Internal Server Error
+
+    post:
+      summary: Create a new agent
+      description: Adds a new AI agent to the catalog.
+      operationId: createAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAgent'
+      responses:
+        '201':
+          description: Agent created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '400':
+          description: Invalid input.
+        '500':
+          description: Internal Server Error
+
+  /agents/{agentId}:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        description: The unique identifier of the agent.
+        schema:
+          type: string
+    get:
+      summary: Get a single agent by ID
+      description: Retrieves the details of a specific agent from the catalog.
+      operationId: getAgentById
+      responses:
+        '200':
+          description: The requested agent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '404':
+          description: Agent not found.
+        '500':
+          description: Internal Server Error
+    put:
+      summary: Update an existing agent
+      description: Updates the details of an existing agent.
+      operationId: updateAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAgent'
+      responses:
+        '200':
+          description: Agent updated successfully.
+        '404':
+          description: Agent not found.
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete an agent
+      description: Deletes an agent from the catalog.
+      operationId: deleteAgent
+      responses:
+        '204':
+          description: Agent deleted successfully.
+        '404':
+          description: Agent not found.
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    Agent:
+      type: object
+      required:
+        - id
+        - name
+        - developer
+        - description
+        - icon
+        - specialty
+        - usage
+        - accuracy
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the agent.
+          example: 'agent-1'
+        name:
+          type: string
+          description: The name of the agent.
+          example: 'Inventory Manager'
+        developer:
+          type: string
+          description: The developer or company that created the agent.
+          example: 'DataFlow Solutions'
+        description:
+          type: string
+          description: A brief description of the agent's function.
+          example: 'Tracks real-time inventory levels and predicts stock needs.'
+        icon:
+          type: string
+          description: The name of the stock icon associated with the agent.
+          example: 'Package'
+        specialty:
+          type: array
+          items:
+            type: string
+          description: A list of business specialties this agent is focused on.
+          example: ['Inventory', 'Logistics']
+        usage:
+          type: object
+          properties:
+            label:
+              type: string
+              description: A human-readable label for the usage data.
+              example: 'Daily Active Users'
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageDataPoint'
+        accuracy:
+          type: object
+          properties:
+            value:
+              type: integer
+              description: The accuracy value as a percentage.
+              example: 98
+            label:
+              type: string
+              description: A human-readable label for the accuracy.
+              example: '98% Prediction Accuracy'
+
+    NewAgent:
+      type: object
+      required:
+        - name
+        - developer
+        - description
+        - icon
+        - specialty
+        - usage
+        - accuracy
+      properties:
+        name:
+          type: string
+          example: 'Inventory Manager'
+        developer:
+          type: string
+          example: 'DataFlow Solutions'
+        description:
+          type: string
+          example: 'Tracks real-time inventory levels and predicts stock needs.'
+        icon:
+          type: string
+          example: 'Package'
+        specialty:
+          type: array
+          items:
+            type: string
+          example: ['Inventory', 'Logistics']
+        usage:
+          type: object
+          properties:
+            label:
+              type: string
+              example: 'Daily Active Users'
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageDataPoint'
+        accuracy:
+          type: object
+          properties:
+            value:
+              type: integer
+              example: 98
+            label:
+              type: string
+              example: '98% Prediction Accuracy'
+
+    UsageDataPoint:
+      type: object
+      properties:
+        day:
+          type: string
+          description: Day of the week (if applicable).
+        week:
+          type: string
+          description: Week number (if applicable).
+        month:
+          type: string
+          description: Month of the year (if applicable).
+        q:
+          type: string
+          description: Quarter (if applicable).
+        time:
+          type: string
+          description: Time of the day (if applicable).
+        value:
+          type: integer
+          description: The numerical value for the data point.

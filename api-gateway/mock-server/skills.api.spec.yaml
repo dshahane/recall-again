@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: AI Skill Manager API
+  description: An API for managing and interacting with AI skills, including their creation, status, and metadata.
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+
+tags:
+  - name: skills
+    description: Skill management operations
+
+paths:
+  /skills:
+    get:
+      tags:
+        - skills
+      summary: Retrieve all skills
+      description: Returns a list of all available AI skills with their details.
+      responses:
+        '200':
+          description: A list of skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+    post:
+      tags:
+        - skills
+      summary: Create a new skill
+      description: Creates a new AI skill based on the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCreationRequest'
+      responses:
+        '201':
+          description: Skill successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          description: Invalid input
+
+  /skills/{skillId}:
+    parameters:
+      - in: path
+        name: skillId
+        schema:
+          type: string
+        required: true
+        description: The unique identifier of the skill.
+    get:
+      tags:
+        - skills
+      summary: Get a skill by ID
+      description: Returns a single skill based on its unique ID.
+      responses:
+        '200':
+          description: A single skill object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '404':
+          description: Skill not found
+    put:
+      tags:
+        - skills
+      summary: Update an existing skill
+      description: Replaces the entire skill object with the new data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCreationRequest'
+      responses:
+        '200':
+          description: Skill successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          description: Invalid input
+        '404':
+          description: Skill not found
+    delete:
+      tags:
+        - skills
+      summary: Delete a skill
+      description: Deletes the skill with the specified ID.
+      responses:
+        '204':
+          description: Skill successfully deleted (no content)
+        '404':
+          description: Skill not found
+
+components:
+  schemas:
+    Skill:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - trigger
+        - status
+      properties:
+        id:
+          type: string
+          description: The unique ID of the skill.
+          example: '1'
+        name:
+          type: string
+          description: The name of the skill.
+          example: 'Query Intent Analysis'
+        description:
+          type: string
+          description: A brief description of what the skill does.
+          example: 'Analyzes user queries to determine intent.'
+        type:
+          type: string
+          description: The category or type of the skill.
+          example: 'Query Understanding'
+        trigger:
+          type: string
+          description: The event that triggers the skill.
+          example: 'User Query'
+        sampleInput:
+          type: string
+          description: A sample of the input data for the skill.
+          example: 'What is the price of a waterproof jacket?'
+        status:
+          type: string
+          description: The current deployment status of the skill.
+          example: 'Deployed'
+          enum:
+            - Deployed
+            - Staging
+            - Draft
+
+    SkillCreationRequest:
+      type: object
+      required:
+        - name
+        - type
+        - trigger
+      properties:
+        name:
+          type: string
+          description: The name of the skill.
+          example: 'Query Intent Analysis'
+        description:
+          type: string
+          description: A brief description of what the skill does.
+          example: 'Analyzes user queries to determine intent.'
+        type:
+          type: string
+          description: The category or type of the skill.
+          example: 'Query Understanding'
+        trigger:
+          type: string
+          description: The event that triggers the skill.
+          example: 'User Query'
+        sampleInput:
+          type: string
+          description: A sample of the input data for the skill.
+          example: 'What is the price of a waterproof jacket?'

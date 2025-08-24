@@ -517,11 +517,6 @@ export default function WorkflowBuilder() {
 
     const selectedNode = useMemo(() => wf.nodes.find(n => n.id === selectedId), [wf.nodes, selectedId]);
 
-    const nodePortPos = (n: AnyNode, port: PortName) => {
-        const rect = { w: 220, h: 84 };
-        const pp = portPositions(rect.w, rect.h, n.kind)[port] || { x: rect.w, y: rect.h / 2 };
-        return { x: n.pos.x + pp.x, y: n.pos.y + pp.y };
-    };
 
     const addNode = (kind: NodeKind) => {
         // This is not used anymore due to drag-and-drop, but kept for completeness
@@ -544,43 +539,56 @@ export default function WorkflowBuilder() {
 
     const onDrag = (id: string, pos: Vec2) => setWf(w => ({ ...w, nodes: w.nodes.map(n => (n.id === id ? { ...n, pos } : n)) }));
 
-    const onPortClick = (nodeId: string, port: PortName, e: React.MouseEvent) => {
+    // ⭐️ Fix: A new utility function to calculate a node's port position
+    const nodePortPos = useCallback((n: AnyNode, port: PortName, kind: 'out' | 'in') => {
+        const rect = { w: 220, h: 84 };
+        if (kind === 'in') {
+            return { x: n.pos.x, y: n.pos.y + rect.h / 2 };
+        }
+        const pp = portPositions(rect.w, rect.h, n.kind)[port] || { x: rect.w, y: rect.h / 2 };
+        return { x: n.pos.x + pp.x, y: n.pos.y + pp.y };
+    }, []);
+
+    // ⭐️ Fix: Corrected onPortClick logic
+    const onPortClick = useCallback((nodeId: string, port: PortName, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!connectingFrom) {
-            setConnectingFrom({ nodeId, port });
-            return;
-        }
 
-        const sourceNode = wf.nodes.find(n => n.id === connectingFrom.nodeId);
-        const targetNode = wf.nodes.find(n => n.id === nodeId);
-        if (!sourceNode || !targetNode || sourceNode.id === targetNode.id) {
-            setConnectingFrom(null);
-            return;
-        }
+        if (connectingFrom) {
+            // Case 2: Complete the connection
+            const sourceNode = wf.nodes.find(n => n.id === connectingFrom.nodeId);
+            const targetNode = wf.nodes.find(n => n.id === nodeId);
 
-        // Check for existing edge to prevent duplicates
-        const existingEdge = wf.edges.find(e => e.from.nodeId === connectingFrom.nodeId && e.from.port === connectingFrom.port);
-        if (existingEdge) {
-            setWf(w => ({
-                ...w,
-                edges: w.edges.map(e => (e.id === existingEdge.id ? { ...e, to: { nodeId: targetNode.id } } : e))
-            }));
-        } else {
+            if (!sourceNode || !targetNode || sourceNode.id === targetNode.id) {
+                setConnectingFrom(null);
+                return;
+            }
+
+            // Remove any existing edge from the source port
+            const newEdges = wf.edges.filter(edge => !(edge.from.nodeId === connectingFrom.nodeId && edge.from.port === connectingFrom.port));
+
+            // Create a new edge
             const newEdge: Edge = {
                 id: genId(),
-                from: { nodeId: sourceNode.id, port: connectingFrom.port },
+                from: { nodeId: connectingFrom.nodeId, port: connectingFrom.port },
                 to: { nodeId: targetNode.id },
             };
-            setWf(w => ({ ...w, edges: [...w.edges, newEdge] }));
-        }
 
-        setConnectingFrom(null);
-    };
+            setWf(w => ({
+                ...w,
+                edges: [...newEdges, newEdge]
+            }));
+            setConnectingFrom(null);
+        } else {
+            // Case 1: Start a new connection
+            setConnectingFrom({ nodeId, port });
+        }
+    }, [connectingFrom, wf.edges, wf.nodes]);
 
     const handleCanvasClick = () => {
         setSelectedId(undefined);
-        setConnectingFrom(null);
+        setConnectingFrom(null); // Cancel any ongoing connection
     };
+
 
     // Placeholder for configuration and execution logic
     const handleConfigChange = (id: string, newConfig: any) => {
@@ -675,8 +683,8 @@ export default function WorkflowBuilder() {
                                 const fromNode = wf.nodes.find(n => n.id === edge.from.nodeId);
                                 const toNode = wf.nodes.find(n => n.id === edge.to.nodeId);
                                 if (!fromNode || !toNode) return null;
-                                const fromPos = nodePortPos(fromNode, edge.from.port);
-                                const toPos = { x: toNode.pos.x, y: toNode.pos.y + 42 };
+                                const fromPos = nodePortPos(fromNode, edge.from.port, 'out');
+                                const toPos = nodePortPos(toNode, 'out', 'in');
                                 return (
                                     <EdgeView
                                         key={edge.id}
@@ -700,7 +708,6 @@ export default function WorkflowBuilder() {
                                 onPortClick={onPortClick}
                             />
                         ))}
-
                     </div>
                 </div>
             </div>
@@ -748,37 +755,52 @@ const Modal = ({ isOpen, message, onClose }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
             <div className="bg-zinc-800 rounded-lg p-6 shadow-xl max-w-sm">
                 <h3 className="text-lg font-semibold text-white">Warning</h3>
-                <p className="mt-2 text-sm text-zinc-300">{message}</p>
-                <div className="mt-4 flex justify-end">
-                    <Button onClick={onClose}>OK</Button>
+                <p className="mt-4 text-sm text-zinc-300">{message}</p>
+                <div className="flex justify-end mt-6">
+                    <Button onClick={onClose}>Close</Button>
                 </div>
             </div>
         </div>
     );
 };
 
-// Simplified NodeConfig component
-const NodeConfig = ({ node, onChange, onNameChange }) => {
-    const handleInputChange = (e) => {
-        onNameChange(node.id, e.target.value);
-    };
-
+// Placeholder for NodeConfig component, assuming it exists
+const NodeConfig = ({ node, onChange, onNameChange }: {
+    node: AnyNode;
+    onChange: (id: string, config: any) => void;
+    onNameChange: (id: string, name: string) => void;
+}) => {
+    // This is a minimal, placeholder component. You would expand this to handle different node kinds.
     return (
         <div className="space-y-4">
-            <div className="space-y-2">
-                <Label>Node Name</Label>
-                <Input value={node.name} onChange={handleInputChange} />
+            <div>
+                <Label htmlFor="node-name" className="text-sm">Node Name</Label>
+                <Input
+                    id="node-name"
+                    value={node.name}
+                    onChange={(e) => onNameChange(node.id, e.target.value)}
+                    className="mt-1"
+                />
             </div>
             <div className="space-y-2">
-                <Label>Node Type</Label>
-                <div className="flex items-center gap-2 p-2 border rounded-md border-zinc-700 bg-zinc-800">
-                    {nodeIcon(node.kind)}
-                    <span className="text-sm font-medium">{node.kind}</span>
-                </div>
-            </div>
-            <div className="space-y-2">
-                <Label>Configuration</Label>
-                <Textarea placeholder="Node-specific config goes here..." disabled />
+                <h4 className="text-sm font-medium">Configuration</h4>
+                {node.kind === "llm" && (
+                    <>
+                        <Label htmlFor="llm-model">Model</Label>
+                        <Input
+                            id="llm-model"
+                            value={(node as LLMNode).config.model}
+                            onChange={(e) => onChange(node.id, { ...node.config, model: e.target.value })}
+                        />
+                        <Label htmlFor="llm-prompt">Prompt</Label>
+                        <Textarea
+                            id="llm-prompt"
+                            value={(node as LLMNode).config.prompt}
+                            onChange={(e) => onChange(node.id, { ...node.config, prompt: e.target.value })}
+                        />
+                    </>
+                )}
+                {/* Add more config sections for other node kinds */}
             </div>
         </div>
     );

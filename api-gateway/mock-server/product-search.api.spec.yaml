@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: Product Search API
+  description: API for retrieving product listings, categories, and recommendations for a search and discovery experience.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Development Server
+
+paths:
+  /data:
+    get:
+      summary: Retrieve all data for the product search dashboard.
+      description: Fetches a complete set of products, categories, and recommendations in a single response.
+      responses:
+        '200':
+          description: A successful response containing all necessary data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+        '500':
+          description: Server error.
+
+components:
+  schemas:
+    DashboardData:
+      type: object
+      description: A container for all data needed for the product search dashboard.
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        categories:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+      required:
+        - products
+        - categories
+        - recommendations
+
+    Product:
+      type: object
+      description: A detailed product listing.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the product.
+        name:
+          type: string
+          description: The name of the product.
+        category:
+          type: string
+          description: The product's category.
+        price:
+          type: number
+          format: float
+          description: The price of the product.
+        image:
+          type: string
+          format: uri
+          description: The URL for the product's image.
+        rating:
+          type: number
+          format: float
+          description: The average rating of the product.
+        reviews:
+          type: integer
+          description: The total number of reviews.
+        description:
+          type: string
+          description: A brief description of the product.
+      example:
+        id: 1
+        name: "Wireless Bluetooth Headphones"
+        category: "Electronics"
+        price: 79.99
+        image: "https://placehold.co/400x400/1e293b/a5b4fc?text=Headphones"
+        rating: 4.5
+        reviews: 120
+        description: "High-fidelity sound with a comfortable, over-ear design."
+
+    Recommendation:
+      type: object
+      description: A simplified product object for recommendations.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the product.
+        name:
+          type: string
+          description: The name of the product.
+        price:
+          type: number
+          format: float
+          description: The price of the product.
+        image:
+          type: string
+          format: uri
+          description: The URL for the product's image.
+      example:
+        id: 11
+        name: "Gaming Mouse"
+        price: 49.99
+        image: "https://placehold.co/200x200/1e293b/a5b4fc?text=Gaming+Mouse"

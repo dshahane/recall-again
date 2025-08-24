@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: AI Chat API
+  description: API for the AI Chat application, enabling conversation with various AI agents.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Development Server
+
+paths:
+  /chat:
+    post:
+      summary: Send a user message and receive an AI response.
+      description: |
+        Processes a user's prompt, optionally considering a set of active agents,
+        and returns an AI-generated response. The response can be a plain text message
+        or a structured set of cards.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: A successful response from the AI.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Invalid request.
+        '500':
+          description: Server error.
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          description: The user's message or query.
+        activeAgents:
+          type: array
+          description: The list of active AI agents to consider for the response.
+          items:
+            type: string
+            enum:
+              - Academic
+              - Code
+              - Writer
+              - Creative
+
+    ChatResponse:
+      type: object
+      description: The response from the AI, which can be text or a carousel of cards.
+      oneOf:
+        - $ref: '#/components/schemas/TextResponse'
+        - $ref: '#/components/schemas/CardsResponse'
+      discriminator:
+        propertyName: type
+
+    TextResponse:
+      type: object
+      required:
+        - type
+        - content
+      properties:
+        type:
+          type: string
+          enum:
+            - text
+        content:
+          type: string
+          description: The plain text content of the AI's response.
+
+    CardsResponse:
+      type: object
+      required:
+        - type
+        - cards
+      properties:
+        type:
+          type: string
+          enum:
+            - cards
+        cards:
+          type: array
+          description: An array of generated cards.
+          items:
+            $ref: '#/components/schemas/Card'
+
+    Card:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the card.
+        description:
+          type: string
+          description: The description or main text of the card.

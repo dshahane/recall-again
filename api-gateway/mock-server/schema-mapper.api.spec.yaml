@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Schema Mapper API
+  description: API for retrieving schemas and functions, and for saving data transformation mappings.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Development Server
+
+paths:
+  /schemas:
+    get:
+      summary: Retrieve a list of all available schemas.
+      description: Fetches a list of both source and destination schemas that can be used for mapping.
+      responses:
+        '200':
+          description: A list of schemas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schema'
+        '500':
+          description: Server error.
+
+  /functions:
+    get:
+      summary: Retrieve a list of all available functions.
+      description: Fetches the function palette, including metadata like category and input count.
+      responses:
+        '200':
+          description: A list of functions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Function'
+        '500':
+          description: Server error.
+
+  /mappings:
+    post:
+      summary: Save a data mapping.
+      description: |
+        Saves the complete graph of a data mapping, including the nodes and edges
+        that define the transformation logic.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mapping'
+      responses:
+        '201':
+          description: Mapping successfully saved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mappingId:
+                    type: string
+                    description: The unique ID of the saved mapping.
+        '400':
+          description: Invalid mapping data.
+        '500':
+          description: Server error.
+
+components:
+  schemas:
+    Schema:
+      type: object
+      description: A source or destination data schema.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the schema.
+        label:
+          type: string
+          description: Display name of the schema.
+        version:
+          type: string
+          description: Version of the schema.
+        fields:
+          type: array
+          description: List of field names in the schema.
+          items:
+            type: string
+      example:
+        id: "ecommerce-orders"
+        label: "E-commerce Orders"
+        version: "1.2"
+        fields:
+          - "orderId"
+          - "customerName"
+          - "orderDate"
+          - "totalAmount"
+
+    Function:
+      type: object
+      description: A function available in the mapping palette.
+      properties:
+        key:
+          type: string
+          description: The unique key for the function.
+        label:
+          type: string
+          description: Display name for the function.
+        inputs:
+          oneOf:
+            - type: integer
+            - type: string
+              enum: [ "many" ]
+          description: Number of inputs the function accepts.
+        category:
+          type: string
+          enum: [ "string", "numeric", "date" ]
+          description: The data type category of the function.
+      example:
+        key: "sum"
+        label: "Sum"
+        inputs: "many"
+        category: "numeric"
+
+    Mapping:
+      type: object
+      description: The complete state of a data mapping flow.
+      required:
+        - sourceSchemas
+        - destinationSchema
+        - nodes
+        - edges
+      properties:
+        sourceSchemas:
+          type: array
+          description: IDs of the source schemas used in the mapping.
+          items:
+            type: string
+        destinationSchema:
+          type: string
+          description: ID of the destination schema used in the mapping.
+        nodes:
+          type: array
+          description: List of all nodes (schemas and functions) in the flow.
+          items:
+            $ref: '#/components/schemas/MappingNode'
+        edges:
+          type: array
+          description: List of all connections between nodes.
+          items:
+            $ref: '#/components/schemas/MappingEdge'
+
+    MappingNode:
+      type: object
+      description: A node in the mapping graph (e.g., a schema or function).
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the node.
+        type:
+          type: string
+          enum: [ "namespace", "function" ]
+          description: The type of the node.
+        position:
+          type: object
+          properties:
+            x:
+              type: number
+            y:
+              type: number
+        data:
+          type: object
+          description: The specific data for the node, varying by type.
+
+    MappingEdge:
+      type: object
+      description: A connection between two nodes.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the edge.
+        source:
+          type: string
+          description: The ID of the source node.
+        sourceHandle:
+          type: string
+          description: The ID of the source handle (field or function output).
+        target:
+          type: string
+          description: The ID of the target node.
+        targetHandle:
+          type: string
+          description: The ID of the target handle (field or function input).

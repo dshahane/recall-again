@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Product Marketplace API
+  description: API for managing and browsing a collection of products.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Development Server
+
+paths:
+  /products:
+    get:
+      summary: Retrieve a list of products.
+      description: |
+        Fetches a list of all products in the marketplace.
+        Results can be filtered using an optional search term.
+      parameters:
+        - name: search
+          in: query
+          description: A search term to filter products by name.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new product.
+      description: Adds a new product to the marketplace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '201':
+          description: Product successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid product data provided.
+        '500':
+          description: Server error.
+
+components:
+  schemas:
+    Product:
+      type: object
+      description: A product in the marketplace.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the product.
+          readOnly: true
+        name:
+          type: string
+          description: The name of the product.
+        brand:
+          type: string
+          description: The brand of the product.
+        description:
+          type: string
+          description: A brief description of the product.
+        icon:
+          type: string
+          description: A Unicode emoji representing the product.
+        category:
+          type: array
+          description: A list of categories the product belongs to.
+          items:
+            type: string
+        price:
+          type: string
+          description: The price of the product, including currency.
+      example:
+        id: "prod-123"
+        name: "Acoustic Headphones"
+        brand: "AudioPhonic"
+        description: "Immersive sound with active noise cancellation."
+        icon: "🎧"
+        category: ["Audio", "Headphones"]
+        price: "$199.99"
+
+    ProductRequest:
+      type: object
+      description: The request body for creating a new product.
+      required:
+        - name
+        - brand
+        - description
+        - icon
+        - category
+        - price
+      properties:
+        name:
+          type: string
+        brand:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        category:
+          type: array
+          items:
+            type: string
+        price:
+          type: string
+      example:
+        name: "Acoustic Headphones"
+        brand: "AudioPhonic"
+        description: "Immersive sound with active noise cancellation."
+        icon: "🎧"
+        category: ["Audio", "Headphones"]
+        price: "$199.99"

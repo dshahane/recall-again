@@ -1,0 +1,392 @@
+openapi: 3.0.0
+info:
+  title: Workflow Builder API
+  description: API for managing and executing a visual workflow automation experience.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Main API Server
+
+paths:
+  /workflows:
+    post:
+      summary: Save a new workflow.
+      description: Stores a complete workflow graph, including all nodes and their connections.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Workflow'
+      responses:
+        '201':
+          description: Workflow successfully saved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workflowId:
+                    type: string
+                    description: The unique ID of the saved workflow.
+        '400':
+          description: Invalid workflow data.
+        '500':
+          description: Server error.
+
+  /workflows/{workflowId}:
+    get:
+      summary: Retrieve a specific workflow.
+      description: Fetches a workflow definition by its unique ID.
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique ID of the workflow to retrieve.
+      responses:
+        '200':
+          description: The workflow definition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+        '404':
+          description: Workflow not found.
+        '500':
+          description: Server error.
+
+  /palette:
+    get:
+      summary: Get the list of available nodes for the palette.
+      description: Returns the dynamic list of node types, their labels, and icons for the builder's palette.
+      responses:
+        '200':
+          description: An array of available node kinds.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaletteItem'
+
+  /proxy:
+    post:
+      summary: Proxy an HTTP request.
+      description: A server-side proxy to handle HTTP calls from the 'API' node, avoiding CORS issues.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiCallRequest'
+      responses:
+        '200':
+          description: The response from the proxied API call.
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  headers:
+                    type: object
+                  body:
+                    oneOf:
+                      - type: string
+                      - type: object
+        '400':
+          description: Invalid request.
+        '502':
+          description: Bad gateway, could not reach the target URL.
+
+  /llm:
+    post:
+      summary: Invoke a large language model.
+      description: A server-side endpoint to securely call a large language model API based on node configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LlmCallRequest'
+      responses:
+        '200':
+          description: The response from the LLM.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: string
+                    description: The generated text from the model.
+        '400':
+          description: Invalid request or bad prompt.
+        '500':
+          description: Server error.
+
+components:
+  schemas:
+    Workflow:
+      type: object
+      description: The complete state of a workflow graph.
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnyNode'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Edge'
+        startId:
+          type: string
+          description: The ID of the starting node.
+        meta:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+
+    PaletteItem:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [api, llm, condition, loop, trycatch, delay, variables]
+        label:
+          type: string
+        tip:
+          type: string
+
+    AnyNode:
+      oneOf:
+        - $ref: '#/components/schemas/APINode'
+        - $ref: '#/components/schemas/LLMNode'
+        - $ref: '#/components/schemas/ConditionNode'
+        - $ref: '#/components/schemas/LoopNode'
+        - $ref: '#/components/schemas/TryCatchNode'
+        - $ref: '#/components/schemas/DelayNode'
+        - $ref: '#/components/schemas/VariablesNode'
+
+    BaseNode:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the node.
+        kind:
+          type: string
+          description: The type of the node.
+        name:
+          type: string
+        pos:
+          type: object
+          properties:
+            x:
+              type: number
+            y:
+              type: number
+      required:
+        - id
+        - kind
+        - name
+        - pos
+
+    APINode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [api]
+            config:
+              type: object
+              properties:
+                method:
+                  type: string
+                  enum: [GET, POST, PUT, PATCH, DELETE]
+                url:
+                  type: string
+                headers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                body:
+                  type: string
+                saveAs:
+                  type: string
+                asJSON:
+                  type: boolean
+
+    LLMNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [llm]
+            config:
+              type: object
+              properties:
+                provider:
+                  type: string
+                model:
+                  type: string
+                prompt:
+                  type: string
+                system:
+                  type: string
+                temperature:
+                  type: number
+                  format: float
+                saveAs:
+                  type: string
+
+    ConditionNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [condition]
+            config:
+              type: object
+              properties:
+                expression:
+                  type: string
+
+    LoopNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [loop]
+            config:
+              type: object
+              properties:
+                mode:
+                  type: string
+                  enum: [times, forEach, while]
+                times:
+                  type: integer
+                listExpr:
+                  type: string
+                whileExpr:
+                  type: string
+                iterName:
+                  type: string
+                maxIterations:
+                  type: integer
+
+    TryCatchNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [trycatch]
+            config:
+              type: object
+              properties:
+                note:
+                  type: string
+
+    DelayNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [delay]
+            config:
+              type: object
+              properties:
+                ms:
+                  type: integer
+
+    VariablesNode:
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            kind:
+              type: string
+              enum: [variables]
+            config:
+              type: object
+              properties:
+                json:
+                  type: string
+
+    Edge:
+      type: object
+      properties:
+        id:
+          type: string
+        from:
+          type: object
+          properties:
+            nodeId:
+              type: string
+            port:
+              type: string
+        to:
+          type: object
+          properties:
+            nodeId:
+              type: string
+      required:
+        - id
+        - from
+        - to
+
+    ApiCallRequest:
+      type: object
+      properties:
+        method:
+          type: string
+          enum: [GET, POST, PUT, PATCH, DELETE]
+        url:
+          type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        body:
+          oneOf:
+            - type: string
+            - type: object
+      required:
+        - method
+        - url
+
+    LlmCallRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        prompt:
+          type: string
+        system:
+          type: string
+        temperature:
+          type: number
+          format: float
+      required:
+        - provider
+        - model
+        - prompt

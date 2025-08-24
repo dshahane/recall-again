@@ -60,7 +60,8 @@ export default function AgentsPage({ params }: { params: { slug: string } }) {
             break;
     }
     return (
-            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            /* className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700"*/
+            <div>
                 {pageContent}
             </div>
     );

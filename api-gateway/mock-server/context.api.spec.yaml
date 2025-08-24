@@ -1,0 +1,380 @@
+openapi: 3.0.3
+info:
+  title: Context Editor API
+  description: API endpoints for managing data contexts and their associated pipelines.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Development server
+tags:
+  - name: contexts
+    description: Operations related to data contexts.
+  - name: pipelines
+    description: Operations related to data pipelines.
+  - name: models
+    description: Operations related to machine learning models.
+  - name: static-data
+    description: Endpoints for application-wide static data like taxonomies and schemas.
+
+paths:
+  /contexts:
+    get:
+      tags:
+        - contexts
+      summary: Get all contexts
+      description: Retrieves a list of all saved data contexts.
+      responses:
+        '200':
+          description: A list of contexts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Context'
+    post:
+      tags:
+        - contexts
+      summary: Create a new context
+      description: Creates a new data context with the provided properties.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContextCreate'
+      responses:
+        '201':
+          description: Context created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Context'
+
+  /contexts/{contextId}:
+    put:
+      tags:
+        - contexts
+      summary: Update a context
+      description: Updates an existing data context.
+      parameters:
+        - name: contextId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the context to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContextUpdate'
+      responses:
+        '200':
+          description: Context updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Context'
+        '404':
+          description: Context not found.
+    delete:
+      tags:
+        - contexts
+      summary: Delete a context
+      description: Deletes a data context by ID.
+      parameters:
+        - name: contextId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the context to delete.
+      responses:
+        '204':
+          description: Context deleted successfully.
+        '404':
+          description: Context not found.
+
+  /contexts/{contextId}/toggle-active:
+    patch:
+      tags:
+        - contexts
+      summary: Toggle context active state
+      description: Toggles the isActive status of a data context.
+      parameters:
+        - name: contextId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the context to toggle.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive:
+                  type: boolean
+                  description: The new active state.
+      responses:
+        '200':
+          description: State toggled successfully.
+        '404':
+          description: Context not found.
+
+  /pipelines:
+    get:
+      tags:
+        - pipelines
+      summary: Get all pipelines
+      description: Retrieves a list of all saved data pipelines.
+      responses:
+        '200':
+          description: A list of pipelines.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pipeline'
+    post:
+      tags:
+        - pipelines
+      summary: Create a new pipeline
+      description: Creates a new data pipeline.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PipelineCreate'
+      responses:
+        '201':
+          description: Pipeline created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pipeline'
+
+  /models:
+    get:
+      tags:
+        - models
+      summary: Get models
+      description: Retrieves a list of available models, optionally filtered by schema and context type.
+      parameters:
+        - name: sourceSchemas
+          in: query
+          description: Comma-separated list of source schema names to filter by.
+          schema:
+            type: string
+        - name: contextType
+          in: query
+          description: The context type to filter by.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of filtered models.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+
+  /static-data/context-types:
+    get:
+      tags:
+        - static-data
+      summary: Get context types
+      description: Retrieves a list of available context types.
+      responses:
+        '200':
+          description: A list of context types.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /static-data/context-scopes:
+    get:
+      tags:
+        - static-data
+      summary: Get context scopes
+      description: Retrieves a list of available context scopes.
+      responses:
+        '200':
+          description: A list of context scopes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /static-data/schemas:
+    get:
+      tags:
+        - static-data
+      summary: Get schemas
+      description: Retrieves a list of available schemas.
+      responses:
+        '200':
+          description: A list of schemas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+components:
+  schemas:
+    Context:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the context.
+        name:
+          type: string
+        type:
+          type: string
+        scope:
+          type: string
+        sourceSchemas:
+          type: array
+          items:
+            type: string
+        schema:
+          type: string
+          description: The JSON schema definition.
+        tags:
+          type: array
+          items:
+            type: string
+        pipeline:
+          type: string
+          nullable: true
+          description: The ID of the associated pipeline.
+        isActive:
+          type: boolean
+          description: The active state of the context.
+      required:
+        - id
+        - name
+        - type
+        - scope
+        - sourceSchemas
+        - schema
+        - isActive
+
+    ContextCreate:
+      type: object
+      description: Schema for creating a new context.
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        scope:
+          type: string
+        sourceSchemas:
+          type: array
+          items:
+            type: string
+        schema:
+          type: string
+          description: The JSON schema definition.
+        tags:
+          type: array
+          items:
+            type: string
+        pipeline:
+          type: string
+          nullable: true
+          description: The ID of the associated pipeline.
+      required:
+        - name
+        - type
+        - scope
+
+    ContextUpdate:
+      allOf:
+        - $ref: '#/components/schemas/ContextCreate'
+        - type: object
+          properties:
+            isActive:
+              type: boolean
+
+    Pipeline:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sourceSchemas:
+          type: array
+          items:
+            type: string
+        targetSchema:
+          type: string
+        model:
+          type: string
+      required:
+        - id
+        - name
+        - sourceSchemas
+        - targetSchema
+        - model
+
+    PipelineCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        sourceSchemas:
+          type: array
+          items:
+            type: string
+        targetSchema:
+          type: string
+        model:
+          type: string
+      required:
+        - name
+        - sourceSchemas
+        - targetSchema
+        - model
+
+    Model:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        supportedSourceSchemas:
+          type: array
+          items:
+            type: string
+        supportedTargetSchema:
+          type: string
+        supportedContextTypes:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - supportedSourceSchemas
+        - supportedTargetSchema
+        - supportedContextTypes

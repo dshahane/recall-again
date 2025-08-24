@@ -76,7 +76,7 @@ export default function SettingsPage({ params } : {params: {slug: string}}) {
     }
 
     return (
-        <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div>
             {pageContent}
         </div>
     );

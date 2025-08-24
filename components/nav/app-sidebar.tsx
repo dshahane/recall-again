@@ -50,6 +50,7 @@ const data = {
       icon: Bot,
       items: [
         { title: 'Taxonomy', url: '/models/schema' },
+        { title: 'Context', url: '/models/context' },
         { title: 'Skills', url: '/models/skills' },
         { title: 'Actions', url: '/models/actions' },
         { title: 'Teachers', url: '/models/yoda' },

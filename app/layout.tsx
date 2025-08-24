@@ -27,14 +27,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             "--header-height": "calc(var(--spacing) * 12)",
                         } as React.CSSProperties
                     }
-                    className="py-4"
                 >
                     <AppSidebar />
                     <SidebarInset>
                         <div className="main gap-2 px-4">
                             <SiteHeader />
                             <DynamicBreadcrumb />
-                            <div className="flex flex-1 flex-col py-4">
+                            <div className="flex flex-1 flex-col abc">
                                 {children}
                             </div>
                         </div>

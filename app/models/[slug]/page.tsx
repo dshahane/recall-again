@@ -8,17 +8,21 @@ import {ModelTraining} from "@/components/models/training";
 import ModelSkills from "@/components/models/skills";
 import WorkflowBuilder from "@/components/models/actions";
 import {ModelTeacher} from "@/components/models/yoda";
+import ContextManagerApp from "@/components/models/context/context-manager";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params
     const {setPageInfo} = usePageInfo()
 
     useEffect(() => {
-        setPageInfo(slug.toUpperCase(), [
-            {children: 'Home', href: '/'},
-            {children: 'Models', href: '/models'},
-        ])
-    }, [setPageInfo])
+        const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
+        const pageBreadcrumbs = [
+            { children: 'Home', href: '/' },
+            { children: 'Models', href: '/models' },
+            { children: pageTitle },
+        ]
+        setPageInfo(pageTitle, pageBreadcrumbs);
+    }, [slug, setPageInfo]);
 
     // Example schemas
     const sourceSchemas: SchemaSpec[] = [
@@ -32,12 +36,11 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
         color: 'bg-slate-50'
     }
 
-    const breadcrumbs = [
-        {label: 'Models', href: '/models'},
-        {label: slug},
-    ]
     let pageContent;
     switch (slug) {
+        case 'context':
+            pageContent = <ContextManagerApp/>;
+            break;
         case 'actions':
             pageContent = <WorkflowBuilder/>;
             break;
@@ -59,7 +62,7 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
             break;
     }
     return (
-        <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div>
             {pageContent}
         </div>
     )

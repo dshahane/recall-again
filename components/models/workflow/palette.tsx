@@ -1,66 +1,77 @@
-'use client'
+// File: components/workflow/Palette.tsx
+'use client';
 
-import React, { useState } from 'react';
-import { ChevronDown, Workflow } from 'lucide-react';
-import { PALETTE_DATA, PaletteNode, NodeKind } from './types';
+import { FC, useState } from 'react';
+import { Palette, ChevronDown, ChevronRight } from 'lucide-react';
+import { PALETTE_DATA, NodeKind, nodeIcon } from './types';
 
-const Palette = ({ setDraggedNode, isTriggerNode }: {
-    setDraggedNode: (node: PaletteNode | null) => void;
+interface PaletteProps {
+    setDraggedNode: React.Dispatch<any>;
     isTriggerNode: (kind: NodeKind) => boolean;
-}) => {
-    const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
+}
 
-    // Fix TS7006 by explicitly typing the parameters
-    const handleDragStart = (e: React.DragEvent, node: PaletteNode) => {
-        setDraggedNode(node);
-        e.dataTransfer.effectAllowed = 'copy';
-        e.dataTransfer.setData('text/plain', node.kind);
-    };
+const PaletteComponent: FC<PaletteProps> = ({ setDraggedNode, isTriggerNode }) => {
+    // State now holds a single string for the currently expanded group
+    const [expandedGroup, setExpandedGroup] = useState<string | null>(PALETTE_DATA[0]?.label || null);
 
-    // Fix TS7006 by explicitly typing the parameter
-    const handleAccordionToggle = (title: string) => {
-        setActiveAccordion(activeAccordion === title ? null : title);
+    const toggleGroup = (label: string) => {
+        // If the clicked group is already open, close it. Otherwise, open it.
+        setExpandedGroup(expandedGroup === label ? null : label);
     };
 
     return (
-        <div className="w-64 flex-shrink-0 border-r border-zinc-800 p-4 overflow-y-auto">
-            <div className="flex items-center gap-2 mb-4">
-                <Workflow className="w-5 h-5" />
-                <h2 className="text-lg font-semibold">Node Palette</h2>
-            </div>
-            {PALETTE_DATA.map((category) => (
-                <div key={category.title} className="mb-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
-                    <button
-                        onClick={() => handleAccordionToggle(category.title)}
-                        className="w-full flex justify-between items-center p-3 text-sm font-medium hover:bg-zinc-800/50 transition-colors rounded-t-xl"
-                    >
-                        <span>{category.title}</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${activeAccordion === category.title ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeAccordion === category.title && (
-                        <div className="p-2 border-t border-zinc-800">
-                            <div className="grid grid-cols-2 gap-2">
-                                {category.nodes.map((node) => (
-                                    <div
-                                        key={node.kind}
-                                        draggable
-                                        onDragStart={(e) => handleDragStart(e, node)}
-                                        className="group relative flex flex-col items-center justify-center p-2 text-center text-xs rounded-lg border border-zinc-700 bg-zinc-800/50 cursor-grab hover:bg-zinc-700/50 transition-colors"
-                                    >
-                                        <span>{node.icon}</span>
-                                        {node.label}
-                                        <div className="absolute top-1/2 left-[calc(100%+8px)] -translate-y-1/2 w-48 rounded-lg bg-zinc-700 text-zinc-50 p-3 text-xs opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-10">
-                                            {node.tip}
+        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 overflow-y-auto">
+            <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-zinc-950 dark:text-zinc-50">
+                <Palette className="w-4 h-4" />
+                Node Palette
+            </h2>
+            <div className="space-y-4">
+                {PALETTE_DATA.map((group, index) => {
+                    const isExpanded = expandedGroup === group.label;
+                    return (
+                        <div key={index}>
+                            <h3
+                                onClick={() => toggleGroup(group.label)}
+                                className="flex items-center justify-between cursor-pointer text-xs font-medium text-gray-500 dark:text-zinc-600 mb-2 transition-colors hover:text-gray-700 dark:hover:text-zinc-400"
+                            >
+                                {group.label}
+                                <span className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                                    <ChevronRight className="w-3 h-3" />
+                                </span>
+                            </h3>
+                            <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {group.items.map(item => (
+                                        <div
+                                            key={item.kind}
+                                            draggable
+                                            onDragStart={(e) => {
+                                                setDraggedNode(item);
+                                                if (isTriggerNode(item.kind)) {
+                                                    e.dataTransfer.effectAllowed = "copy";
+                                                } else {
+                                                    e.dataTransfer.effectAllowed = "move";
+                                                }
+                                            }}
+                                            onDragEnd={() => setDraggedNode(null)}
+                                            className="p-3 bg-gray-100 dark:bg-zinc-800 rounded-lg flex flex-col items-center cursor-grab active:cursor-grabbing transition-colors hover:bg-gray-200 dark:hover:bg-zinc-700 border border-gray-200 dark:border-zinc-800"
+                                        >
+                                            <span className="mb-1 text-gray-600 dark:text-zinc-300">
+                                                {nodeIcon(item.kind)}
+                                            </span>
+                                            <span className="text-xs font-medium text-center text-zinc-900 dark:text-zinc-50">
+                                                {item.label}
+                                            </span>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    )}
-                </div>
-            ))}
+                    );
+                })}
+            </div>
         </div>
     );
 };
 
-export default Palette;
+export default PaletteComponent;

@@ -49,17 +49,38 @@ export default function WorkflowBuilder() {
 
     const isTriggerNode = (kind: NodeKind) => ["query", "document", "session"].includes(kind);
 
-    const onDrag = useCallback((id: string, pos: Vec2) => {
-        setDraggedNodePos({ id, pos });
-    }, []);
+    const onNodeDrag = useCallback((id: string, e: React.MouseEvent) => {
+        const node = wf.nodes.find(n => n.id === id);
+        if (!node) return;
 
-    const onDragEnd = useCallback((id: string, pos: Vec2) => {
-        setWf(w => {
-            const newNodes = w.nodes.map(n => (n.id === id ? { ...n, pos } : n));
-            return { ...w, nodes: newNodes };
-        });
-        setDraggedNodePos(null);
-    }, []);
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedId(node.id);
+        const dragStartPos = { x: e.clientX, y: e.clientY };
+        const initialPos = { x: node.pos.x, y: node.pos.y };
+
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+            const dx = moveEvent.clientX - dragStartPos.x;
+            const dy = moveEvent.clientY - dragStartPos.y;
+            const newPos = { x: snap(initialPos.x + dx), y: snap(initialPos.y + dy) };
+            setDraggedNodePos({ id, pos: newPos });
+        };
+
+        const handleMouseUp = (upEvent: MouseEvent) => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            const dx = upEvent.clientX - dragStartPos.x;
+            const dy = upEvent.clientY - dragStartPos.y;
+            const finalPos = { x: snap(initialPos.x + dx), y: snap(initialPos.y + dy) };
+            setWf(w => ({
+                ...w,
+                nodes: w.nodes.map(n => (n.id === id ? { ...n, pos: finalPos } : n))
+            }));
+            setDraggedNodePos(null);
+        };
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, [wf.nodes, setSelectedId]);
 
     const deleteNode = useCallback((id: string) => {
         setWf(w => ({
@@ -139,7 +160,7 @@ export default function WorkflowBuilder() {
     const selectedNode = useMemo(() => wf.nodes.find(n => n.id === selectedId), [wf.nodes, selectedId]);
 
     return (
-        <div className="flex h-screen bg-zinc-950 text-zinc-50 overflow-hidden font-sans">
+        <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
             <Palette setDraggedNode={setDraggedNode} isTriggerNode={isTriggerNode} />
 
             <div className="flex-1 flex flex-col relative">
@@ -151,7 +172,7 @@ export default function WorkflowBuilder() {
                 >
                     <div
                         ref={canvasRef}
-                        className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M20%200%20L0%200%200%2020%22%20fill%3D%22none%22%20stroke%3D%22%23252525%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')] bg-repeat"
+                        className="absolute inset-0 bg-white bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M20%200%20L0%200%200%2020%22%20fill%3D%22none%22%20stroke%3D%22%23e5e7eb%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')] dark:bg-zinc-950 dark:bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M20%200%20L0%200%200%2020%22%20fill%3D%22none%22%20stroke%3D%22%23252525%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')] bg-repeat"
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
                             const canvasRect = canvasRef.current?.getBoundingClientRect();
@@ -202,9 +223,7 @@ export default function WorkflowBuilder() {
                                 key={node.id}
                                 node={draggedNodePos?.id === node.id ? { ...node, pos: draggedNodePos.pos } : node}
                                 selected={node.id === selectedId}
-                                onDrag={onDrag}
-                                onDragEnd={onDragEnd}
-                                onSelect={setSelectedId}
+                                onNodeDrag={onNodeDrag}
                                 onDelete={deleteNode}
                                 onPortMouseDown={onPortMouseDown}
                                 onPortMouseUp={onPortMouseUp}
@@ -214,7 +233,7 @@ export default function WorkflowBuilder() {
                 </div>
             </div>
 
-            <div className="w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-900/50 p-4 overflow-y-auto">
+            <div className="w-80 flex-shrink-0 border-l border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 p-4 overflow-y-auto">
                 <Tabs defaultValue="configure" className="h-full flex flex-col">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="configure">Configure</TabsTrigger>
@@ -223,7 +242,7 @@ export default function WorkflowBuilder() {
                     <div className="flex-1 mt-4">
                         <TabsContent value="configure" className="space-y-4">
                             {!selectedNode ? (
-                                <div className="text-center text-zinc-500 text-sm py-8">Select a node to configure</div>
+                                <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">Select a node to configure</div>
                             ) : (
                                 <NodeConfig node={selectedNode} onChange={handleConfigChange} onNameChange={handleNameChange} />
                             )}

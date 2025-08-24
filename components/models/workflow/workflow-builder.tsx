@@ -200,7 +200,6 @@ export default function WorkflowBuilder() {
                         {wf.nodes.map(node => (
                             <NodeView
                                 key={node.id}
-                                // 🎯 Pass the real-time position if the node is being dragged
                                 node={draggedNodePos?.id === node.id ? { ...node, pos: draggedNodePos.pos } : node}
                                 selected={node.id === selectedId}
                                 onDrag={onDrag}

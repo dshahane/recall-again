@@ -2,27 +2,27 @@
 'use client'
 
 import React from 'react';
-import { Vec2 } from './types';
+import { Vec2, defaultBezierPoints } from './types';
 import { cn } from '@/lib/utils';
 
-// Defines the props for the EdgeView component
 interface EdgeViewProps {
     from: Vec2;
     to: Vec2;
-    c1: Vec2;
-    c2: Vec2;
+    c1?: Vec2;
+    c2?: Vec2;
     selected: boolean;
     onSelect: (e: React.MouseEvent) => void;
     onDragControlPoint: (controlPoint: 'c1' | 'c2', e: React.MouseEvent) => void;
 }
 
-/**
- * Renders a bezier curve edge between two points on the canvas.
- * @param props - The component props.
- * @returns An SVG path element representing the edge.
- */
 export default function EdgeView({ from, to, c1, c2, selected, onSelect, onDragControlPoint }: EdgeViewProps) {
-    const d = `M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`;
+    const { c1: defaultC1, c2: defaultC2 } = defaultBezierPoints(from, to);
+
+    // Use the provided control points or fall back to defaults
+    const curveC1 = c1 || defaultC1;
+    const curveC2 = c2 || defaultC2;
+
+    const d = `M${from.x},${from.y} C${curveC1.x},${curveC1.y} ${curveC2.x},${curveC2.y} ${to.x},${to.y}`;
 
     return (
         <g>
@@ -52,15 +52,15 @@ export default function EdgeView({ from, to, c1, c2, selected, onSelect, onDragC
             {selected && (
                 <>
                     <circle
-                        cx={c1.x}
-                        cy={c1.y}
+                        cx={curveC1.x}
+                        cy={curveC1.y}
                         r="5"
                         className="fill-blue-500 cursor-move"
                         onMouseDown={(e) => onDragControlPoint('c1', e)}
                     />
                     <circle
-                        cx={c2.x}
-                        cy={c2.y}
+                        cx={curveC2.x}
+                        cy={curveC2.y}
                         r="5"
                         className="fill-blue-500 cursor-move"
                         onMouseDown={(e) => onDragControlPoint('c2', e)}

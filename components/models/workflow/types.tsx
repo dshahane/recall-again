@@ -1,45 +1,37 @@
 // File: components/workflow/types.ts
-import { PlaySquare, FileText, Bot, List, Rocket, Wand, MessageSquare, Plus, Minus, Table, LayoutDashboard, Database, Repeat, Split, Code, Timer, GitBranch, Lightbulb } from 'lucide-react';
+// Defines the core types and utility functions for the workflow builder.
 
-export type NodeKind =
-    | "query"
-    | "document"
-    | "session"
-    | "transformation"
-    | "llm"
-    | "classifier"
-    | "regressor"
-    | "ranker"
-    | "intent-detection"
-    | "context"
-    | "table"
-    | "visualization"
-    | "context-out"
-    | "loop"
-    | "condition"
-    | "api"
-    | "trycatch"
-    | "delay"
-    | "variables";
+export type Vec2 = { x: number; y: number; };
 
-export type Vec2 = {
-    x: number;
-    y: number;
-};
+export type NodeKind = "query" | "document" | "session" | "text-generation" | "image-generation" | "action" | "table" | "output-context";
+export type PortName = "in" | "out" | "out-1" | "out-2" | "out-3";
 
-export type AnyNode = {
+// Base node structure
+export type Node = {
     id: string;
     kind: NodeKind;
     name: string;
     pos: Vec2;
-    config?: any;
+    config: any;
 };
+
+// Specific node types for type safety
+export type QueryNode = Node & { kind: "query"; };
+export type DocumentNode = Node & { kind: "document"; };
+export type SessionNode = Node & { kind: "session"; };
+export type TextGenerationNode = Node & { kind: "text-generation"; };
+export type ImageGenerationNode = Node & { kind: "image-generation"; };
+export type ActionNode = Node & { kind: "action"; };
+export type TableNode = Node & { kind: "table"; };
+export type OutputContextNode = Node & { kind: "output-context"; };
+
+export type AnyNode = QueryNode | DocumentNode | SessionNode | TextGenerationNode | ImageGenerationNode | ActionNode | TableNode | OutputContextNode;
 
 export type Edge = {
     id: string;
     from: { nodeId: string; port: PortName; };
     to: { nodeId: string; };
-    c1?: Vec2; // Optional custom control points
+    c1?: Vec2;
     c2?: Vec2;
 };
 
@@ -49,188 +41,106 @@ export type Workflow = {
     edges: Edge[];
 };
 
-export const PALETTE_DATA = [
-    {
-        label: "Triggers",
-        items: [
-            { label: "Query", kind: "query", icon: <PlaySquare className="w-4 h-4" /> },
-            { label: "Document", kind: "document", icon: <FileText className="w-4 h-4" /> },
-            { label: "Session", kind: "session", icon: <MessageSquare className="w-4 h-4" /> },
-        ]
-    },
-    {
-        label: "Models",
-        items: [
-            { label: "LLM", kind: "llm", icon: <Bot className="w-4 h-4" /> },
-            { label: "Classifier", kind: "classifier", icon: <Bot className="w-4 h-4" /> },
-            { label: "Regressor", kind: "regressor", icon: <Bot className="w-4 h-4" /> },
-            { label: "Ranker", kind: "ranker", icon: <Bot className="w-4 h-4" /> },
-            { label: "Intent Detection", kind: "intent-detection", icon: <Lightbulb className="w-4 h-4" /> },
-        ]
-    },
-    {
-        label: "Tools",
-        items: [
-            { label: "API", kind: "api", icon: <Rocket className="w-4 h-4" /> },
-            { label: "Transformation", kind: "transformation", icon: <Wand className="w-4 h-4" /> },
-            { label: "Context", kind: "context", icon: <Database className="w-4 h-4" /> },
-            { label: "Table", kind: "table", icon: <Table className="w-4 h-4" /> },
-        ]
-    },
-    {
-        label: "Data",
-        items: [
-            { label: "Context Out", kind: "context-out", icon: <Database className="w-4 h-4" /> },
-            { label: "Visualization", kind: "visualization", icon: <LayoutDashboard className="w-4 h-4" /> },
-            { label: "Variables", kind: "variables", icon: <Code className="w-4 h-4" /> },
-        ]
-    },
-    {
-        label: "Flow Control",
-        items: [
-            { label: "Loop", kind: "loop", icon: <Repeat className="w-4 h-4" /> },
-            { label: "Condition", kind: "condition", icon: <Split className="w-4 h-4" /> },
-            { label: "Try/Catch", kind: "trycatch", icon: <GitBranch className="w-4 h-4" /> },
-            { label: "Delay", kind: "delay", icon: <Timer className="w-4 h-4" /> },
-        ]
-    },
-];
-
-export const nodeColor = (kind: NodeKind) => {
-    switch (kind) {
-        case 'query':
-        case 'document':
-        case 'session':
-            return 'bg-green-100 dark:bg-green-800';
-        case 'llm':
-        case 'classifier':
-        case 'regressor':
-        case 'ranker':
-        case 'intent-detection':
-            return 'bg-purple-100 dark:bg-purple-800';
-        case 'transformation':
-        case 'api':
-        case 'context':
-        case 'table':
-            return 'bg-blue-100 dark:bg-blue-800';
-        case 'context-out':
-        case 'visualization':
-        case 'variables':
-            return 'bg-yellow-100 dark:bg-yellow-800';
-        case 'loop':
-        case 'condition':
-        case 'trycatch':
-        case 'delay':
-            return 'bg-orange-100 dark:bg-orange-800';
+/**
+ * Utility function to create a new node with default configuration.
+ * @param node - The partial node object to complete.
+ * @returns A complete node object.
+ */
+export const completeNode = (node: Partial<Node>): AnyNode => {
+    switch (node.kind) {
+        case "query":
+            return { ...node, kind: "query", name: node.name || "Query", config: { text: "What is a workflow?" } } as QueryNode;
+        case "document":
+            return { ...node, kind: "document", name: node.name || "Document", config: { content: "A workflow is a series of steps." } } as DocumentNode;
+        case "session":
+            return { ...node, kind: "session", name: node.name || "Session", config: { history: [] } } as SessionNode;
+        case "text-generation":
+            return { ...node, kind: "text-generation", name: node.name || "Text Gen", config: { prompt: "" } } as TextGenerationNode;
+        case "image-generation":
+            return { ...node, kind: "image-generation", name: node.name || "Image Gen", config: { prompt: "" } } as ImageGenerationNode;
+        case "action":
+            return { ...node, kind: "action", name: node.name || "Action", config: { code: "console.log('Hello');" } } as ActionNode;
+        case "table":
+            return { ...node, kind: "table", name: node.name || "Table", config: { name: "", columns: [] } } as TableNode;
+        case "output-context":
+            return { ...node, kind: "output-context", name: node.name || "Output Context", config: { key: "output" } } as OutputContextNode;
         default:
-            return 'bg-gray-100 dark:bg-gray-800';
+            return { ...node, kind: "action", name: node.name || "New Node", config: {} } as ActionNode;
     }
 };
 
-export const nodeIcon = (kind: NodeKind) => {
-    switch (kind) {
-        case 'query':
-            return <PlaySquare className="w-5 h-5" />;
-        case 'document':
-            return <FileText className="w-5 h-5" />;
-        case 'session':
-            return <MessageSquare className="w-5 h-5" />;
-        case 'llm':
-            return <Bot className="w-5 h-5" />;
-        case 'classifier':
-            return <Bot className="w-5 h-5" />;
-        case 'regressor':
-            return <Bot className="w-5 h-5" />;
-        case 'ranker':
-            return <Bot className="w-5 h-5" />;
-        case 'intent-detection':
-            return <Lightbulb className="w-5 h-5" />;
-        case 'transformation':
-            return <Wand className="w-5 h-5" />;
-        case 'context':
-            return <Database className="w-5 h-5" />;
-        case 'table':
-            return <Table className="w-5 h-5" />;
-        case 'visualization':
-            return <LayoutDashboard className="w-5 h-5" />;
-        case 'context-out':
-            return <Database className="w-5 h-5" />;
-        case 'loop':
-            return <Repeat className="w-5 h-5" />;
-        case 'condition':
-            return <Split className="w-5 h-5" />;
-        case 'api':
-            return <Rocket className="w-5 h-5" />;
-        case 'trycatch':
-            return <GitBranch className="w-5 h-5" />;
-        case 'delay':
-            return <Timer className="w-5 h-5" />;
-        case 'variables':
-            return <Code className="w-5 h-5" />;
-        default:
-            return null;
-    }
-};
-
-export type PortName = string;
-
-export const portLabel = (kind: NodeKind, port: PortName) => {
-    // Port labels for various node types
-    if (kind === 'llm' && port === 'out') return 'output';
-    if (kind === 'api' && port === 'out') return 'response';
-    if (kind === 'transformation' && port === 'out') return 'transformed';
-    if (kind === 'condition' && port === 'true') return 'true';
-    if (kind === 'condition' && port === 'false') return 'false';
-    if (kind === 'trycatch' && port === 'try') return 'try';
-    if (kind === 'trycatch' && port === 'catch') return 'catch';
-    if (port === 'in') return 'in'; // Explicitly label the 'in' port
-    return port;
-};
-
-export const portPositions = (w: number, h: number, kind: NodeKind) => {
-    const ports: { [key: string]: Vec2 } = {};
-
-    // All nodes have one input port on the left
-    ports['in'] = { x: 0, y: h / 2 };
-
-    // Add specific output ports based on node kind on the right
-    if (['query', 'document', 'session', 'api'].includes(kind)) {
-        ports['out'] = { x: w, y: h / 2 };
-    }
-    if (['llm', 'classifier', 'regressor', 'ranker', 'intent-detection', 'transformation', 'context', 'table', 'context-out', 'visualization', 'variables'].includes(kind)) {
-        ports['out'] = { x: w, y: h / 2 };
-    }
-    if (kind === 'condition') {
-        ports['true'] = { x: w, y: h / 3 };
-        ports['false'] = { x: w, y: h / 3 * 2 };
-    }
-    if (kind === 'trycatch') {
-        ports['try'] = { x: w, y: h / 3 };
-        ports['catch'] = { x: w, y: h / 3 * 2 };
-    }
-    if (kind === 'loop') {
-        ports['out'] = { x: w, y: h / 2 };
-    }
-
-    return ports;
-};
-
-export const createStarterWorkflow = () => {
+/**
+ * Creates an initial starter workflow with a single Query node.
+ * @returns A new starter workflow object.
+ */
+export const createStarterWorkflow = (): Workflow => {
+    const startNodeId = "start-node";
     const startNode = completeNode({
-        id: 'start-node',
-        kind: 'query',
-        name: 'Start',
-        pos: { x: 50, y: 50 },
+        id: startNodeId,
+        kind: "query",
+        name: "Start",
+        pos: { x: 300, y: 100 },
     });
     return {
-        startId: startNode.id,
+        startId: startNodeId,
         nodes: [startNode],
         edges: [],
     };
 };
 
-export const completeNode = (node: any): AnyNode => {
-    return node;
-};
+/**
+ * Snaps a number to the nearest grid increment.
+ * @param n - The number to snap.
+ * @returns The snapped number.
+ */
+export const snap = (n: number) => Math.round(n / 20) * 20;
 
-export const snap = (val: number, step = 20) => Math.round(val / step) * step;
+/**
+ * Calculates the relative positions of ports for a given node kind.
+ * The positions are now on the left and right sides.
+ * @param w - The node width.
+ * @param h - The node height.
+ * @param kind - The node kind.
+ * @returns A record of port names to their relative positions.
+ */
+export const portPositions = (w: number, h: number, kind: NodeKind): Record<PortName, Vec2> => {
+    const commonPorts = {
+        in: { x: 0, y: h / 2 },
+        out: { x: w, y: h / 2 },
+    };
+
+    switch (kind) {
+        // Trigger nodes only have an output port
+        case "query":
+        case "document":
+        case "session":
+            return {
+                out: commonPorts.out,
+            } as Record<PortName, Vec2>;
+
+        // Sink nodes only have an input port
+        case "table":
+        case "output-context":
+            return {
+                in: commonPorts.in,
+            } as Record<PortName, Vec2>;
+
+        // Generation nodes have multiple output ports
+        case "text-generation":
+        case "image-generation":
+            const out1_y = h * 0.25;
+            const out2_y = h * 0.5;
+            const out3_y = h * 0.75;
+            return {
+                in: commonPorts.in,
+                "out-1": { x: w, y: out1_y },
+                "out-2": { x: w, y: out2_y },
+                "out-3": { x: w, y: out3_y },
+            };
+
+        // All other nodes have a single input and output
+        case "action":
+        default:
+            return commonPorts;
+    }
+};

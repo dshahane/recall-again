@@ -1,77 +1,107 @@
 // File: components/workflow/Palette.tsx
-'use client';
+'use client'
 
-import { FC, useState } from 'react';
-import { Palette, ChevronDown, ChevronRight } from 'lucide-react';
-import { PALETTE_DATA, NodeKind, nodeIcon } from './types';
+import React from 'react';
+import { WorkflowIcon, ChevronDown, Rocket, FileText, MessageSquare, Monitor, Table, ImageIcon, SearchIcon, Cog } from 'lucide-react';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
 
-interface PaletteProps {
-    setDraggedNode: React.Dispatch<any>;
-    isTriggerNode: (kind: NodeKind) => boolean;
+// Defines the properties for a draggable node type in the palette
+interface NodePaletteItem {
+    kind: string;
+    label: string;
 }
 
-const PaletteComponent: FC<PaletteProps> = ({ setDraggedNode, isTriggerNode }) => {
-    // State now holds a single string for the currently expanded group
-    const [expandedGroup, setExpandedGroup] = useState<string | null>(PALETTE_DATA[0]?.label || null);
+// Defines the props for the Palette component
+interface PaletteProps {
+    setDraggedNode: (node: NodePaletteItem | null) => void;
+}
 
-    const toggleGroup = (label: string) => {
-        // If the clicked group is already open, close it. Otherwise, open it.
-        setExpandedGroup(expandedGroup === label ? null : label);
-    };
+// List of all node types available in the palette, grouped by category
+const nodeGroups = [
+    {
+        name: "Triggers",
+        description: "Start a workflow with these nodes.",
+        nodes: [
+            { kind: "query", label: "Query", icon: SearchIcon },
+            { kind: "document", label: "Document", icon: FileText },
+            { kind: "session", label: "Session", icon: MessageSquare },
+        ],
+    },
+    {
+        name: "Generators",
+        description: "Generate content from prompts.",
+        nodes: [
+            { kind: "text-generation", label: "Text Generation", icon: Rocket },
+            { kind: "image-generation", label: "Image Generation", icon: ImageIcon },
+        ],
+    },
+    {
+        name: "Tools",
+        description: "Run custom code or actions.",
+        nodes: [
+            { kind: "action", label: "Action", icon: Cog },
+        ],
+    },
+    {
+        name: "Sinks",
+        description: "End a workflow with these nodes.",
+        nodes: [
+            { kind: "table", label: "Table", icon: Table },
+            { kind: "output-context", label: "Output Context", icon: Monitor },
+        ],
+    },
+];
 
+/**
+ * The Palette component provides a draggable list of node types.
+ * @param props - The component props.
+ * @returns A React component for the node palette.
+ */
+export default function Palette({ setDraggedNode }: PaletteProps) {
     return (
-        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 overflow-y-auto">
-            <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-zinc-950 dark:text-zinc-50">
-                <Palette className="w-4 h-4" />
-                Node Palette
+        <div className="w-80 flex-shrink-0 p-4 border-r border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 overflow-y-auto">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <WorkflowIcon className="w-5 h-5" /> Node Palette
             </h2>
-            <div className="space-y-4">
-                {PALETTE_DATA.map((group, index) => {
-                    const isExpanded = expandedGroup === group.label;
-                    return (
-                        <div key={index}>
-                            <h3
-                                onClick={() => toggleGroup(group.label)}
-                                className="flex items-center justify-between cursor-pointer text-xs font-medium text-gray-500 dark:text-zinc-600 mb-2 transition-colors hover:text-gray-700 dark:hover:text-zinc-400"
-                            >
-                                {group.label}
-                                <span className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
-                                    <ChevronRight className="w-3 h-3" />
-                                </span>
-                            </h3>
-                            <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {group.items.map(item => (
-                                        <div
-                                            key={item.kind}
-                                            draggable
-                                            onDragStart={(e) => {
-                                                setDraggedNode(item);
-                                                if (isTriggerNode(item.kind)) {
-                                                    e.dataTransfer.effectAllowed = "copy";
-                                                } else {
-                                                    e.dataTransfer.effectAllowed = "move";
-                                                }
-                                            }}
-                                            onDragEnd={() => setDraggedNode(null)}
-                                            className="p-3 bg-gray-100 dark:bg-zinc-800 rounded-lg flex flex-col items-center cursor-grab active:cursor-grabbing transition-colors hover:bg-gray-200 dark:hover:bg-zinc-700 border border-gray-200 dark:border-zinc-800"
-                                        >
-                                            <span className="mb-1 text-gray-600 dark:text-zinc-300">
-                                                {nodeIcon(item.kind)}
-                                            </span>
-                                            <span className="text-xs font-medium text-center text-zinc-900 dark:text-zinc-50">
-                                                {item.label}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
+            <Accordion type="single" collapsible defaultValue="Triggers">
+                {nodeGroups.map((group) => (
+                    <AccordionItem key={group.name} value={group.name}>
+                        <AccordionTrigger className="text-sm font-medium">{group.name}</AccordionTrigger>
+                        <AccordionContent>
+                            <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">{group.description}</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {group.nodes.map((node) => (
+                                    <div
+                                        key={node.kind}
+                                        draggable
+                                        onDragStart={(e) => {
+                                            setDraggedNode({ kind: node.kind, label: node.label });
+                                            e.dataTransfer.effectAllowed = "move";
+                                        }}
+                                        onDragEnd={() => setDraggedNode(null)}
+                                        className={`
+                                            p-3 rounded-lg border border-gray-200 dark:border-zinc-800
+                                            bg-white/70 dark:bg-zinc-800/70 shadow-sm
+                                            flex flex-col items-center justify-center gap-1
+                                            text-sm cursor-grab active:cursor-grabbing
+                                            transition-all duration-150 ease-in-out
+                                            hover:shadow-md hover:bg-white dark:hover:bg-zinc-800
+                                        `}
+                                    >
+                                        {node.icon && <node.icon className="h-5 w-5 text-gray-500 dark:text-zinc-400" />}
+                                        <span className="font-medium text-center">{node.label}</span>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                ))}
+            </Accordion>
         </div>
     );
-};
-
-export default PaletteComponent;
+}

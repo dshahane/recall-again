@@ -1,43 +1,34 @@
-// File: components/workflow/edge-config.tsx
+// File: components/workflow/EdgeConfig.tsx
 'use client'
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Edge } from './types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
+// Defines the props for the EdgeConfig component
 interface EdgeConfigProps {
     edge: Edge;
+    onDelete: (id: string) => void;
 }
 
-const EdgeConfig: FC<EdgeConfigProps> = ({ edge }) => {
+/**
+ * A component to configure a selected edge.
+ * @param props - The component props.
+ * @returns A React component for edge configuration.
+ */
+export default function EdgeConfig({ edge, onDelete }: EdgeConfigProps) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Edge Properties</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-                <div className="space-y-2">
-                    <Label htmlFor="from-node">From Node ID</Label>
-                    <p id="from-node" className="font-mono text-xs p-2 bg-gray-100 dark:bg-zinc-800 rounded">
-                        {edge.from.nodeId}
-                    </p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="from-port">From Port</Label>
-                    <p id="from-port" className="font-mono text-xs p-2 bg-gray-100 dark:bg-zinc-800 rounded">
-                        {edge.from.port}
-                    </p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="to-node">To Node ID</Label>
-                    <p id="to-node" className="font-mono text-xs p-2 bg-gray-100 dark:bg-zinc-800 rounded">
-                        {edge.to.nodeId}
-                    </p>
-                </div>
-            </CardContent>
-        </Card>
+        <div className="flex flex-col gap-4 p-4 rounded-xl shadow-inner bg-gray-200/50 dark:bg-zinc-800/50">
+            <h3 className="font-bold text-lg">Edge Configuration</h3>
+            <div className="flex justify-between items-center">
+                <p className="text-sm text-gray-600 dark:text-zinc-400">
+                    Connection from Node ID: <span className="font-mono text-xs">{edge.from.nodeId.substring(0, 8)}...</span>
+                </p>
+                <Button variant="destructive" onClick={() => onDelete(edge.id)}>
+                    <Trash2 className="h-4 w-4 mr-2" /> Delete Edge
+                </Button>
+            </div>
+        </div>
     );
-};
-
-export default EdgeConfig;
+}

@@ -1,9 +1,11 @@
 // File: components/workflow/EdgeView.tsx
-'use client';
+'use client'
 
-import { FC } from 'react';
+import React from 'react';
 import { Vec2 } from './types';
+import { cn } from '@/lib/utils';
 
+// Defines the props for the EdgeView component
 interface EdgeViewProps {
     from: Vec2;
     to: Vec2;
@@ -11,71 +13,66 @@ interface EdgeViewProps {
     c2: Vec2;
     selected: boolean;
     onSelect: (e: React.MouseEvent) => void;
-    onDragControlPoint: (cPoint: 'c1' | 'c2', e: React.MouseEvent) => void;
+    onDragControlPoint: (controlPoint: 'c1' | 'c2', e: React.MouseEvent) => void;
 }
 
-const EdgeView: FC<EdgeViewProps> = ({ from, to, c1, c2, selected, onSelect, onDragControlPoint }) => {
-    if (
-        !from || !to || !c1 || !c2 ||
-        typeof from.x !== 'number' || typeof from.y !== 'number' ||
-        typeof to.x !== 'number' || typeof to.y !== 'number' ||
-        typeof c1.x !== 'number' || typeof c1.y !== 'number' ||
-        isNaN(from.x) || isNaN(from.y) ||
-        isNaN(to.x) || isNaN(to.y) ||
-        isNaN(c1.x) || isNaN(c1.y)
-    ) {
-        return null;
-    }
-
-    const pathData = `M${from.x} ${from.y} C${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${to.x} ${to.y}`;
+/**
+ * Renders a bezier curve edge between two points on the canvas.
+ * @param props - The component props.
+ * @returns An SVG path element representing the edge.
+ */
+export default function EdgeView({ from, to, c1, c2, selected, onSelect, onDragControlPoint }: EdgeViewProps) {
+    const d = `M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`;
 
     return (
         <g>
-            {/* Invisible path for a larger click target */}
+            {/* Invisible path for easier selection/interaction */}
             <path
-                d={pathData}
+                d={d}
+                fill="none"
                 stroke="transparent"
                 strokeWidth="10"
-                fill="none"
-                onClick={onSelect} // onSelect is handled here
-                onMouseDown={(e) => e.stopPropagation()} // Stop propagation to prevent canvas deselect
-                style={{ cursor: 'pointer' }}
+                className="cursor-pointer"
+                onMouseDown={onSelect}
             />
-            {/* Visible path */}
+            {/* Visible path for the edge */}
             <path
-                d={pathData}
-                stroke="#d4d4d8"
-                strokeWidth="3"
+                d={d}
                 fill="none"
-                className={`transition-all duration-300 ${selected ? 'stroke-purple-500' : ''}`}
-                style={{ pointerEvents: 'none' }} // Ensure clicks go to the invisible path
+                strokeWidth="2"
+                className={cn(
+                    "transition-all duration-150 ease-in-out",
+                    selected ? "stroke-blue-500" : "stroke-gray-400 dark:stroke-zinc-600"
+                )}
+                strokeDasharray={selected ? "4,4" : "none"}
+                markerEnd="url(#arrowhead)"
+                style={{ pointerEvents: 'none' }}
             />
+            {/* Control points for editing the curve */}
             {selected && (
                 <>
                     <circle
                         cx={c1.x}
                         cy={c1.y}
-                        r="6"
-                        fill="#a855f7"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        className="cursor-grab"
-                        onMouseDown={(e) => { e.stopPropagation(); onDragControlPoint('c1', e); }}
+                        r="5"
+                        className="fill-blue-500 cursor-move"
+                        onMouseDown={(e) => onDragControlPoint('c1', e)}
                     />
                     <circle
                         cx={c2.x}
                         cy={c2.y}
-                        r="6"
-                        fill="#a855f7"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        className="cursor-grab"
-                        onMouseDown={(e) => { e.stopPropagation(); onDragControlPoint('c2', e); }}
+                        r="5"
+                        className="fill-blue-500 cursor-move"
+                        onMouseDown={(e) => onDragControlPoint('c2', e)}
                     />
                 </>
             )}
+            {/* Arrowhead marker definition */}
+            <defs>
+                <marker id="arrowhead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280" />
+                </marker>
+            </defs>
         </g>
     );
-};
-
-export default EdgeView;
+}

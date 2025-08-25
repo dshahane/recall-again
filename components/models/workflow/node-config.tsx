@@ -1,158 +1,147 @@
 // File: components/workflow/NodeConfig.tsx
 'use client'
 
-import React, { FC } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AnyNode } from './types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    AnyNode,
-    APINode,
-    LLMNode,
-    ConditionNode,
-    LoopNode,
-    TryCatchNode,
-    DelayNode,
-    VariablesNode
-} from './types';
+import { WorkflowIcon, Rocket, FileText, MessageSquare, Monitor, Table, ImageIcon, SearchIcon, Cog } from 'lucide-react';
 
+// Defines the props for the NodeConfig component
 interface NodeConfigProps {
     node: AnyNode;
     onChange: (id: string, newConfig: any) => void;
     onNameChange: (id: string, newName: string) => void;
 }
 
-// Type guard function
-function hasConfig(node: AnyNode): node is APINode | LLMNode | ConditionNode | LoopNode | TryCatchNode | DelayNode | VariablesNode {
-    return 'config' in node;
-}
-
-const NodeConfig: FC<NodeConfigProps> = ({ node, onChange, onNameChange }) => {
-    return (
-        <div className="space-y-4">
-            <div>
-                <Label htmlFor="node-name" className="text-sm">Node Name</Label>
-                <Input
-                    id="node-name"
-                    value={node.name}
-                    onChange={(e) => onNameChange(node.id, e.target.value)}
-                    className="mt-1"
-                />
-            </div>
-
-            <div className="space-y-2">
-                <h4 className="text-sm font-medium">Configuration</h4>
-
-                {/* Use the type guard to conditionally render configuration */}
-                {hasConfig(node) ? (
-                    <>
-                        {/* LLM Node Configuration */}
-                        {node.kind === "llm" && (
-                            <>
-                                <Label htmlFor="llm-model">Model</Label>
-                                <Input
-                                    id="llm-model"
-                                    value={node.config.model}
-                                    onChange={(e) => onChange(node.id, { ...node.config, model: e.target.value })}
-                                />
-                                <Label htmlFor="llm-prompt">Prompt</Label>
-                                <Textarea
-                                    id="llm-prompt"
-                                    value={node.config.prompt}
-                                    onChange={(e) => onChange(node.id, { ...node.config, prompt: e.target.value })}
-                                />
-                            </>
-                        )}
-
-                        {/* API Node Configuration */}
-                        {node.kind === "api" && (
-                            <>
-                                <Label htmlFor="api-url">URL</Label>
-                                <Input
-                                    id="api-url"
-                                    value={node.config.url}
-                                    onChange={(e) => onChange(node.id, { ...node.config, url: e.target.value })}
-                                />
-                                <Label htmlFor="api-method">Method</Label>
-                                <Input
-                                    id="api-method"
-                                    value={node.config.method}
-                                    onChange={(e) => onChange(node.id, { ...node.config, method: e.target.value })}
-                                />
-                                <Label htmlFor="api-save-as">Save As</Label>
-                                <Input
-                                    id="api-save-as"
-                                    value={node.config.saveAs}
-                                    onChange={(e) => onChange(node.id, { ...node.config, saveAs: e.target.value })}
-                                />
-                            </>
-                        )}
-
-                        {/* Condition Node Configuration */}
-                        {node.kind === "condition" && (
-                            <>
-                                <Label htmlFor="condition-expression">Expression</Label>
-                                <Textarea
-                                    id="condition-expression"
-                                    value={node.config.expression}
-                                    onChange={(e) => onChange(node.id, { ...node.config, expression: e.target.value })}
-                                />
-                            </>
-                        )}
-
-                        {/* Loop Node Configuration */}
-                        {node.kind === "loop" && (
-                            <>
-                                <Label htmlFor="loop-mode">Mode</Label>
-                                <Input
-                                    id="loop-mode"
-                                    value={node.config.mode}
-                                    onChange={(e) => onChange(node.id, { ...node.config, mode: e.target.value })}
-                                />
-                            </>
-                        )}
-
-                        {/* Delay Node Configuration */}
-                        {node.kind === "delay" && (
-                            <>
-                                <Label htmlFor="delay-ms">Delay (ms)</Label>
-                                <Input
-                                    id="delay-ms"
-                                    type="number"
-                                    value={node.config.ms}
-                                    onChange={(e) => onChange(node.id, { ...node.config, ms: parseInt(e.target.value) })}
-                                />
-                            </>
-                        )}
-
-                        {/* Try/Catch Node Configuration */}
-                        {node.kind === "trycatch" && (
-                            <div className="text-sm text-zinc-400">
-                                This node does not require a configuration.
-                            </div>
-                        )}
-
-                        {/* Variables Node Configuration */}
-                        {node.kind === "variables" && (
-                            <>
-                                <Label htmlFor="variables-json">JSON</Label>
-                                <Textarea
-                                    id="variables-json"
-                                    value={node.config.json}
-                                    onChange={(e) => onChange(node.id, { ...node.config, json: e.target.value })}
-                                />
-                            </>
-                        )}
-                    </>
-                ) : (
-                    // Other generic nodes
-                    <div className="text-sm text-zinc-400">
-                        This node does not require a specific configuration.
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+const nodeIcons: Record<AnyNode['kind'], React.ElementType> = {
+    "query": SearchIcon,
+    "document": FileText,
+    "session": MessageSquare,
+    "text-generation": Rocket,
+    "image-generation": ImageIcon,
+    "action": Cog,
+    "table": Table,
+    "output-context": Monitor,
 };
 
-export default NodeConfig;
+/**
+ * A component to configure the properties of a selected node.
+ * @param props - The component props.
+ * @returns A React component for node configuration.
+ */
+export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigProps) {
+    const [config, setConfig] = useState(node.config);
+    const [name, setName] = useState(node.name);
+
+    // Update internal state when the selected node changes
+    useEffect(() => {
+        setConfig(node.config);
+        setName(node.name);
+    }, [node]);
+
+    // Handle changes to node configuration
+    const handleConfigChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        const newConfig = { ...config, [name]: value };
+        setConfig(newConfig);
+        onChange(node.id, newConfig);
+    }, [config, onChange, node.id]);
+
+    // Handle changes to the node's display name
+    const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = e.target.value;
+        setName(newName);
+        onNameChange(node.id, newName);
+    }, [onNameChange, node.id]);
+
+    const NodeIcon = nodeIcons[node.kind];
+
+    return (
+        <div className="flex flex-col gap-4 p-4 rounded-xl shadow-inner bg-gray-200/50 dark:bg-zinc-800/50">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+                {NodeIcon && <NodeIcon className="h-5 w-5 text-gray-500 dark:text-zinc-400" />}
+                {node.name}
+            </h3>
+            <div className="space-y-2">
+                <Label htmlFor="node-name">Name</Label>
+                <Input
+                    id="node-name"
+                    name="name"
+                    value={name}
+                    onChange={handleNameChange}
+                />
+            </div>
+            {node.kind === "query" && (
+                <div className="space-y-2">
+                    <Label htmlFor="query-text">Query Text</Label>
+                    <Input
+                        id="query-text"
+                        name="text"
+                        value={config.text || ""}
+                        onChange={handleConfigChange}
+                    />
+                </div>
+            )}
+            {node.kind === "document" && (
+                <div className="space-y-2">
+                    <Label htmlFor="document-content">Document Content</Label>
+                    <Textarea
+                        id="document-content"
+                        name="content"
+                        value={config.content || ""}
+                        onChange={handleConfigChange}
+                        rows={6}
+                    />
+                </div>
+            )}
+            {(node.kind === "text-generation" || node.kind === "image-generation") && (
+                <div className="space-y-2">
+                    <Label htmlFor="generation-prompt">Prompt</Label>
+                    <Textarea
+                        id="generation-prompt"
+                        name="prompt"
+                        value={config.prompt || ""}
+                        onChange={handleConfigChange}
+                        rows={6}
+                    />
+                </div>
+            )}
+            {node.kind === "action" && (
+                <div className="space-y-2">
+                    <Label htmlFor="action-code">Code</Label>
+                    <Textarea
+                        id="action-code"
+                        name="code"
+                        value={config.code || ""}
+                        onChange={handleConfigChange}
+                        rows={10}
+                    />
+                </div>
+            )}
+            {node.kind === "table" && (
+                <div className="space-y-2">
+                    <Label htmlFor="table-name">Table Name</Label>
+                    <Input
+                        id="table-name"
+                        name="name"
+                        value={config.name || ""}
+                        onChange={handleConfigChange}
+                    />
+                </div>
+            )}
+            {node.kind === "output-context" && (
+                <div className="space-y-2">
+                    <Label htmlFor="output-context-key">Output Key</Label>
+                    <Input
+                        id="output-context-key"
+                        name="key"
+                        value={config.key || ""}
+                        onChange={handleConfigChange}
+                    />
+                </div>
+            )}
+        </div>
+    );
+}

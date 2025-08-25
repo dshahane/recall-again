@@ -1,10 +1,11 @@
 // File: components/workflow/types.ts
-import { PlaySquare, FileText, Bot, List, Rocket, Wand, MessageSquare, Plus, Minus, Table, LayoutDashboard, Database, Repeat, Split, Code, Timer, GitBranch, Lightbulb } from 'lucide-react';
+import { PlaySquare, FileText, Bot, List, Rocket, Wand, MessageSquare, Plus, Minus, Table, LayoutDashboard, Database, Repeat, Split, Code, Timer, GitBranch, Lightbulb, AlarmClock, Columns4 } from 'lucide-react';
 
 export type NodeKind =
     | "query"
     | "document"
     | "session"
+    | "timer"
     | "transformation"
     | "llm"
     | "classifier"
@@ -13,6 +14,7 @@ export type NodeKind =
     | "intent-detection"
     | "context"
     | "table"
+    | "table-out"
     | "visualization"
     | "context-out"
     | "loop"
@@ -21,9 +23,16 @@ export type NodeKind =
     | "trycatch"
     | "delay"
     | "variables"
-    | "text-generation"; // Add this kind
+    | "text-generation"
+    | "bmecat"
+    | "cif"
+    | "cxml"
+    | "reviews"
+    | "sql"
+    | "sparql"
+    | "sheet"
+    ;
 
-// ...
 
 
 export interface Vec2 {
@@ -61,14 +70,17 @@ const nodeRect = { w: 224, h: 96 };
 export const PALETTE_DATA = [
     {
         label: "Triggers",
+        description: "Start a workflow with these nodes.",
         items: [
             { label: "Query", kind: "query", icon: <PlaySquare className="w-4 h-4" /> },
             { label: "Document", kind: "document", icon: <FileText className="w-4 h-4" /> },
             { label: "Session", kind: "session", icon: <MessageSquare className="w-4 h-4" /> },
+            { label: "Timer", kind: "timer", icon: <AlarmClock className="w-4 h-4" /> },
         ]
     },
     {
         label: "Models",
+        description: "Connect to ML/LLM models.",
         items: [
             { label: "LLM", kind: "llm", icon: <Bot className="w-4 h-4" /> },
             { label: "Classifier", kind: "classifier", icon: <Bot className="w-4 h-4" /> },
@@ -78,7 +90,8 @@ export const PALETTE_DATA = [
         ]
     },
     {
-        label: "Tools",
+        label: "Additional Inputs",
+        description: "Gather Additional Context",
         items: [
             { label: "API", kind: "api", icon: <Rocket className="w-4 h-4" /> },
             { label: "Transformation", kind: "transformation", icon: <Wand className="w-4 h-4" /> },
@@ -87,15 +100,31 @@ export const PALETTE_DATA = [
         ]
     },
     {
+        label: "Specialized Inputs",
+        description: "Process specialized inputs",
+        items: [
+            { label: "BME Cat", kind: "api", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "CIF", kind: "transformation", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "cXML", kind: "context", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "Reviews", kind: "reviews", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "SQL", kind: "sql", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "SparQL", kind: "sparql", icon: <Columns4 className="w-4 h-4" /> },
+            { label: "Sheet", kind: "sheet", icon: <Columns4 className="w-4 h-4" /> },
+        ]
+    },
+    {
         label: "Sinks",
+        description: "Persist the output",
         items: [
             { label: "Context Out", kind: "context-out", icon: <Database className="w-4 h-4" /> },
             { label: "Visualization", kind: "visualization", icon: <LayoutDashboard className="w-4 h-4" /> },
             { label: "Variables", kind: "variables", icon: <Code className="w-4 h-4" /> },
+            { label: "Table Out", kind: "table-out", icon: <Table className="w-4 h-4" /> },
         ]
     },
     {
         label: "Flow Control",
+        description: "Control execution flow",
         items: [
             { label: "Loop", kind: "loop", icon: <Repeat className="w-4 h-4" /> },
             { label: "Condition", kind: "condition", icon: <Split className="w-4 h-4" /> },

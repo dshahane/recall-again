@@ -2,6 +2,8 @@
 'use client'
 
 import React from 'react';
+import {PALETTE_DATA} from "@/components/models/workflow/types";
+
 import { WorkflowIcon, ChevronDown, Rocket, FileText, MessageSquare, Monitor, Table, ImageIcon, SearchIcon, Cog } from 'lucide-react';
 import {
     Accordion,
@@ -21,42 +23,6 @@ interface PaletteProps {
     setDraggedNode: (node: NodePaletteItem | null) => void;
 }
 
-// List of all node types available in the palette, grouped by category
-const nodeGroups = [
-    {
-        name: "Triggers",
-        description: "Start a workflow with these nodes.",
-        nodes: [
-            { kind: "query", label: "Query", icon: SearchIcon },
-            { kind: "document", label: "Document", icon: FileText },
-            { kind: "session", label: "Session", icon: MessageSquare },
-        ],
-    },
-    {
-        name: "Generators",
-        description: "Generate content from prompts.",
-        nodes: [
-            { kind: "text-generation", label: "Text Generation", icon: Rocket },
-            { kind: "image-generation", label: "Image Generation", icon: ImageIcon },
-        ],
-    },
-    {
-        name: "Tools",
-        description: "Run custom code or actions.",
-        nodes: [
-            { kind: "action", label: "Action", icon: Cog },
-        ],
-    },
-    {
-        name: "Sinks",
-        description: "End a workflow with these nodes.",
-        nodes: [
-            { kind: "table", label: "Table", icon: Table },
-            { kind: "output-context", label: "Output Context", icon: Monitor },
-        ],
-    },
-];
-
 /**
  * The Palette component provides a draggable list of node types.
  * @param props - The component props.
@@ -69,13 +35,13 @@ export default function Palette({ setDraggedNode }: PaletteProps) {
                 <WorkflowIcon className="w-5 h-5" /> Node Palette
             </h2>
             <Accordion type="single" collapsible defaultValue="Triggers">
-                {nodeGroups.map((group) => (
-                    <AccordionItem key={group.name} value={group.name}>
-                        <AccordionTrigger className="text-sm font-medium">{group.name}</AccordionTrigger>
+                {PALETTE_DATA.map((group) => (
+                    <AccordionItem key={group.label} value={group.label}>
+                        <AccordionTrigger className="text-sm font-medium">{group.label}</AccordionTrigger>
                         <AccordionContent>
                             <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">{group.description}</p>
                             <div className="grid grid-cols-2 gap-2">
-                                {group.nodes.map((node) => (
+                                {group.items.map((node) => (
                                     <div
                                         key={node.kind}
                                         draggable
@@ -93,8 +59,9 @@ export default function Palette({ setDraggedNode }: PaletteProps) {
                                             hover:shadow-md hover:bg-white dark:hover:bg-zinc-800
                                         `}
                                     >
-                                        {node.icon && <node.icon className="h-5 w-5 text-gray-500 dark:text-zinc-400" />}
-                                        <span className="font-medium text-center">{node.label}</span>
+                                        {/*node.icon && <node.icon className: 'h-5 w-5 text-gray-500 dark:text-zinc-400'/>*/}
+                                        <span className="mb-1 h-5 w-5 text-gray-500 dark:text-zinc-400">{node.icon}</span>
+                                        <span className="font-medium text-center text-gray-500">{node.label}</span>
                                     </div>
                                 ))}
                             </div>

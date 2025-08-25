@@ -9,6 +9,7 @@ import ModelSkills from "@/components/models/skills";
 import WorkflowBuilder from "@/components/models/workflow/workflow-builder";
 import {ModelTeacher} from "@/components/models/yoda";
 import ContextManagerApp from "@/components/models/context/context-manager";
+import NeoContextBuilder from "@/components/models/neo/neo-context-builder";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params
@@ -51,7 +52,7 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
             pageContent = <ModelTraining/>;
             break;
         case 'yoda':
-            pageContent = <ModelTeacher/>;
+            pageContent = <NeoContextBuilder/>
             break;
         default:
             pageContent = <SchemaMapper

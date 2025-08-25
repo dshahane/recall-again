@@ -79,7 +79,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Input
                         id="query-text"
                         name="text"
-                        value={config.text || ""}
+                        value={config?.text || ""}
                         onChange={handleConfigChange}
                     />
                 </div>
@@ -90,7 +90,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Textarea
                         id="document-content"
                         name="content"
-                        value={config.content || ""}
+                        value={config?.content || ""}
                         onChange={handleConfigChange}
                         rows={6}
                     />
@@ -102,7 +102,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Textarea
                         id="generation-prompt"
                         name="prompt"
-                        value={config.prompt || ""}
+                        value={config?.prompt || ""}
                         onChange={handleConfigChange}
                         rows={6}
                     />
@@ -114,7 +114,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Textarea
                         id="action-code"
                         name="code"
-                        value={config.code || ""}
+                        value={config?.code || ""}
                         onChange={handleConfigChange}
                         rows={10}
                     />
@@ -126,7 +126,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Input
                         id="table-name"
                         name="name"
-                        value={config.name || ""}
+                        value={config?.name || ""}
                         onChange={handleConfigChange}
                     />
                 </div>
@@ -137,7 +137,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     <Input
                         id="output-context-key"
                         name="key"
-                        value={config.key || ""}
+                        value={config?.key || ""}
                         onChange={handleConfigChange}
                     />
                 </div>

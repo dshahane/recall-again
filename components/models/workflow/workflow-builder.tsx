@@ -90,17 +90,20 @@ export default function WorkflowBuilder() {
 
     const handleNodeClick = useCallback((nodeId: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        console.log('Node clicked:', nodeId);
         setSelectedId(nodeId);
         setSelectedEdgeId(undefined);
     }, []);
 
     const handleCanvasClick = useCallback(() => {
+        console.log('Canvas clicked, deselecting all.');
         setSelectedId(undefined);
         setSelectedEdgeId(undefined);
     }, []);
 
     const handleEdgeClick = useCallback((edgeId: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        console.log('Edge clicked:', edgeId);
         setSelectedEdgeId(edgeId);
         setSelectedId(undefined);
     }, []);
@@ -172,13 +175,16 @@ export default function WorkflowBuilder() {
     }, [wf.startId]);
 
     // Handle edge creation when mouse is released on a port
-    const onPortMouseUp = useCallback((toNodeId: string, toPort: PortName) => {
+    const onPortMouseUp = useCallback((toNodeId: string, toPort: PortName, e: React.MouseEvent) => {
+        e.stopPropagation();
+
         const fromNode = wf.nodes.find(n => n.id === connectingFrom?.nodeId);
         const toNode = wf.nodes.find(n => n.id === toNodeId);
+        console.log('onPortMouseUp fired.');
 
         if (fromNode && toNode && connectingFrom) {
-            // Validate connection: can't connect a trigger to a trigger, a sink to a sink,
-            // or connect from an output to an output or an input to an input.
+            // Validation: can't connect a trigger to a trigger, a sink from a sink,
+            // or an input to an input/output to an output.
             if (isTriggerNode(toNode.kind)) {
                 toast.error("Invalid connection", { description: "You cannot connect to a Trigger node." });
             } else if (isSinkNode(fromNode.kind)) {
@@ -186,19 +192,26 @@ export default function WorkflowBuilder() {
             } else if (connectingFrom.port === toPort) {
                 toast.error("Invalid connection", { description: "Cannot connect an input to an input or an output to an output." });
             } else {
+                const newEdgeId = uuidv4();
                 setWf(prevWf => ({
                     ...prevWf,
                     edges: [...prevWf.edges, {
-                        id: uuidv4(),
+                        id: newEdgeId,
                         from: { nodeId: connectingFrom.nodeId, port: connectingFrom.port },
                         to: { nodeId: toNodeId, port: toPort },
                     }]
                 }));
+
+                // ⭐ This is the fix: Select the newly created edge
+                setSelectedEdgeId(newEdgeId);
+                setSelectedId(undefined); // Deselect any node
+                console.log('New edge created and selected:', newEdgeId);
                 toast.success("Edge created!");
             }
         }
+        // Always reset the connection state after mouse up
         resetHookConnection();
-    }, [connectingFrom, wf.nodes, resetHookConnection]);
+    }, [connectingFrom, wf.nodes, resetHookConnection, setSelectedEdgeId, setSelectedId]);
 
 
     const selectedNode = useMemo(() => wf.nodes.find(n => n.id === selectedId), [wf.nodes, selectedId]);
@@ -240,7 +253,7 @@ export default function WorkflowBuilder() {
                     setIsModalOpen={setIsModalOpen}
                     onCanvasClick={handleCanvasClick}
                     onCanvasMouseMove={onCanvasMouseMove}
-                    onCanvasMouseUp={onCanvasMouseUp}
+                    //onCanvasMouseUp={onCanvasMouseUp}
                     selectedId={selectedId}
                     selectedEdgeId={selectedEdgeId}
                 />

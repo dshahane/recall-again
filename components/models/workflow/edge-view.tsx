@@ -33,7 +33,7 @@ export default function EdgeView({ from, to, c1, c2, selected, onSelect, onDragC
                 stroke="transparent"
                 strokeWidth="10"
                 className="cursor-pointer"
-                onMouseDown={onSelect}
+                onClick={onSelect}
             />
             {/* Visible path for the edge */}
             <path

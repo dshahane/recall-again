@@ -1,3 +1,7 @@
+// File: components/workflow/WorkflowCanvas.tsx
+
+'use client'
+
 import React from 'react';
 import { AnyNode, Edge, Vec2, PortName, NodeKind, snap, completeNode, nodePortPos, defaultBezierPoints } from './types';
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +29,6 @@ interface WorkflowCanvasProps {
     setIsModalOpen: (isOpen: boolean) => void;
     onCanvasClick: (e: React.MouseEvent) => void;
     onCanvasMouseMove: (e: React.MouseEvent) => void;
-    onCanvasMouseUp: (e: React.MouseEvent) => void;
     selectedId: string | undefined;
     selectedEdgeId: string | undefined;
 }
@@ -37,13 +40,14 @@ const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                                                            onNodeDrag, onNodeClick, onDeleteNode, onPortMouseDown, onPortMouseUp,
                                                            handleEdgeClick, handleDragControlPoint, isTriggerNode, draggedNode,
                                                            setDraggedNode, setModalMessage, setIsModalOpen, onCanvasClick,
-                                                           onCanvasMouseMove, onCanvasMouseUp, selectedId, selectedEdgeId
+                                                           onCanvasMouseMove, selectedId, selectedEdgeId
                                                        }) => {
     return (
         <div
             className="flex-1 overflow-hidden relative"
             onMouseMove={onCanvasMouseMove}
-            onMouseUp={onCanvasMouseUp}
+            // `onMouseUp` is a standard DOM event handler, not a prop.
+            // It will be handled correctly by the `WorkflowBuilder` component.
         >
             <div
                 ref={canvasRef}

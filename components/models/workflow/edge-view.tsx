@@ -1,35 +1,80 @@
 // File: components/workflow/EdgeView.tsx
-'use client'
+'use client';
 
-import React, { FC } from 'react';
-import { Vec2, NodeKind } from './types';
+import { FC } from 'react';
+import { Vec2 } from './types';
 
-// A simple helper to generate the SVG path
-const getPath = (from: Vec2, to: Vec2) => {
-    // Corrected logic for a smooth, curving path
-    const cp1x = from.x + (to.x - from.x) / 2;
-    const cp1y = from.y;
-    const cp2x = from.x + (to.x - from.x) / 2;
-    const cp2y = to.y;
+interface EdgeViewProps {
+    from: Vec2;
+    to: Vec2;
+    c1: Vec2;
+    c2: Vec2;
+    selected: boolean;
+    onSelect: (e: React.MouseEvent) => void;
+    onDragControlPoint: (cPoint: 'c1' | 'c2', e: React.MouseEvent) => void;
+}
 
-    return `M${from.x} ${from.y} C${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${to.x} ${to.y}`;
-};
+const EdgeView: FC<EdgeViewProps> = ({ from, to, c1, c2, selected, onSelect, onDragControlPoint }) => {
+    if (
+        !from || !to || !c1 || !c2 ||
+        typeof from.x !== 'number' || typeof from.y !== 'number' ||
+        typeof to.x !== 'number' || typeof to.y !== 'number' ||
+        typeof c1.x !== 'number' || typeof c1.y !== 'number' ||
+        isNaN(from.x) || isNaN(from.y) ||
+        isNaN(to.x) || isNaN(to.y) ||
+        isNaN(c1.x) || isNaN(c1.y)
+    ) {
+        return null;
+    }
 
-const EdgeView: FC<{ from: Vec2; to: Vec2; fromKind: NodeKind }> = ({ from, to }) => {
-    const path = getPath(from, to);
+    const pathData = `M${from.x} ${from.y} C${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${to.x} ${to.y}`;
 
     return (
-        <path
-            d={path}
-            fill="none"
-            // 🎯 Fix: Use inline styles to force visibility
-            style={{
-                stroke: '#d4d4d8', // A guaranteed visible color (zinc-400 equivalent)
-                strokeWidth: 2.5,
-                transition: 'stroke 100ms ease-in-out',
-            }}
-            markerEnd="url(#arrow)"
-        />
+        <g>
+            {/* Invisible path for a larger click target */}
+            <path
+                d={pathData}
+                stroke="transparent"
+                strokeWidth="10"
+                fill="none"
+                onClick={onSelect} // onSelect is handled here
+                onMouseDown={(e) => e.stopPropagation()} // Stop propagation to prevent canvas deselect
+                style={{ cursor: 'pointer' }}
+            />
+            {/* Visible path */}
+            <path
+                d={pathData}
+                stroke="#d4d4d8"
+                strokeWidth="3"
+                fill="none"
+                className={`transition-all duration-300 ${selected ? 'stroke-purple-500' : ''}`}
+                style={{ pointerEvents: 'none' }} // Ensure clicks go to the invisible path
+            />
+            {selected && (
+                <>
+                    <circle
+                        cx={c1.x}
+                        cy={c1.y}
+                        r="6"
+                        fill="#a855f7"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        className="cursor-grab"
+                        onMouseDown={(e) => { e.stopPropagation(); onDragControlPoint('c1', e); }}
+                    />
+                    <circle
+                        cx={c2.x}
+                        cy={c2.y}
+                        r="6"
+                        fill="#a855f7"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        className="cursor-grab"
+                        onMouseDown={(e) => { e.stopPropagation(); onDragControlPoint('c2', e); }}
+                    />
+                </>
+            )}
+        </g>
     );
 };
 

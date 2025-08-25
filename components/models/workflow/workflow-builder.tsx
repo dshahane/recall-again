@@ -1,7 +1,7 @@
 // File: components/workflow/WorkflowBuilder.tsx
 'use client'
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ChevronDown, Workflow } from 'lucide-react';
@@ -23,23 +23,56 @@ import NodeView from './node-view';
 import EdgeView from './edge-view';
 import NodeConfig from './node-config';
 import Palette from './palette';
+import EdgeConfig from './edge-config';
 
-const nodePortPos = (n: AnyNode, port: PortName, kind: 'out' | 'in') => {
+const nodePortPos = (n: AnyNode, port: PortName) => {
     const rect = { w: 220, h: 84 };
-    if (kind === 'in') {
-        return { x: n.pos.x, y: n.pos.y + rect.h / 2 };
+    const pp = portPositions(rect.w, rect.h, n.kind)[port];
+    if (!pp) {
+        return { x: n.pos.x, y: n.pos.y };
     }
-    const pp = portPositions(rect.w, rect.h, n.kind)[port] || { x: rect.w, y: rect.h / 2 };
     return { x: n.pos.x + pp.x, y: n.pos.y + pp.y };
 };
 
+const defaultBezierPoints = (from: Vec2, to: Vec2): { c1: Vec2, c2: Vec2 } => {
+    // Calculate midpoints
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+
+    // Determine the direction of the line
+    const dx = Math.abs(from.x - to.x);
+    const dy = Math.abs(from.y - to.y);
+
+    if (from.x > to.x) {
+        // Bend backwards for edges that go from right to left
+        return {
+            c1: { x: midX, y: from.y + dy / 2 },
+            c2: { x: midX, y: to.y + dy / 2 }
+        };
+    } else if (Math.abs(from.y - to.y) < 20) {
+        // Bend up/down for nearly horizontal lines
+        return {
+            c1: { x: midX, y: from.y + 50 },
+            c2: { x: midX, y: to.y + 50 }
+        };
+    } else {
+        // General case: create a gentle curve
+        return {
+            c1: { x: from.x + dx * 0.25, y: from.y },
+            c2: { x: to.x - dx * 0.25, y: to.y }
+        };
+    }
+};
 
 export default function WorkflowBuilder() {
     const [wf, setWf] = useState<WorkflowType>(() => createStarterWorkflow());
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+    const [selectedEdgeId, setSelectedEdgeId] = useState<string | undefined>(undefined);
     const connectingFrom = useRef<{ nodeId: string; port: PortName } | null>(null);
     const [connectingTo, setConnectingTo] = useState<Vec2 | null>(null);
     const [draggedNodePos, setDraggedNodePos] = useState<{ id: string; pos: Vec2 } | null>(null);
+    const draggedEdgeControlPoint = useRef<{ edgeId: string; controlPoint: 'c1' | 'c2'; startOffset: Vec2 } | null>(null);
+    const [isDraggingControlPoint, setIsDraggingControlPoint] = useState(false);
     const [logs, setLogs] = useState<any[]>([]);
     const [running, setRunning] = useState(false);
     const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +82,65 @@ export default function WorkflowBuilder() {
 
     const isTriggerNode = (kind: NodeKind) => ["query", "document", "session"].includes(kind);
 
+    useEffect(() => {
+        const handleDrag = (e: MouseEvent) => {
+            if (!draggedEdgeControlPoint.current || !canvasRef.current) return;
+            const rect = canvasRef.current.getBoundingClientRect();
+            const newPos = {
+                x: e.clientX - rect.left - draggedEdgeControlPoint.current.startOffset.x,
+                y: e.clientY - rect.top - draggedEdgeControlPoint.current.startOffset.y,
+            };
+            setWf(w => ({
+                ...w,
+                edges: w.edges.map(edge => {
+                    if (edge.id === draggedEdgeControlPoint.current!.edgeId) {
+                        return { ...edge, [draggedEdgeControlPoint.current!.controlPoint]: newPos };
+                    }
+                    return edge;
+                })
+            }));
+        };
+
+        const handleDragEnd = () => {
+            setIsDraggingControlPoint(false);
+            draggedEdgeControlPoint.current = null;
+        };
+
+        if (isDraggingControlPoint) {
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', handleDragEnd);
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleDrag);
+            document.removeEventListener('mouseup', handleDragEnd);
+        };
+    }, [isDraggingControlPoint, setWf]);
+
+
+    const handleDragControlPoint = useCallback((edgeId: string, controlPoint: 'c1' | 'c2', e: React.MouseEvent) => {
+        e.stopPropagation();
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (rect) {
+            const edge = wf.edges.find(e => e.id === edgeId);
+            if (!edge) return;
+            const fromNode = wf.nodes.find(n => n.id === edge.from.nodeId)!;
+            const toNode = wf.nodes.find(n => n.id === edge.to.nodeId)!;
+            const fromPos = nodePortPos(fromNode, edge.from.port);
+            const toPos = nodePortPos(toNode, 'in');
+            const defaultPoints = defaultBezierPoints(fromPos, toPos);
+            const currentPoint = edge[controlPoint] || defaultPoints[controlPoint];
+
+            draggedEdgeControlPoint.current = {
+                edgeId,
+                controlPoint,
+                startOffset: { x: e.clientX - rect.left - currentPoint.x, y: e.clientY - rect.top - currentPoint.y }
+            };
+            // Set the state to true to trigger the useEffect
+            setIsDraggingControlPoint(true);
+        }
+    }, [wf.edges, wf.nodes, setWf]);
+
     const onNodeDrag = useCallback((id: string, e: React.MouseEvent) => {
         const node = wf.nodes.find(n => n.id === id);
         if (!node) return;
@@ -56,6 +148,7 @@ export default function WorkflowBuilder() {
         e.preventDefault();
         e.stopPropagation();
         setSelectedId(node.id);
+        setSelectedEdgeId(undefined);
         const dragStartPos = { x: e.clientX, y: e.clientY };
         const initialPos = { x: node.pos.x, y: node.pos.y };
 
@@ -80,7 +173,7 @@ export default function WorkflowBuilder() {
         };
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
-    }, [wf.nodes, setSelectedId]);
+    }, [wf.nodes, setSelectedId, setSelectedEdgeId]);
 
     const deleteNode = useCallback((id: string) => {
         setWf(w => ({
@@ -90,17 +183,21 @@ export default function WorkflowBuilder() {
             startId: w.startId === id ? undefined : w.startId,
         }));
         if (selectedId === id) setSelectedId(undefined);
-    }, [selectedId]);
+        if (selectedEdgeId === id) setSelectedEdgeId(undefined);
+    }, [selectedId, selectedEdgeId]);
 
     const handleCanvasClick = useCallback((e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
             setSelectedId(undefined);
+            setSelectedEdgeId(undefined);
             connectingFrom.current = null;
         }
     }, []);
 
     const onPortMouseDown = useCallback((nodeId: string, port: PortName, e: React.MouseEvent) => {
         e.stopPropagation();
+        setSelectedId(nodeId);
+        setSelectedEdgeId(undefined);
         if (port !== ('in' as PortName)) {
             connectingFrom.current = { nodeId, port };
             const rect = canvasRef.current?.getBoundingClientRect();
@@ -130,23 +227,12 @@ export default function WorkflowBuilder() {
         setConnectingTo(null);
     }, [wf.nodes, wf.edges]);
 
-    const handleMouseMove = useCallback((e: React.MouseEvent) => {
-        if (connectingFrom.current) {
-            const rect = canvasRef.current?.getBoundingClientRect();
-            if (rect) {
-                setConnectingTo({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-            }
-        }
-    }, [connectingFrom]);
-
     const handleConfigChange = useCallback((id: string, newConfig: any) => {
         setWf(w => ({
             ...w,
             nodes: w.nodes.map(n => {
                 if (n.id === id) {
-                    if ('config' in n) {
-                        return { ...n, config: newConfig };
-                    }
+                    return { ...n, config: newConfig };
                 }
                 return n;
             }) as AnyNode[]
@@ -157,7 +243,39 @@ export default function WorkflowBuilder() {
         setWf(w => ({ ...w, nodes: w.nodes.map(n => n.id === id ? { ...n, name: newName } : n) }));
     }, []);
 
+    const handleEdgeClick = useCallback((edgeId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedEdgeId(edgeId);
+        setSelectedId(undefined);
+    }, []);
+
+    // Using a ref to avoid stale closure issues with useCallback
+    const handleEdgeControlPointDrag = useCallback((e: MouseEvent) => {
+        if (!draggedEdgeControlPoint.current || !canvasRef.current) return;
+        const rect = canvasRef.current.getBoundingClientRect();
+        const newPos = {
+            x: e.clientX - rect.left - draggedEdgeControlPoint.current.startOffset.x,
+            y: e.clientY - rect.top - draggedEdgeControlPoint.current.startOffset.y,
+        };
+        setWf(w => ({
+            ...w,
+            edges: w.edges.map(edge => {
+                if (edge.id === draggedEdgeControlPoint.current!.edgeId) {
+                    return { ...edge, [draggedEdgeControlPoint.current!.controlPoint]: newPos };
+                }
+                return edge;
+            })
+        }));
+    }, []); // No dependencies needed
+
+    const handleEdgeControlPointDragEnd = useCallback(() => {
+        draggedEdgeControlPoint.current = null;
+        document.removeEventListener('mousemove', handleEdgeControlPointDrag);
+        document.removeEventListener('mouseup', handleEdgeControlPointDragEnd);
+    }, [handleEdgeControlPointDrag]);
+
     const selectedNode = useMemo(() => wf.nodes.find(n => n.id === selectedId), [wf.nodes, selectedId]);
+    const selectedEdge = useMemo(() => wf.edges.find(e => e.id === selectedEdgeId), [wf.edges, selectedEdgeId]);
 
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
@@ -166,7 +284,14 @@ export default function WorkflowBuilder() {
             <div className="flex-1 flex flex-col relative">
                 <div
                     className="flex-1 overflow-hidden relative"
-                    onMouseMove={handleMouseMove}
+                    onMouseMove={(e) => {
+                        if (connectingFrom.current) {
+                            const rect = canvasRef.current?.getBoundingClientRect();
+                            if (rect) {
+                                setConnectingTo({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+                            }
+                        }
+                    }}
                     onMouseUp={() => { if (connectingFrom.current) { connectingFrom.current = null; setConnectingTo(null); } }}
                     onClick={handleCanvasClick}
                 >
@@ -178,7 +303,7 @@ export default function WorkflowBuilder() {
                             const canvasRect = canvasRef.current?.getBoundingClientRect();
                             if (!canvasRect || !draggedNode) return;
                             const x = e.clientX - canvasRect.left;
-                            const y = e.clientY - canvasRect.top;
+                            const y = e.clientY - canvasRect.y;
                             if (isTriggerNode(draggedNode.kind) && wf.nodes.some(n => isTriggerNode(n.kind))) {
                                 setModalMessage("A workflow can only have one Trigger node.");
                                 setIsModalOpen(true);
@@ -187,15 +312,11 @@ export default function WorkflowBuilder() {
                             const newNode = completeNode({ id: uuidv4(), kind: draggedNode.kind, name: draggedNode.label, pos: { x: snap(x - 110), y: snap(y - 42) } });
                             setWf(w => ({ ...w, nodes: [...w.nodes, newNode], startId: isTriggerNode(newNode.kind) ? newNode.id : w.startId }));
                             setSelectedId(newNode.id);
+                            setSelectedEdgeId(undefined);
                             setDraggedNode(null);
                         }}
                     >
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                            <defs>
-                                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#d4d4d8" />
-                                </marker>
-                            </defs>
+                        <svg className="absolute inset-0 w-full h-full pointer-events-auto z-0">
                             {wf.edges.map(edge => {
                                 const fromNode = wf.nodes.find(n => n.id === edge.from.nodeId);
                                 const toNode = wf.nodes.find(n => n.id === edge.to.nodeId);
@@ -204,16 +325,33 @@ export default function WorkflowBuilder() {
                                 const finalFromNode = draggedNodePos?.id === fromNode.id ? { ...fromNode, pos: draggedNodePos.pos } : fromNode;
                                 const finalToNode = draggedNodePos?.id === toNode.id ? { ...toNode, pos: draggedNodePos.pos } : toNode;
 
-                                const fromPos = nodePortPos(finalFromNode, edge.from.port, 'out');
-                                const toPos = nodePortPos(finalToNode, 'out', 'in');
+                                const fromPos = nodePortPos(finalFromNode, edge.from.port);
+                                const toPos = nodePortPos(finalToNode, 'in');
 
-                                return <EdgeView key={edge.id} from={fromPos} to={toPos} fromKind={finalFromNode.kind} />;
+                                const { c1, c2 } = edge.c1 && edge.c2 ? { c1: edge.c1, c2: edge.c2 } : defaultBezierPoints(fromPos, toPos);
+
+                                return (
+                                    <EdgeView
+                                        key={edge.id}
+                                        from={fromPos}
+                                        to={toPos}
+                                        c1={c1}
+                                        c2={c2}
+                                        selected={edge.id === selectedEdgeId}
+                                        onSelect={(e) => handleEdgeClick(edge.id, e)}
+                                        onDragControlPoint={(cPoint, e) => handleDragControlPoint(edge.id, cPoint, e)}
+                                    />
+                                );
                             })}
                             {connectingFrom.current && connectingTo && (
                                 <EdgeView
-                                    from={nodePortPos(wf.nodes.find(n => n.id === connectingFrom.current!.nodeId)!, connectingFrom.current!.port, 'out')}
+                                    from={nodePortPos(wf.nodes.find(n => n.id === connectingFrom.current!.nodeId)!, connectingFrom.current!.port)}
                                     to={connectingTo}
-                                    fromKind={wf.nodes.find(n => n.id === connectingFrom.current!.nodeId)!.kind}
+                                    c1={defaultBezierPoints(nodePortPos(wf.nodes.find(n => n.id === connectingFrom.current!.nodeId)!, connectingFrom.current!.port), connectingTo).c1}
+                                    c2={defaultBezierPoints(nodePortPos(wf.nodes.find(n => n.id === connectingFrom.current!.nodeId)!, connectingFrom.current!.port), connectingTo).c2}
+                                    selected={false}
+                                    onSelect={() => {}}
+                                    onDragControlPoint={() => {}}
                                 />
                             )}
                         </svg>
@@ -241,14 +379,16 @@ export default function WorkflowBuilder() {
                     </TabsList>
                     <div className="flex-1 mt-4">
                         <TabsContent value="configure" className="space-y-4">
-                            {!selectedNode ? (
-                                <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">Select a node to configure</div>
-                            ) : (
+                            {selectedNode ? (
                                 <NodeConfig node={selectedNode} onChange={handleConfigChange} onNameChange={handleNameChange} />
+                            ) : selectedEdge ? (
+                                <EdgeConfig edge={selectedEdge} />
+                            ) : (
+                                <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">Select a node or edge to configure</div>
                             )}
                         </TabsContent>
                         <TabsContent value="logs" className="space-y-2">
-                            {/* ... (Logs content from original code) */}
+                            {/* ... (Logs content) */}
                         </TabsContent>
                     </div>
                 </Tabs>

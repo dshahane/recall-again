@@ -39,6 +39,8 @@ export type Edge = {
     id: string;
     from: { nodeId: string; port: PortName; };
     to: { nodeId: string; };
+    c1?: Vec2; // Optional custom control points
+    c2?: Vec2;
 };
 
 export type Workflow = {
@@ -181,31 +183,36 @@ export const portLabel = (kind: NodeKind, port: PortName) => {
     if (kind === 'condition' && port === 'false') return 'false';
     if (kind === 'trycatch' && port === 'try') return 'try';
     if (kind === 'trycatch' && port === 'catch') return 'catch';
+    if (port === 'in') return 'in'; // Explicitly label the 'in' port
     return port;
 };
 
 export const portPositions = (w: number, h: number, kind: NodeKind) => {
-    // Port positions for various node types
+    const ports: { [key: string]: Vec2 } = {};
+
+    // All nodes have one input port on the left
+    ports['in'] = { x: 0, y: h / 2 };
+
+    // Add specific output ports based on node kind on the right
     if (['query', 'document', 'session', 'api'].includes(kind)) {
-        return {
-            out: { x: w, y: h / 2 }
-        };
+        ports['out'] = { x: w, y: h / 2 };
+    }
+    if (['llm', 'classifier', 'regressor', 'ranker', 'intent-detection', 'transformation', 'context', 'table', 'context-out', 'visualization', 'variables'].includes(kind)) {
+        ports['out'] = { x: w, y: h / 2 };
     }
     if (kind === 'condition') {
-        return {
-            true: { x: w, y: h / 3 },
-            false: { x: w, y: h / 3 * 2 }
-        };
+        ports['true'] = { x: w, y: h / 3 };
+        ports['false'] = { x: w, y: h / 3 * 2 };
     }
     if (kind === 'trycatch') {
-        return {
-            try: { x: w, y: h / 3 },
-            catch: { x: w, y: h / 3 * 2 }
-        };
+        ports['try'] = { x: w, y: h / 3 };
+        ports['catch'] = { x: w, y: h / 3 * 2 };
     }
-    return {
-        out: { x: w, y: h / 2 },
-    };
+    if (kind === 'loop') {
+        ports['out'] = { x: w, y: h / 2 };
+    }
+
+    return ports;
 };
 
 export const createStarterWorkflow = () => {

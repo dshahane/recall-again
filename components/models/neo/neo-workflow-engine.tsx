@@ -30,6 +30,7 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
     const [modalMessage, setModalMessage] = useState("");
     const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
     const [loadString, setLoadString] = useState("");
+    const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLDivElement | null>(null);
 
@@ -42,19 +43,32 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
         resetConnection: resetHookConnection
     } = useConnection(canvasRef);
 
-    const {handleMouseDown: onNodeDragStart, currentDraggedPos: draggedNodePos} = useMouseDrag(
+    const {handleMouseDown: onNodeDragStart, currentDraggedPos: draggedPos} = useMouseDrag(
+        // The onMouseUp callback: this runs only once when the drag ends
         (finalPos) => {
-            if (selectedId) {
+            if (draggedNodeId) {
                 setWf(prevWf => ({
                     ...prevWf,
-                    nodes: prevWf.nodes.map(n => (n.id === selectedId ? {
+                    nodes: prevWf.nodes.map(n => (n.id === draggedNodeId ? {
                         ...n,
                         pos: snap(finalPos.x, finalPos.y) as Vec2
                     } : n))
                 }));
+                setDraggedNodeId(null); // Reset the dragging ID
             }
         }
     );
+
+    // Modify onNodeDrag to store the ID and start the drag
+    const onNodeDrag = useCallback((id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const node = wf.nodes.find(n => n.id === id);
+        if (!node) return;
+        setDraggedNodeId(id); // Store the ID of the node being dragged
+        setSelectedId(id);
+        setSelectedEdgeId(undefined);
+        onNodeDragStart(e, node.pos);
+    }, [wf.nodes, onNodeDragStart]);
 
     const {handleMouseDown: onEdgeControlPointDragStart} = useMouseDrag(
         (finalPos) => {
@@ -72,13 +86,7 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
         }
     );
 
-    const onNodeDrag = useCallback((id: string, e: React.MouseEvent) => {
-        const node = wf.nodes.find(n => n.id === id);
-        if (!node) return;
-        setSelectedId(id);
-        setSelectedEdgeId(undefined);
-        onNodeDragStart(e, node.pos);
-    }, [wf.nodes, setSelectedId, setSelectedEdgeId, onNodeDragStart]);
+
 
     const handleNodeClick = useCallback((nodeId: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -197,31 +205,43 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
     const api = {
         wf,
         canvasRef,
-        draggedNode,
-        draggedNodePos,
+        // New dragging state
+        draggedNodeId,
+        draggedPos,
+        // Old, unused state
+        // draggedNode,
+        // setDraggedNode,
+
         connectingFrom,
         connectingTo,
         onCanvasMouseMove,
         onCanvasMouseUp,
+
         selectedId,
         selectedEdgeId,
+
         setWf,
-        setDraggedNode,
         setModalMessage,
         setIsModalOpen,
+
         onNodeDrag,
         onNodeClick: handleNodeClick,
         onDeleteNode,
+
         onPortMouseDown,
         onPortMouseUp,
+
         handleEdgeClick,
         handleDragControlPoint,
         handleCanvasClick,
+
         selectedNode,
         selectedEdge,
+
         handleConfigChange,
         handleNameChange,
         onDeleteEdge,
+
         logs,
         running,
         isModalOpen,
@@ -230,6 +250,7 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
         setIsLoadModalOpen,
         loadString,
         setLoadString,
+
         handleLoad: loadWorkflow,
         handleRun: runWorkflow,
         handleSave: saveWorkflow,

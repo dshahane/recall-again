@@ -6,10 +6,13 @@ import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
 import {getPortPositions} from "@/components/models/workflow/port-config-types";
+import {Vec2} from "@/app/types/app";
 
 interface NodeViewProps {
     node: AnyNode;
     selected: boolean;
+    isBeingDragged: boolean
+    draggedPosition: Vec2,
     onNodeDrag: (id: string, e: React.MouseEvent) => void;
     onNodeClick: (id: string, e: React.MouseEvent) => void;
     onDelete: (id: string) => void;
@@ -22,6 +25,8 @@ const nodeRect = { w: 224, h: 96 };
 export default function NodeView({
                                      node,
                                      selected,
+                                     isBeingDragged,
+                                     draggedPosition,
                                      onNodeDrag,
                                      onNodeClick,
                                      onDelete,
@@ -31,6 +36,8 @@ export default function NodeView({
     const nodeMeta = getNodeMetadata(node.kind);
     const NodeIcon = nodeMeta?.icon;
     const ports = getPortPositions(nodeRect.w, nodeRect.h, nodeMeta?.portConfig) || {};
+    // Determine the position to render: dragged position or stored position
+    const position = isBeingDragged ? draggedPosition : node.pos;
 
     return (
         <div
@@ -42,8 +49,8 @@ export default function NodeView({
                 "w-56 h-24 flex flex-col justify-between"
             )}
             style={{
-                left: node.pos.x,
-                top: node.pos.y,
+                left: position.x,
+                top: position.y,
             }}
             onMouseDown={(e) => {
                 e.stopPropagation();

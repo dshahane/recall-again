@@ -57,3 +57,4 @@ export interface Workflow {
     nodes: AnyNode[];
     edges: Edge[];
 }
+

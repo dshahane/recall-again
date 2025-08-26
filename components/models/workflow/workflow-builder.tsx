@@ -12,8 +12,9 @@ import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 
 import { Vec2 } from '@/app/types/app';
-import { PortName, snap, Workflow as WorkflowType } from './types';
-import { createStarterWorkflow, isSinkNode, isTriggerNode } from '@/components/models/workflow/workflow-utils';
+import { PortName, Workflow as WorkflowType } from './types';
+import { createStarterWorkflow, snap } from '@/components/models/workflow/workflow-utils';
+import { isSinkNode, isTriggerNode } from '@/components/models/workflow/node-config-types';
 import { deleteEdge, deleteNode, updateNodeConfig, updateNodeName } from '@/components/models/workflow//workflow-manager';
 
 import NodeConfig from './node-config';

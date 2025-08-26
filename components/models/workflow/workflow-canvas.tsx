@@ -4,8 +4,8 @@
 
 import React from 'react';
 import { Vec2 } from '@/app/types/app';
-import {AnyNode, Edge, PortName, NodeKind, snap, Workflow} from './types';
-import { completeNode, nodePortPos, defaultBezierPoints } from './workflow-utils';
+import { AnyNode, Edge, PortName, NodeKind, Workflow } from './types';
+import { completeNode, nodePortPos, defaultBezierPoints, snap } from './workflow-utils';
 import { v4 as uuidv4 } from "uuid";
 import NodeView from './node-view';
 import EdgeView from './edge-view';

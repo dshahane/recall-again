@@ -1,15 +1,17 @@
 // components/workflow/NeoWorkflowEngine.tsx
 'use client'
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { useMouseDrag } from '@/hooks/use-mouse-drag';
-import { useConnection } from '@/hooks/use-connection';
-import { Vec2 } from '@/app/types/app';
+import React, {useCallback, useMemo, useRef, useState} from "react";
+import {v4 as uuidv4} from "uuid";
+import {useMouseDrag} from '@/hooks/use-mouse-drag';
+import {useConnection} from '@/hooks/use-connection';
+import {Vec2} from '@/app/types/app';
 
-import { PortName, snap, Workflow as WorkflowType } from '@/components/models/workflow/types';
-import { createStarterWorkflow, isSinkNode, isTriggerNode } from '@/components/models/workflow/workflow-utils';
-import { deleteEdge, deleteNode, updateNodeConfig, updateNodeName } from '@/components/models/workflow//workflow-manager';
+import {PortName, Workflow as WorkflowType} from '@/components/models/workflow/types';
+import {getNodeMetadata, isSinkNode, isTriggerNode} from '@/components/models/workflow/node-config-types';
+import {createStarterWorkflow, nodeRect, snap} from '@/components/models/workflow/workflow-utils';
+import {deleteEdge, deleteNode, updateNodeConfig, updateNodeName} from '@/components/models/workflow//workflow-manager';
+import {getPortPositions} from "@/components/models/workflow/port-config-types";
 
 interface NeoWorkflowEngineProps {
     initialWorkflow?: WorkflowType;
@@ -125,27 +127,43 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
         e.stopPropagation();
         const fromNode = wf.nodes.find(n => n.id === connectingFrom?.nodeId);
         const toNode = wf.nodes.find(n => n.id === toNodeId);
-        if (fromNode && toNode && connectingFrom) {
-            if (isTriggerNode(toNode.kind)) {
-                console.error("Invalid connection: cannot connect to a Trigger node.");
-            } else if (isSinkNode(fromNode.kind)) {
-                console.error("Invalid connection: cannot connect from a Sink node.");
-            } else if (connectingFrom.port === toPort) {
-                console.error("Invalid connection: cannot connect an input to an input or an output to an output.");
-            } else {
-                const newEdgeId = uuidv4();
-                setWf(prevWf => ({
-                    ...prevWf,
-                    edges: [...prevWf.edges, {
-                        id: newEdgeId,
-                        from: {nodeId: connectingFrom.nodeId, port: connectingFrom.port},
-                        to: {nodeId: toNodeId, port: toPort},
-                    }]
-                }));
-                setSelectedEdgeId(newEdgeId);
-                setSelectedId(undefined);
-            }
+
+        if (!fromNode || !toNode || !connectingFrom) {
+            // Handle cases where nodes or connection info are missing
+            resetHookConnection();
+            return;
         }
+
+        const fromNodeMeta = getNodeMetadata(fromNode.kind);
+        const toNodeMeta = getNodeMetadata(toNode.kind);
+
+        const fromPorts = getPortPositions(nodeRect.w, nodeRect.h, fromNodeMeta.portConfig);
+        const toPorts = getPortPositions(nodeRect.w, nodeRect.h, toNodeMeta.portConfig);
+
+        // Consolidated Validation Logic
+        if (isTriggerNode(toNode.kind)) {
+            console.error("Invalid connection: cannot connect to a Trigger node.");
+        } else if (isSinkNode(fromNode.kind)) {
+            console.error("Invalid connection: cannot connect from a Sink node.");
+        } else if (fromPorts[connectingFrom.port]?.x === 0 && toPorts[toPort]?.x === 0) {
+            console.error("Invalid connection: cannot connect two input ports.");
+        } else if (connectingFrom.port === toPort) {
+            console.error("Invalid connection: cannot connect an input to an input or an output to an output.");
+        } else {
+            // All validation passed, create the new edge
+            const newEdgeId = uuidv4();
+            setWf(prevWf => ({
+                ...prevWf,
+                edges: [...prevWf.edges, {
+                    id: newEdgeId,
+                    from: { nodeId: connectingFrom.nodeId, port: connectingFrom.port },
+                    to: { nodeId: toNodeId, port: toPort },
+                }]
+            }));
+            setSelectedEdgeId(newEdgeId);
+            setSelectedId(undefined);
+        }
+
         resetHookConnection();
     }, [connectingFrom, wf.nodes, resetHookConnection]);
 

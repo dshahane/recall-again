@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast, Toaster } from 'sonner';
 
-import { isTriggerNode } from '@/components/models/workflow/workflow-utils';
+import { isTriggerNode } from '@/components/models/workflow/node-config-types';
 import NodeConfig from '@/components/models/workflow/node-config';
 import Palette from '@/components/models/workflow/palette';
 import EdgeConfig from '@/components/models/workflow/edge-config';

@@ -1,8 +1,8 @@
-// File: components/workflow/workflow-utils.ts
 import { v4 as uuidv4 } from "uuid";
 import { Vec2 } from '@/app/types/app';
-import { AnyNode, NodeKind, nodeRect } from './types';
-import { NODE_METADATA } from './node-config-types';
+import { AnyNode, NodeKind } from './types';
+import {getPortPositions} from "@/components/models/workflow/port-config-types";
+import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
 
 export const completeNode = (incompleteNode: any): AnyNode => {
     return {
@@ -26,11 +26,25 @@ export const createStarterWorkflow = () => {
 };
 
 export const nodePortPos = (n: AnyNode, port: string): Vec2 => {
-    const metadata = NODE_METADATA[n.kind];
-    const pp = metadata?.portPositions?.(nodeRect.w, nodeRect.h)[port];
+    // 1. Get the node's metadata
+    const metadata = getNodeMetadata(n.kind);
+
+    // Safety check to ensure metadata exists
+    if (!metadata) {
+        return { x: n.pos.x, y: n.pos.y };
+    }
+
+    // 2. Pass the correct `portConfig` enum to get all ports
+    const allPorts = getPortPositions(nodeRect.w, nodeRect.h, metadata.portConfig);
+
+    // 3. Get the specific port's position from the result
+    const pp = allPorts[port];
+
     if (!pp) {
         return { x: n.pos.x, y: n.pos.y };
     }
+
+    // 4. Return the calculated position
     return { x: n.pos.x + pp.x, y: n.pos.y + pp.y };
 };
 
@@ -50,10 +64,4 @@ export const snap = (x: number, y?: number): Vec2 | number => {
     return { x: Math.round(x / s) * s, y: Math.round(y / s) * s };
 };
 
-export const isTriggerNode = (kind: NodeKind): boolean => {
-    return ["query", "document", "session", "timer"].includes(kind);
-};
-
-export const isSinkNode = (kind: NodeKind): boolean => {
-    return ["table-out", "context-out", "visualization", "variables"].includes(kind);
-};
+export const nodeRect = { w: 224, h: 96 };

@@ -1,21 +1,43 @@
 [
   {
-    "label": "EMB Context Inputs",
-    "description": "Nodes for gathering context.",
+    "label": "EMB Triggers",
+    "description": "Start a workflow with these nodes.",
     "items": [
       { "label": "Query", "kind": "query" },
-      { "label": "Context", "kind": "context" },
-      { "label": "Session", "kind": "session" }
+      { "label": "Document", "kind": "document" },
+      { "label": "Session", "kind": "session" },
+      { "label": "Timer", "kind": "timer" }
     ]
   },
   {
-    "label": "EMB LLM Flow",
-    "description": "Nodes for LLM generation.",
+    "label": "EMB Models",
+    "description": "Connect to ML/LLM models.",
     "items": [
-      { "label": "Transformation", "kind": "transformation" },
-      { "label": "LLM", "kind": "llm" },
+      { "label": "EMB LLM", "kind": "llm" },
+      { "label": "Classifier", "kind": "classifier" },
+      { "label": "Regressor", "kind": "regressor" },
+      { "label": "Ranker", "kind": "ranker" },
+      { "label": "Intent Detection", "kind": "intent-detection" }
+    ]
+  },
+  {
+    "label": "EMB Flow Control",
+    "description": "Control execution flow",
+    "items": [
+      { "label": "Loop", "kind": "loop" },
+      { "label": "Condition", "kind": "condition" },
+      { "label": "Try/Catch", "kind": "trycatch" },
+      { "label": "Delay", "kind": "delay" }
+    ]
+  },
+  {
+    "label": "EMB Sinks",
+    "description": "Persist the output",
+    "items": [
+      { "label": "Context Out", "kind": "context-out" },
+      { "label": "Visualization", "kind": "visualization" },
       { "label": "Variables", "kind": "variables" },
-      { "label": "Text Generation", "kind": "text-generation" }
+      { "label": "Table Out", "kind": "api-out" }
     ]
   }
 ]

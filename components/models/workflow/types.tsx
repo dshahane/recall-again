@@ -1,34 +1,38 @@
-// File: components/workflow/types.ts
 import { Vec2 } from '@/app/types/app'; // Or from a shared types file if you create one
 
-export type NodeKind =
-    | "query"
-    | "document"
-    | "session"
-    | "timer"
-    | "transformation"
-    | "llm"
-    | "classifier"
-    | "regressor"
-    | "ranker"
-    | "intent-detection"
-    | "context"
-    | "loop"
-    | "condition"
-    | "trycatch"
-    | "delay"
-    | "variables"
-    | "api"
-    | "table"
-    | "catalog"
-    | "reviews"
-    | "sql"
-    | "sparql"
-    | "sheet"
-    | "context-out"
-    | "api-out"
-    | "visualization"
-    ;
+export enum NodeKind {
+    // Triggers
+    QueryTrigger = "query",
+    DocumentTrigger = "document",
+    SessionTrigger = "session",
+    TimerTrigger = "timer",
+
+    // Intermediate nodes
+    Transformation = "transformation",
+    Llm = "llm",
+    Classifier = "classifier",
+    Regressor = "regressor",
+    Ranker = "ranker",
+    IntentDetection = "intent-detection",
+    Context = "context",
+    Loop = "loop",
+    Condition = "condition",
+    TryCatch = "trycatch",
+    Delay = "delay",
+    Variables = "variables",
+    Api = "api",
+    Table = "table",
+    Catalog = "catalog",
+    Reviews = "reviews",
+    Sql = "sql",
+    Sparql = "sparql",
+    Sheet = "sheet",
+
+    // Sinks
+    ContextSink = "context-out",
+    ApiSink = "api-out",
+    VisualizationSink = "visualization",
+}
 
 export type AnyNode = {
     id: string;
@@ -53,14 +57,3 @@ export interface Workflow {
     nodes: AnyNode[];
     edges: Edge[];
 }
-
-// Node dimensions for consistent calculations
-export const nodeRect = { w: 224, h: 96 };
-
-export const snap = (x: number, y?: number): Vec2 | number => {
-    const s = 10;
-    if (y === undefined) {
-        return Math.round(x / s) * s;
-    }
-    return { x: Math.round(x / s) * s, y: Math.round(y / s) * s };
-};

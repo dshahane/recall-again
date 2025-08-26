@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { AnyNode, NodeKind } from './types';
-import { getNodeMetadata } from './node-config-types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import React, {useCallback, useEffect, useState} from 'react';
+import {AnyNode, NodeKind} from './types';
+import {getNodeMetadata, isSinkNode, isTriggerNode} from './node-config-types';
+import {Label} from '@/components/ui/label';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
 
 // Defines the props for the NodeConfig component
 interface NodeConfigProps {
@@ -62,7 +62,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     onChange={handleNameChange}
                 />
             </div>
-            {node.kind === "query" && (
+            {isTriggerNode(node.kind) && (
                 <div className="space-y-2">
                     <Label htmlFor="query-text">Query Text</Label>
                     <Input
@@ -73,7 +73,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "document" && (
+            {node.kind === NodeKind.Catalog && (
                 <div className="space-y-2">
                     <Label htmlFor="document-content">Document Content</Label>
                     <Textarea
@@ -85,7 +85,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {(node.kind === "llm") && (
+            {(node.kind === NodeKind.Llm) && (
                 <div className="space-y-2">
                     <Label htmlFor="generation-prompt">Prompt</Label>
                     <Textarea
@@ -97,7 +97,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "api" && (
+            {node.kind === NodeKind.Api && (
                 <div className="space-y-2">
                     <Label htmlFor="action-code">Code</Label>
                     <Textarea
@@ -109,7 +109,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "table" && (
+            {node.kind === NodeKind.Table && (
                 <div className="space-y-2">
                     <Label htmlFor="table-name">Table Name</Label>
                     <Input
@@ -120,7 +120,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "context-out" && (
+            {isSinkNode(node.kind) && (
                 <div className="space-y-2">
                     <Label htmlFor="output-context-key">Output Key</Label>
                     <Input

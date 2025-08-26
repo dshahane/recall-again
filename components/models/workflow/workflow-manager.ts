@@ -1,10 +1,4 @@
-// File: components/workflow/workflowManager.ts
-import { AnyNode, Edge, Workflow as WorkflowType } from './types';
-
-// Helper function to check for trigger nodes, you can move this here too
-export const isTriggerNode = (kind: AnyNode['kind']): boolean => {
-    return ["query", "document", "session"].includes(kind);
-};
+import {Workflow as WorkflowType} from './types';
 
 // Pure function to delete a node and its connected edges
 export const deleteNode = (wf: WorkflowType, id: string): WorkflowType => ({

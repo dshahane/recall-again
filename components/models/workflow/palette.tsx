@@ -1,10 +1,9 @@
-// File: components/workflow/Palette.tsx
 'use client'
 
 import React from 'react';
 import {WorkflowIcon} from 'lucide-react';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from '@/components/ui/accordion';
-import {PaletteItem} from "@/hooks/use-palette";
+import {PaletteItem} from './palette-utils';
 
 
 interface PaletteProps {
@@ -30,12 +29,12 @@ export default function Palette({ setDraggedNode,paletteData }: PaletteProps) {
                         <AccordionContent>
                             <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">{group.description}</p>
                             <div className="grid grid-cols-2 gap-2">
-                                {group.items.map((node: PaletteItem) => (
+                                {group.items.map((paletteNode: PaletteItem) => (
                                     <div
-                                        key={node.kind}
+                                        key={paletteNode.id}
                                         draggable
                                         onDragStart={(e) => {
-                                            setDraggedNode({ kind: node.kind, label: node.label });
+                                            setDraggedNode({ kind: paletteNode.kind, label: paletteNode.label });
                                             e.dataTransfer.effectAllowed = "move";
                                         }}
                                         onDragEnd={() => setDraggedNode(null)}
@@ -49,8 +48,8 @@ export default function Palette({ setDraggedNode,paletteData }: PaletteProps) {
                                         `}
                                     >
                                         {/*node.icon && <node.icon className: 'h-5 w-5 text-gray-500 dark:text-zinc-400'/>*/}
-                                        <span className="mb-1 h-5 w-5 text-gray-500 dark:text-zinc-400">{node.icon}</span>
-                                        <span className="font-medium text-center text-gray-500">{node.label}</span>
+                                        <span className="mb-1 h-5 w-5 text-gray-500 dark:text-zinc-400">{paletteNode.icon}</span>
+                                        <span className="font-medium text-center text-gray-500">{paletteNode.label}</span>
                                     </div>
                                 ))}
                             </div>

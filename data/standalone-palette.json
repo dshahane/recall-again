@@ -50,7 +50,7 @@
       { "label": "Context Out", "kind": "context-out" },
       { "label": "Visualization", "kind": "visualization" },
       { "label": "Variables", "kind": "variables" },
-      { "label": "Table Out", "kind": "table-out" }
+      { "label": "Table Out", "kind": "api-out" }
     ]
   },
   {

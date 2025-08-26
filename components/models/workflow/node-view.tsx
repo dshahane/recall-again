@@ -1,4 +1,3 @@
-// File: components/workflow/NodeView.tsx
 'use client'
 
 import React from 'react';
@@ -6,6 +5,7 @@ import { PortName, AnyNode, NodeKind, } from './types';
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
+import {getPortPositions} from "@/components/models/workflow/port-config-types";
 
 interface NodeViewProps {
     node: AnyNode;
@@ -30,7 +30,7 @@ export default function NodeView({
                                  }: NodeViewProps) {
     const nodeMeta = getNodeMetadata(node.kind);
     const NodeIcon = nodeMeta?.icon;
-    const ports = nodeMeta?.portPositions?.(nodeRect.w, nodeRect.h) || {};
+    const ports = getPortPositions(nodeRect.w, nodeRect.h, nodeMeta?.portConfig) || {};
     const hasInput = !!ports['in'];
     const hasOutputs = Object.keys(ports).length > 1;
 

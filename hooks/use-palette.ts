@@ -1,46 +1,30 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { NODE_METADATA } from '@/components/models/workflow/node-config-types';
-import { NodeKind } from '@/components/models/workflow/types';
+import React, {useMemo} from 'react';
+import {getNodeMetadata} from '@/components/models/workflow/node-config-types';
+// Import the data files directly
+import {PALETTE_DATA as PALETTE_DATA_STANDALONE} from '@/data/standalone-palette';
+import {PALETTE_DATA as PALETTE_DATA_EMBEDDED} from '@/data/embedded-palette';
 
-export interface PaletteItem {
-    label: string;
-    kind: NodeKind;
-    icon: React.ReactElement | null;
-}
-
-interface PaletteCategory {
-    label: string;
-    description: string;
-    items: PaletteItem[];
-}
+import {processPaletteData} from '@/components/models/workflow/palette-utils';
+import {NodeKind} from "@/components/models/workflow/types";
 
 export function usePalette(mode: 'standalone' | 'embedded') {
-    const [paletteData, setPaletteData] = useState<PaletteCategory[] | null>(null);
-
-    useEffect(() => {
-        const loadPalette = async () => {
-            const data = mode === 'standalone'
-                ? (await import('@/data/standalone-palette.json')).default
-                : (await import('@/data/embedded-palette.json')).default;
-            setPaletteData(data as PaletteCategory[]);
-        };
-        loadPalette();
-    }, [mode]);
+    const rawPaletteData = mode === 'standalone' ? PALETTE_DATA_STANDALONE : PALETTE_DATA_EMBEDDED;
 
     const paletteWithIcons = useMemo(() => {
-        if (!paletteData) return [];
-        return paletteData.map(category => ({
+        // Process the data to add unique IDs
+        const dataWithIds = processPaletteData(rawPaletteData);
+
+        return dataWithIds.map(category => ({
             ...category,
             items: category.items.map(item => {
-                const iconComponent = NODE_METADATA[item.kind]?.icon;
+                const iconComponent = getNodeMetadata(item.kind as NodeKind)?.icon;
                 return {
                     ...item,
-                    // If iconComponent exists, create the element; otherwise, the whole expression is null
                     icon: iconComponent && React.createElement(iconComponent, { className: "w-4 h-4" })
                 };
             })
         }));
-    }, [paletteData]);
+    }, [rawPaletteData]); // Re-run if the raw data changes (e.g., mode changes)
 
     return paletteWithIcons;
 }

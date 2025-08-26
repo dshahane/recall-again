@@ -1,4 +1,3 @@
-// File: components/workflow/EdgeView.tsx
 'use client'
 
 import React from 'react';

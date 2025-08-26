@@ -6,7 +6,7 @@ import {SchemaMapper} from "@/components/schema-mapper/mapper";
 import {SchemaSpec} from "@/app/types/mapper"
 import {ModelTraining} from "@/components/models/training";
 import ModelSkills from "@/components/models/skills";
-import WorkflowBuilder from "@/components/models/workflow/workflow-builder";
+import WorkflowBuilder from "@/components/models/neo/workflow-builder";
 import {ModelTeacher} from "@/components/models/yoda";
 import ContextManagerApp from "@/components/models/context/context-manager";
 import NeoContextBuilder from "@/components/models/neo/neo-context-builder";

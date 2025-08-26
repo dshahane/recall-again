@@ -23,7 +23,7 @@ interface NeoWorkflowBuilderProps {
     mode: 'standalone' | 'embedded';
 }
 
-export default function NeoWorkflowBuilder({ api, mode }: NeoWorkflowBuilderProps) {
+export default function NeoWorkflowView({ api, mode }: NeoWorkflowBuilderProps) {
     const paletteData = usePalette(mode);
 
     return (

@@ -1,12 +1,11 @@
-// pages/NeoContextBuilder.tsx (or a new component file)
 'use client'
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React, {useState} from 'react';
+import {Button} from '@/components/ui/button';
 import {NodeKind, Workflow as WorkflowType} from '@/components/models/workflow/types';
 import NeoWorkflowEngine from './neo-workflow-engine';
-import NeoWorkflowView from './neo-workflow-view';
 import {useWorkflowPersistence} from "@/hooks/use-workflow-persistance";
+import NeoWorkflowView from "@/components/models/neo/neo-workflow-view";
 
 const initialWorkflowData: WorkflowType = {
     nodes: [{
@@ -19,17 +18,17 @@ const initialWorkflowData: WorkflowType = {
     edges: []
 };
 
-export default function NeoContextBuilder() {
+export default function NeoWorkflowBuilder() {
     // Call the hook to get the persistence logic
     const { handleCommit, handleLoad } = useWorkflowPersistence();
 
     // Use the initial data as the default
-    const [initialWorkflow] = useState(() => handleLoad() || initialWorkflowData);
+    const [initialWorkflow] = useState(() => handleLoad() || initialWorkflowData );
 
     return (
         <div className="flex h-screen flex-col">
             <header className="p-4 bg-gray-200 dark:bg-zinc-800 flex justify-between items-center">
-                <h1 className="text-xl font-bold">Neo Context Engineering</h1>
+                <h1 className="text-xl font-bold">Should go to Settings</h1>
                 <div className="space-x-2">
                     <Button onClick={handleLoad}>Load Context Workflow</Button>
                 </div>
@@ -39,7 +38,7 @@ export default function NeoContextBuilder() {
                     initialWorkflow={initialWorkflow}
                     onCommit={handleCommit}
                 >
-                    {(api) => <NeoWorkflowView api={api} mode={"embedded"} />}
+                    {(api) => <NeoWorkflowView api={api} mode={"standalone"} />}
                 </NeoWorkflowEngine>
             </main>
         </div>

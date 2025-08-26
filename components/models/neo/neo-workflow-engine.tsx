@@ -131,7 +131,7 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
         setWf(w => updateNodeName(w, id, newName));
     }, []);
 
-    const onPortMouseUp = useCallback((toNodeId: string, toPort: PortName, e: React.MouseEvent) => {
+    const onPortMouseUp = useCallback((e: React.MouseEvent, toNodeId: string, toPort: PortName) => {
         e.stopPropagation();
         const fromNode = wf.nodes.find(n => n.id === connectingFrom?.nodeId);
         const toNode = wf.nodes.find(n => n.id === toNodeId);
@@ -237,6 +237,8 @@ export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}:
 
         selectedNode,
         selectedEdge,
+        setSelectedId,
+        setSelectedEdgeId,
 
         handleConfigChange,
         handleNameChange,

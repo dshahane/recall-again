@@ -21,7 +21,8 @@ export default function EdgeView({ from, to, c1, c2, selected, onSelect, onDragC
     // Use the provided control points or fall back to defaults
     const curveC1 = c1 || defaultC1;
     const curveC2 = c2 || defaultC2;
-
+    //console.log('curveC1', curveC1);
+    //console.log('curveC2', curveC2);
     const d = `M${from.x},${from.y} C${curveC1.x},${curveC1.y} ${curveC2.x},${curveC2.y} ${to.x},${to.y}`;
 
     return (

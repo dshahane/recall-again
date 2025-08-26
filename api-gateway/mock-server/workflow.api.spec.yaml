@@ -1,18 +1,58 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Workflow Builder API
-  description: API for managing and executing a visual workflow automation experience.
+  title: Workflow API
+  description: API for managing, initializing, loading, saving, and running user workflows.
   version: 1.0.0
 
 servers:
-  - url: /api
-    description: Main API Server
+  - url: https://api.yourdomain.com
+    description: Production server
 
 paths:
-  /workflows:
+  /initialize:
     post:
-      summary: Save a new workflow.
-      description: Stores a complete workflow graph, including all nodes and their connections.
+      summary: Initialize a new workflow based on a theme.
+      description: Generates a new, basic workflow object based on a provided theme.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitializeRequest'
+      responses:
+        '200':
+          description: A new workflow object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+        '400':
+          description: Invalid theme provided.
+
+  /load:
+    post:
+      summary: Load and validate a workflow from a string.
+      description: Validates and parses a raw JSON string into a structured workflow object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadRequest'
+      responses:
+        '200':
+          description: The validated workflow object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+        '400':
+          description: Invalid workflow data string.
+
+  /save:
+    post:
+      summary: Save a workflow.
+      description: Processes and stores the current workflow state, returning a human-readable summary.
       requestBody:
         required: true
         content:
@@ -20,373 +60,137 @@ paths:
             schema:
               $ref: '#/components/schemas/Workflow'
       responses:
-        '201':
-          description: Workflow successfully saved.
+        '200':
+          description: A summary of the saved workflow.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  workflowId:
+                  message:
                     type: string
-                    description: The unique ID of the saved workflow.
+                    example: "Workflow 'Initial Query' saved successfully."
+        '500':
+          description: Internal server error.
+
+  /run:
+    post:
+      summary: Simulate running a workflow.
+      description: Executes a simulation of the workflow and returns a step-by-step log of the process.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Workflow'
+      responses:
+        '200':
+          description: The execution log of the workflow.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  log:
+                    type: string
+                    example: "Starting workflow. Step 1: Execute Initial Query..."
         '400':
           description: Invalid workflow data.
-        '500':
-          description: Server error.
-
-  /workflows/{workflowId}:
-    get:
-      summary: Retrieve a specific workflow.
-      description: Fetches a workflow definition by its unique ID.
-      parameters:
-        - name: workflowId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The unique ID of the workflow to retrieve.
-      responses:
-        '200':
-          description: The workflow definition.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Workflow'
-        '404':
-          description: Workflow not found.
-        '500':
-          description: Server error.
-
-  /palette:
-    get:
-      summary: Get the list of available nodes for the palette.
-      description: Returns the dynamic list of node types, their labels, and icons for the builder's palette.
-      responses:
-        '200':
-          description: An array of available node kinds.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PaletteItem'
-
-  /proxy:
-    post:
-      summary: Proxy an HTTP request.
-      description: A server-side proxy to handle HTTP calls from the 'API' node, avoiding CORS issues.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiCallRequest'
-      responses:
-        '200':
-          description: The response from the proxied API call.
-          content:
-            '*/*':
-              schema:
-                type: object
-                properties:
-                  headers:
-                    type: object
-                  body:
-                    oneOf:
-                      - type: string
-                      - type: object
-        '400':
-          description: Invalid request.
-        '502':
-          description: Bad gateway, could not reach the target URL.
-
-  /llm:
-    post:
-      summary: Invoke a large language model.
-      description: A server-side endpoint to securely call a large language model API based on node configuration.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LlmCallRequest'
-      responses:
-        '200':
-          description: The response from the LLM.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  output:
-                    type: string
-                    description: The generated text from the model.
-        '400':
-          description: Invalid request or bad prompt.
-        '500':
-          description: Server error.
 
 components:
   schemas:
+    InitializeRequest:
+      type: object
+      required:
+        - theme
+      properties:
+        theme:
+          type: string
+          description: A brief theme to guide the workflow generation.
+          example: "data pipeline"
+
+    LoadRequest:
+      type: object
+      required:
+        - workflowString
+      properties:
+        workflowString:
+          type: string
+          description: The raw JSON string of the workflow to be loaded.
+          example: '{"nodes":[{"id":"1","kind":"query","name":"Initial Query","pos":{"x":100,"y":100}}],"edges":[]}'
+
     Workflow:
       type: object
-      description: The complete state of a workflow graph.
       properties:
         nodes:
           type: array
           items:
-            $ref: '#/components/schemas/AnyNode'
+            $ref: '#/components/schemas/Node'
+          description: An array of all nodes in the workflow.
         edges:
           type: array
           items:
             $ref: '#/components/schemas/Edge'
-        startId:
-          type: string
-          description: The ID of the starting node.
-        meta:
-          type: object
-          properties:
-            name:
-              type: string
-            description:
-              type: string
+          description: An array of all edges connecting the nodes.
 
-    PaletteItem:
+    Node:
       type: object
-      properties:
-        kind:
-          type: string
-          enum: [api, llm, condition, loop, trycatch, delay, variables]
-        label:
-          type: string
-        tip:
-          type: string
-
-    AnyNode:
-      oneOf:
-        - $ref: '#/components/schemas/APINode'
-        - $ref: '#/components/schemas/LLMNode'
-        - $ref: '#/components/schemas/ConditionNode'
-        - $ref: '#/components/schemas/LoopNode'
-        - $ref: '#/components/schemas/TryCatchNode'
-        - $ref: '#/components/schemas/DelayNode'
-        - $ref: '#/components/schemas/VariablesNode'
-
-    BaseNode:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the node.
-        kind:
-          type: string
-          description: The type of the node.
-        name:
-          type: string
-        pos:
-          type: object
-          properties:
-            x:
-              type: number
-            y:
-              type: number
       required:
         - id
         - kind
         - name
         - pos
-
-    APINode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [api]
-            config:
-              type: object
-              properties:
-                method:
-                  type: string
-                  enum: [GET, POST, PUT, PATCH, DELETE]
-                url:
-                  type: string
-                headers:
-                  type: object
-                  additionalProperties:
-                    type: string
-                body:
-                  type: string
-                saveAs:
-                  type: string
-                asJSON:
-                  type: boolean
-
-    LLMNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [llm]
-            config:
-              type: object
-              properties:
-                provider:
-                  type: string
-                model:
-                  type: string
-                prompt:
-                  type: string
-                system:
-                  type: string
-                temperature:
-                  type: number
-                  format: float
-                saveAs:
-                  type: string
-
-    ConditionNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [condition]
-            config:
-              type: object
-              properties:
-                expression:
-                  type: string
-
-    LoopNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [loop]
-            config:
-              type: object
-              properties:
-                mode:
-                  type: string
-                  enum: [times, forEach, while]
-                times:
-                  type: integer
-                listExpr:
-                  type: string
-                whileExpr:
-                  type: string
-                iterName:
-                  type: string
-                maxIterations:
-                  type: integer
-
-    TryCatchNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [trycatch]
-            config:
-              type: object
-              properties:
-                note:
-                  type: string
-
-    DelayNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [delay]
-            config:
-              type: object
-              properties:
-                ms:
-                  type: integer
-
-    VariablesNode:
-      allOf:
-        - $ref: '#/components/schemas/BaseNode'
-        - type: object
-          properties:
-            kind:
-              type: string
-              enum: [variables]
-            config:
-              type: object
-              properties:
-                json:
-                  type: string
-
-    Edge:
-      type: object
       properties:
         id:
           type: string
-        from:
+          description: A unique identifier for the node.
+          example: "node-123"
+        kind:
+          type: string
+          description: The type of the node (e.g., 'query', 'filter').
+          example: "query"
+        name:
+          type: string
+          description: The display name of the node.
+          example: "User Data Filter"
+        pos:
+          $ref: '#/components/schemas/Position'
+          description: The position of the node on the canvas.
+        config:
           type: object
-          properties:
-            nodeId:
-              type: string
-            port:
-              type: string
-        to:
-          type: object
-          properties:
-            nodeId:
-              type: string
+          description: Configuration data specific to the node type.
+
+    Edge:
+      type: object
       required:
         - id
-        - from
-        - to
-
-    ApiCallRequest:
-      type: object
+        - source
+        - target
       properties:
-        method:
+        id:
           type: string
-          enum: [GET, POST, PUT, PATCH, DELETE]
-        url:
+          description: A unique identifier for the edge.
+          example: "edge-123"
+        source:
           type: string
-        headers:
-          type: object
-          additionalProperties:
-            type: string
-        body:
-          oneOf:
-            - type: string
-            - type: object
+          description: The ID of the source node.
+          example: "node-123"
+        target:
+          type: string
+          description: The ID of the target node.
+          example: "node-456"
+
+    Position:
+      type: object
       required:
-        - method
-        - url
-
-    LlmCallRequest:
-      type: object
+        - x
+        - y
       properties:
-        provider:
-          type: string
-        model:
-          type: string
-        prompt:
-          type: string
-        system:
-          type: string
-        temperature:
+        x:
           type: number
-          format: float
-      required:
-        - provider
-        - model
-        - prompt
+          description: The x-coordinate of the position.
+          example: 250
+        y:
+          type: number
+          description: The y-coordinate of the position.
+          example: 300

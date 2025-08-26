@@ -12,8 +12,8 @@ import ContextManagerApp from "@/components/models/context/context-manager";
 import NeoContextBuilder from "@/components/models/neo/neo-context-builder";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
-    const {slug} = params
-    const {setPageInfo} = usePageInfo()
+    const {slug} = params;
+    const {setPageInfo} = usePageInfo();
 
     useEffect(() => {
         const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;

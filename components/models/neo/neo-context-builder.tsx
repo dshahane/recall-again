@@ -7,6 +7,7 @@ import {NodeKind, Workflow as WorkflowType} from '@/components/models/workflow/t
 import NeoWorkflowEngine from './neo-workflow-engine';
 import NeoWorkflowView from './neo-workflow-view';
 import {useWorkflowPersistence} from "@/hooks/use-workflow-persistance";
+import {WorkflowProvider} from "@/components/models/context/workflow-context";
 
 const initialWorkflowData: WorkflowType = {
     nodes: [{
@@ -39,7 +40,12 @@ export default function NeoContextBuilder() {
                     initialWorkflow={initialWorkflow}
                     onCommit={handleCommit}
                 >
-                    {(api) => <NeoWorkflowView api={api} mode={"embedded"} />}
+                    {/*(api) => <NeoWorkflowView api={api} mode={"embedded"} />*/}
+                    {(api) => (
+                        <WorkflowProvider api={api}>
+                            <NeoWorkflowView mode={"embedded"}/>
+                        </WorkflowProvider>
+                    )}
                 </NeoWorkflowEngine>
             </main>
         </div>

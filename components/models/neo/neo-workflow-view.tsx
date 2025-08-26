@@ -1,4 +1,4 @@
-// components/workflow/NeoWorkflowBuilder.tsx
+// File: components/workflow/NeoWorkflowView.tsx
 'use client'
 
 import React from 'react';
@@ -17,14 +17,21 @@ import EdgeConfig from '@/components/models/workflow/edge-config';
 import WorkflowCanvas from '@/components/models/workflow/workflow-canvas';
 
 import {usePalette} from "@/hooks/use-palette";
+import { useWorkflow } from '@/components/models/context/workflow-context';
+import { nodeSchemas } from '@/data/node-schemas'; // Import nodeSchemas
 
-interface NeoWorkflowBuilderProps {
-    api: any;
+interface NeoWorkflowViewProps {
     mode: 'standalone' | 'embedded';
 }
 
-export default function NeoWorkflowView({ api, mode }: NeoWorkflowBuilderProps) {
+export default function NeoWorkflowView({ mode }: NeoWorkflowViewProps) {
+    // Get the API object from the context
+    const api = useWorkflow();
     const paletteData = usePalette(mode);
+
+    // Find the currently selected node or edge object from the workflow data
+    const selectedNode = api.wf.nodes.find((node: any) => node.id === api.selectedId);
+    const selectedEdge = api.wf.edges.find((edge: any) => edge.id === api.selectedEdgeId);
 
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
@@ -74,10 +81,11 @@ export default function NeoWorkflowView({ api, mode }: NeoWorkflowBuilderProps) 
                     </TabsList>
                     <div className="flex-1 mt-4">
                         <TabsContent value="configure" className="space-y-4">
-                            {api.selectedNode ? (
-                                <NodeConfig node={api.selectedNode} onChange={api.handleConfigChange} onNameChange={api.handleNameChange} />
-                            ) : api.selectedEdge ? (
-                                <EdgeConfig edge={api.selectedEdge} onDelete={api.onDeleteEdge} />
+                            {/* Correctly handle conditional rendering here */}
+                            {selectedNode && nodeSchemas[selectedNode.kind] ? (
+                                <NodeConfig node={selectedNode} onChange={api.handleConfigChange} onNameChange={api.handleNameChange} />
+                            ) : selectedEdge ? (
+                                <EdgeConfig edge={selectedEdge} onDelete={api.onDeleteEdge} />
                             ) : (
                                 <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">Select a node or edge to configure</div>
                             )}

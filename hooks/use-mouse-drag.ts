@@ -1,6 +1,6 @@
 // hooks/useMouseDrag.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Vec2 } from '@/components/models/workflow/types';
+import { Vec2 } from '@/app/types/app';
 
 export const useMouseDrag = (onDragEnd: (finalPos: Vec2) => void) => {
     const [isDragging, setIsDragging] = useState(false);

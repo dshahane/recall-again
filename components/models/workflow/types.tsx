@@ -42,7 +42,7 @@ export type AnyNode = {
     config?: any;
 };
 
-export type PortName = "in" | "out" | "true" | "false" | "try" | "catch" | "out1" | "out2" | "out3";
+export type PortName = string;
 
 export interface Edge {
     id: string;

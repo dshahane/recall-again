@@ -1,11 +1,14 @@
+// File: components/workflow/node-config.tsx
 'use client'
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AnyNode, NodeKind} from './types';
-import {getNodeMetadata, isSinkNode, isTriggerNode} from './node-config-types';
+import {getNodeMetadata} from './node-config-types';
 import {Label} from '@/components/ui/label';
 import {Input} from '@/components/ui/input';
-import {Textarea} from '@/components/ui/textarea';
+import AutoForm from '@/components/ui/auto-form';
+import { nodeSchemas } from '@/data/node-schemas';
+import { z } from 'zod';
 
 // Defines the props for the NodeConfig component
 interface NodeConfigProps {
@@ -20,22 +23,20 @@ interface NodeConfigProps {
  * @returns A React component for node configuration.
  */
 export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigProps) {
-    const [config, setConfig] = useState(node.config);
     const [name, setName] = useState(node.name);
 
-    // Update internal state when the selected node changes
-    useEffect(() => {
-        setConfig(node.config);
-        setName(node.name);
-    }, [node]);
-
-    // Handle changes to node configuration
-    const handleConfigChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        const newConfig = { ...config, [name]: value };
-        setConfig(newConfig);
-        onChange(node.id, newConfig);
-    }, [config, onChange, node.id]);
+    // Get the schema for the current node kind.
+    // The conditional check is safe here because all hooks are called before this.
+    // @ts-ignore Ignore error until all node types are covered with a schema.
+    /*
+    const schema = nodeSchemas[node.kind];
+    if (!schema) {
+        return (
+            <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">
+                No configuration for this node type.
+            </div>
+        );
+    }*/
 
     // Handle changes to the node's display name
     const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,84 +54,25 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                 {NodeIcon && <NodeIcon className="h-5 w-5 text-gray-500 dark:text-zinc-400" />}
                 {node.name}
             </h3>
-            <div className="space-y-2">
-                <Label htmlFor="node-name">Name</Label>
-                <Input
-                    id="node-name"
-                    name="name"
-                    value={name}
-                    onChange={handleNameChange}
+            <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Configuration</h3>
+                {/*
+                <AutoForm
+                    schema={schema}
+                    values={node.config}
+                    onValuesChange={(updatedValues) => {
+                        onChange(node.id, updatedValues);
+                    }}
                 />
+                */}
             </div>
-            {isTriggerNode(node.kind) && (
-                <div className="space-y-2">
-                    <Label htmlFor="query-text">Query Text</Label>
-                    <Input
-                        id="query-text"
-                        name="text"
-                        value={config?.text || ""}
-                        onChange={handleConfigChange}
-                    />
+            <div className="space-y-4 mt-4">
+                <h3 className="text-lg font-semibold">Node Details</h3>
+                <div className="grid gap-2">
+                    <Label htmlFor="node-name">Name</Label>
+                    <Input id="node-name" value={name} onChange={handleNameChange} />
                 </div>
-            )}
-            {node.kind === NodeKind.Catalog && (
-                <div className="space-y-2">
-                    <Label htmlFor="document-content">Document Content</Label>
-                    <Textarea
-                        id="document-content"
-                        name="content"
-                        value={config?.content || ""}
-                        onChange={handleConfigChange}
-                        rows={6}
-                    />
-                </div>
-            )}
-            {(node.kind === NodeKind.Llm) && (
-                <div className="space-y-2">
-                    <Label htmlFor="generation-prompt">Prompt</Label>
-                    <Textarea
-                        id="generation-prompt"
-                        name="prompt"
-                        value={config?.prompt || ""}
-                        onChange={handleConfigChange}
-                        rows={6}
-                    />
-                </div>
-            )}
-            {node.kind === NodeKind.Api && (
-                <div className="space-y-2">
-                    <Label htmlFor="action-code">Code</Label>
-                    <Textarea
-                        id="action-code"
-                        name="code"
-                        value={config?.code || ""}
-                        onChange={handleConfigChange}
-                        rows={10}
-                    />
-                </div>
-            )}
-            {node.kind === NodeKind.Table && (
-                <div className="space-y-2">
-                    <Label htmlFor="table-name">Table Name</Label>
-                    <Input
-                        id="table-name"
-                        name="name"
-                        value={config?.name || ""}
-                        onChange={handleConfigChange}
-                    />
-                </div>
-            )}
-            {isSinkNode(node.kind) && (
-                <div className="space-y-2">
-                    <Label htmlFor="output-context-key">Output Key</Label>
-                    <Input
-                        id="output-context-key"
-                        name="key"
-                        value={config?.key || ""}
-                        onChange={handleConfigChange}
-                    />
-                </div>
-            )}
+            </div>
         </div>
     );
 }

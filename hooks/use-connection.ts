@@ -1,11 +1,11 @@
-import { useState, useRef, useCallback, MouseEvent } from "react";
-import { Vec2, PortName } from "@/components/models/workflow/types";
+import {MouseEvent, useCallback, useRef, useState} from "react";
+import {Vec2} from "@/app/types/app";
 
 export const useConnection = (canvasRef: React.RefObject<HTMLDivElement | null>) => {
-    const connectingFrom = useRef<{ nodeId: string; port: PortName } | null>(null);
+    const connectingFrom = useRef<{ nodeId: string; port: string } | null>(null);
     const [connectingTo, setConnectingTo] = useState<Vec2 | null>(null);
 
-    const onPortMouseDown = useCallback((nodeId: string, port: PortName, e: MouseEvent) => {
+    const onPortMouseDown = useCallback((e: MouseEvent, nodeId: string, port: string ) => {
         e.stopPropagation();
         connectingFrom.current = { nodeId, port };
         const rect = canvasRef.current?.getBoundingClientRect();

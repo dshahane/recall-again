@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Workflow as WorkflowType } from '@/components/models/workflow/types';
+import {toast} from "sonner";
 
 interface WorkflowPersistence {
     savedWorkflow: WorkflowType | null;
@@ -19,10 +20,10 @@ export const useWorkflowPersistence = (): WorkflowPersistence => {
     const handleLoad = () => {
         // If no workflow is saved, return null
         if (savedWorkflow) {
-            alert("Workflow loaded from state.");
+            toast("Workflow loaded from state.");
             return savedWorkflow;
         } else {
-            alert("No saved workflow found.");
+            toast("No saved workflow found.");
             return null;
         }
     };

@@ -3,6 +3,7 @@ import { Vec2 } from '@/app/types/app';
 import { AnyNode, NodeKind } from './types';
 import {getPortPositions} from "@/components/models/workflow/port-config-types";
 import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
+import {log} from "node:util";
 
 export const completeNode = (incompleteNode: any): AnyNode => {
     return {
@@ -28,7 +29,6 @@ export const createStarterWorkflow = () => {
 export const nodePortPos = (n: AnyNode, port: string): Vec2 => {
     // 1. Get the node's metadata
     const metadata = getNodeMetadata(n.kind);
-
     // Safety check to ensure metadata exists
     if (!metadata) {
         return { x: n.pos.x, y: n.pos.y };
@@ -43,7 +43,6 @@ export const nodePortPos = (n: AnyNode, port: string): Vec2 => {
     if (!pp) {
         return { x: n.pos.x, y: n.pos.y };
     }
-
     // 4. Return the calculated position
     return { x: n.pos.x + pp.x, y: n.pos.y + pp.y };
 };

@@ -2,7 +2,8 @@
 'use client'
 
 import React from 'react';
-import { Vec2, defaultBezierPoints } from './types';
+import { Vec2, } from '@/app/types/app';
+import { defaultBezierPoints } from './workflow-utils';
 import { cn } from '@/lib/utils';
 
 interface EdgeViewProps {

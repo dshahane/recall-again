@@ -90,7 +90,7 @@ const NamespaceGroupNode: React.FC<{ data: any }> = ({ data }) => {
                 <div className="font-semibold text-sm">
                     {label} {data.version ? `(v${data.version})` : ""}
                 </div>
-                <Button size="xs" variant="outline">
+                <Button size="sm" variant="outline">
                     {collapsed ? "+" : "-"}
                 </Button>
             </div>
@@ -188,10 +188,10 @@ const FunctionNode: React.FC<{ id: string; data: any }> = ({ id, data }) => {
             <Handle type="source" position={Position.Right} id="out" />
             {meta.inputs === "many" && (
                 <div className="mt-2 flex items-center justify-center gap-2">
-                    <Button size="xs" variant="secondary" onClick={addInput}>
+                    <Button size="sm" variant="secondary" onClick={addInput}>
                         + Add
                     </Button>
-                    <Button size="xs" variant="ghost" onClick={removeInput}>
+                    <Button size="sm" variant="ghost" onClick={removeInput}>
                         – Remove
                     </Button>
                 </div>

@@ -1,11 +1,11 @@
-// File: components/workflow/NodeConfig.tsx
 'use client'
 
-import React, {useCallback, useEffect, useState} from 'react';
-import {AnyNode, _nodeIcons} from './types';
-import {Label} from '@/components/ui/label';
-import {Input} from '@/components/ui/input';
-import {Textarea} from '@/components/ui/textarea';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AnyNode, NodeKind } from './types';
+import { getNodeMetadata } from './node-config-types';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 // Defines the props for the NodeConfig component
 interface NodeConfigProps {
@@ -44,7 +44,8 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
         onNameChange(node.id, newName);
     }, [onNameChange, node.id]);
 
-    const NodeIcon = nodeIcons[node.kind];
+    const nodeMetadata = getNodeMetadata(node.kind as NodeKind);
+    const NodeIcon = nodeMetadata.icon;
 
     return (
         <div className="flex flex-col gap-4 p-4 rounded-xl shadow-inner bg-gray-200/50 dark:bg-zinc-800/50">
@@ -84,7 +85,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {(node.kind === "text-generation" || node.kind === "image-generation") && (
+            {(node.kind === "llm") && (
                 <div className="space-y-2">
                     <Label htmlFor="generation-prompt">Prompt</Label>
                     <Textarea
@@ -96,7 +97,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "action" && (
+            {node.kind === "api" && (
                 <div className="space-y-2">
                     <Label htmlFor="action-code">Code</Label>
                     <Textarea
@@ -119,7 +120,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
                     />
                 </div>
             )}
-            {node.kind === "output-context" && (
+            {node.kind === "context-out" && (
                 <div className="space-y-2">
                     <Label htmlFor="output-context-key">Output Key</Label>
                     <Input

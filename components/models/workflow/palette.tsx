@@ -4,13 +4,8 @@
 import React from 'react';
 import {WorkflowIcon} from 'lucide-react';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from '@/components/ui/accordion';
-import {AnyNode} from "@/components/models/workflow/types";
+import {PaletteItem} from "@/hooks/use-palette";
 
-// Defines the properties for a draggable node type in the palette
-interface NodePaletteItem {
-    kind: string;
-    label: string;
-}
 
 interface PaletteProps {
     setDraggedNode: (node: any) => void;
@@ -35,7 +30,7 @@ export default function Palette({ setDraggedNode,paletteData }: PaletteProps) {
                         <AccordionContent>
                             <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">{group.description}</p>
                             <div className="grid grid-cols-2 gap-2">
-                                {group.items.map((node) => (
+                                {group.items.map((node: PaletteItem) => (
                                     <div
                                         key={node.kind}
                                         draggable

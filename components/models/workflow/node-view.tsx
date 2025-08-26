@@ -2,16 +2,10 @@
 'use client'
 
 import React from 'react';
-import {
-    PortName,
-    AnyNode,
-    NodeKind,
-    nodeColor,
-    nodeIcon,
-    portPositions
-} from './types';
+import { PortName, AnyNode, NodeKind, } from './types';
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
 
 interface NodeViewProps {
     node: AnyNode;
@@ -34,8 +28,9 @@ export default function NodeView({
                                      onPortMouseDown,
                                      onPortMouseUp
                                  }: NodeViewProps) {
-    const NodeIcon = nodeIcon(node.kind);
-    const ports = portPositions(nodeRect.w, nodeRect.h, node.kind);
+    const nodeMeta = getNodeMetadata(node.kind);
+    const NodeIcon = nodeMeta?.icon;
+    const ports = nodeMeta?.portPositions?.(nodeRect.w, nodeRect.h) || {};
     const hasInput = !!ports['in'];
     const hasOutputs = Object.keys(ports).length > 1;
 
@@ -46,7 +41,7 @@ export default function NodeView({
             className={cn(
                 "absolute rounded-xl shadow-md border-2 transition-shadow duration-150 ease-in-out cursor-grab active:cursor-grabbing",
                 "bg-white/80 backdrop-blur-sm dark:bg-zinc-800/80",
-                nodeColor(node.kind),
+                nodeMeta?.color,
                 selected ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-zinc-700",
                 "w-56 h-24 flex flex-col justify-between"
             )}
@@ -72,7 +67,7 @@ export default function NodeView({
             {/* Node Header with name and delete button */}
             <div className="flex justify-between items-center p-2 border-b border-gray-200 dark:border-zinc-700 bg-gray-100/50 dark:bg-zinc-900/50 rounded-t-lg">
                 <span className="font-semibold text-sm flex items-center gap-2 truncate">
-                    {NodeIcon && React.cloneElement(NodeIcon as React.ReactElement, { className: "h-4 w-4 text-gray-500 dark:text-zinc-400" })}
+                    {NodeIcon && React.createElement(NodeIcon, { className: "h-4 w-4 text-gray-500 dark:text-zinc-400" })}
                     {node.name}
                 </span>
                 <button

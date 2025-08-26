@@ -10,11 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast, Toaster } from 'sonner';
 
-import { isTriggerNode } from '@/components/models/workflow/types';
-import NodeConfig from '@/components/models/workflow//node-config';
-import Palette from '@/components/models/workflow//palette';
-import EdgeConfig from '@/components/models/workflow//edge-config';
-import WorkflowCanvas from '@/components/models/workflow//workflow-canvas';
+import { isTriggerNode } from '@/components/models/workflow/workflow-utils';
+import NodeConfig from '@/components/models/workflow/node-config';
+import Palette from '@/components/models/workflow/palette';
+import EdgeConfig from '@/components/models/workflow/edge-config';
+import WorkflowCanvas from '@/components/models/workflow/workflow-canvas';
+
 import {usePalette} from "@/hooks/use-palette";
 
 interface NeoWorkflowBuilderProps {
@@ -84,7 +85,7 @@ export default function NeoWorkflowBuilder({ api, mode }: NeoWorkflowBuilderProp
                         <TabsContent value="logs" className="space-y-2">
                             <div className="flex flex-col-reverse space-y-2 text-xs text-gray-700 dark:text-gray-300">
                                 {api.logs.length > 0 ? (
-                                    api.logs.map((log, index) => (
+                                    api.logs.map((log: string, index: number) => (
                                         <div key={index} className="bg-gray-200 dark:bg-zinc-800 p-2 rounded-md font-mono">
                                             {log}
                                         </div>

@@ -5,23 +5,11 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useMouseDrag } from '@/hooks/use-mouse-drag';
 import { useConnection } from '@/hooks/use-connection';
-import {
-    AnyNode,
-    Edge,
-    Vec2,
-    Workflow as WorkflowType,
-    createStarterWorkflow,
-    snap,
-    isTriggerNode,
-    isSinkNode,
-    PortName
-} from '@/components/models/workflow/types';
-import {
-    deleteNode,
-    deleteEdge,
-    updateNodeConfig,
-    updateNodeName,
-} from '@/components/models/workflow//workflow-manager';
+import { Vec2 } from '@/app/types/app';
+
+import { PortName, snap, Workflow as WorkflowType } from '@/components/models/workflow/types';
+import { createStarterWorkflow, isSinkNode, isTriggerNode } from '@/components/models/workflow/workflow-utils';
+import { deleteEdge, deleteNode, updateNodeConfig, updateNodeName } from '@/components/models/workflow//workflow-manager';
 
 interface NeoWorkflowEngineProps {
     initialWorkflow?: WorkflowType;
@@ -29,7 +17,7 @@ interface NeoWorkflowEngineProps {
     children: (props: any) => React.ReactNode;
 }
 
-export default function NeoWorkflowEngine({ initialWorkflow, onCommit, children }: NeoWorkflowEngineProps) {
+export default function NeoWorkflowEngine({initialWorkflow, onCommit, children}: NeoWorkflowEngineProps) {
     const [wf, setWf] = useState<WorkflowType>(() => initialWorkflow || createStarterWorkflow());
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
     const [selectedEdgeId, setSelectedEdgeId] = useState<string | undefined>(undefined);
@@ -43,27 +31,37 @@ export default function NeoWorkflowEngine({ initialWorkflow, onCommit, children 
 
     const canvasRef = useRef<HTMLDivElement | null>(null);
 
-    const { onPortMouseDown, connectingFrom, connectingTo, onCanvasMouseMove, onCanvasMouseUp, resetConnection: resetHookConnection } = useConnection(canvasRef);
+    const {
+        onPortMouseDown,
+        connectingFrom,
+        connectingTo,
+        onCanvasMouseMove,
+        onCanvasMouseUp,
+        resetConnection: resetHookConnection
+    } = useConnection(canvasRef);
 
-    const { handleMouseDown: onNodeDragStart, currentDraggedPos: draggedNodePos } = useMouseDrag(
+    const {handleMouseDown: onNodeDragStart, currentDraggedPos: draggedNodePos} = useMouseDrag(
         (finalPos) => {
             if (selectedId) {
                 setWf(prevWf => ({
                     ...prevWf,
-                    nodes: prevWf.nodes.map(n => (n.id === selectedId ? { ...n, pos: snap(finalPos.x, finalPos.y) as Vec2 } : n))
+                    nodes: prevWf.nodes.map(n => (n.id === selectedId ? {
+                        ...n,
+                        pos: snap(finalPos.x, finalPos.y) as Vec2
+                    } : n))
                 }));
             }
         }
     );
 
-    const { handleMouseDown: onEdgeControlPointDragStart } = useMouseDrag(
+    const {handleMouseDown: onEdgeControlPointDragStart} = useMouseDrag(
         (finalPos) => {
             if (selectedEdgeId) {
                 setWf(prevWf => ({
                     ...prevWf,
                     edges: prevWf.edges.map(edge => {
                         if (edge.id === selectedEdgeId) {
-                            return { ...edge, c1: finalPos };
+                            return {...edge, c1: finalPos};
                         }
                         return edge;
                     })
@@ -101,7 +99,7 @@ export default function NeoWorkflowEngine({ initialWorkflow, onCommit, children 
         e.stopPropagation();
         const edge = wf.edges.find(e => e.id === edgeId);
         if (!edge) return;
-        const initialPoint = edge[controlPoint] || { x: 0, y: 0 };
+        const initialPoint = edge[controlPoint] || {x: 0, y: 0};
         onEdgeControlPointDragStart(e, initialPoint);
     }, [wf.edges, onEdgeControlPointDragStart]);
 
@@ -140,8 +138,8 @@ export default function NeoWorkflowEngine({ initialWorkflow, onCommit, children 
                     ...prevWf,
                     edges: [...prevWf.edges, {
                         id: newEdgeId,
-                        from: { nodeId: connectingFrom.nodeId, port: connectingFrom.port },
-                        to: { nodeId: toNodeId, port: toPort },
+                        from: {nodeId: connectingFrom.nodeId, port: connectingFrom.port},
+                        to: {nodeId: toNodeId, port: toPort},
                     }]
                 }));
                 setSelectedEdgeId(newEdgeId);

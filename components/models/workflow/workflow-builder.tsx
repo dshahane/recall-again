@@ -11,31 +11,17 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 
-import {
-    AnyNode,
-    Edge,
-    NodeKind,
-    Vec2,
-    Workflow as WorkflowType,
-    createStarterWorkflow,
-    snap,
-    isTriggerNode,
-    nodePortPos,
-    isSinkNode,
-} from './types';
+import { Vec2 } from '@/app/types/app';
+import { PortName, snap, Workflow as WorkflowType } from './types';
+import { createStarterWorkflow, isSinkNode, isTriggerNode } from '@/components/models/workflow/workflow-utils';
+import { deleteEdge, deleteNode, updateNodeConfig, updateNodeName } from '@/components/models/workflow//workflow-manager';
+
 import NodeConfig from './node-config';
 import Palette from './palette';
 import EdgeConfig from './edge-config';
 import WorkflowCanvas from './workflow-canvas';
 import { useMouseDrag } from '@/hooks/use-mouse-drag';
 import { useConnection } from '@/hooks/use-connection';
-import {
-    deleteNode,
-    deleteEdge,
-    updateNodeConfig,
-    updateNodeName,
-} from './workflow-manager';
-import { PortName } from "./types";
 import {usePalette} from "@/hooks/use-palette";
 
 export default function WorkflowBuilder() {

@@ -1,11 +1,11 @@
-// File: src/hooks/usePalette.ts
 import React, { useEffect, useState, useMemo } from 'react';
-import { PlaySquare, FileText, Bot, Rocket, Wand, MessageSquare, Table, LayoutDashboard, Database, Repeat, Split, Code, Timer, GitBranch, Lightbulb, AlarmClock, Columns4 } from 'lucide-react';
+import { NODE_METADATA } from '@/components/models/workflow/node-config-types';
 import { NodeKind } from '@/components/models/workflow/types';
 
-interface PaletteItem {
+export interface PaletteItem {
     label: string;
     kind: NodeKind;
+    icon: React.ReactElement | null;
 }
 
 interface PaletteCategory {
@@ -13,39 +13,6 @@ interface PaletteCategory {
     description: string;
     items: PaletteItem[];
 }
-
-// Map NodeKind to the correct icon component
-const icons = {
-    'query': PlaySquare,
-    'document': FileText,
-    'session': MessageSquare,
-    'timer': AlarmClock,
-    'llm': Bot,
-    'classifier': Bot,
-    'regressor': Bot,
-    'ranker': Bot,
-    'intent-detection': Lightbulb,
-    'transformation': Wand,
-    'context': Database,
-    'table': Table,
-    'api': Rocket,
-    'table-out': Table,
-    'visualization': LayoutDashboard,
-    'context-out': Database,
-    'loop': Repeat,
-    'condition': Split,
-    'trycatch': GitBranch,
-    'delay': Timer,
-    'variables': Code,
-    'text-generation': Bot, // Example
-    'bmecat': Columns4,
-    'cif': Columns4,
-    'cxml': Columns4,
-    'reviews': Columns4,
-    'sql': Columns4,
-    'sparql': Columns4,
-    'sheet': Columns4
-};
 
 export function usePalette(mode: 'standalone' | 'embedded') {
     const [paletteData, setPaletteData] = useState<PaletteCategory[] | null>(null);
@@ -55,8 +22,7 @@ export function usePalette(mode: 'standalone' | 'embedded') {
             const data = mode === 'standalone'
                 ? (await import('@/data/standalone-palette.json')).default
                 : (await import('@/data/embedded-palette.json')).default;
-            // @ts-ignore
-            setPaletteData(data);
+            setPaletteData(data as PaletteCategory[]);
         };
         loadPalette();
     }, [mode]);
@@ -65,10 +31,14 @@ export function usePalette(mode: 'standalone' | 'embedded') {
         if (!paletteData) return [];
         return paletteData.map(category => ({
             ...category,
-            items: category.items.map(item => ({
-                ...item,
-                icon: icons[item.kind] ? React.createElement(icons[item.kind], { className: "w-4 h-4" }) : null
-            }))
+            items: category.items.map(item => {
+                const iconComponent = NODE_METADATA[item.kind]?.icon;
+                return {
+                    ...item,
+                    // If iconComponent exists, create the element; otherwise, the whole expression is null
+                    icon: iconComponent && React.createElement(iconComponent, { className: "w-4 h-4" })
+                };
+            })
         }));
     }, [paletteData]);
 

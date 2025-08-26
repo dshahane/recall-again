@@ -113,3 +113,8 @@ export interface User {
     id: string;
     email: string;
 }
+
+export interface Vec2 {
+    x: number;
+    y: number;
+}

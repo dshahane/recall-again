@@ -1,6 +1,6 @@
 [
   {
-    "label": "SA Triggers",
+    "label": "Triggers",
     "description": "Start a workflow with these nodes.",
     "items": [
       { "label": "Query", "kind": "query" },
@@ -10,11 +10,57 @@
     ]
   },
   {
-    "label": "SA Models",
+    "label": "Models",
     "description": "Connect to ML/LLM models.",
     "items": [
       { "label": "LLM", "kind": "llm" },
-      { "label": "Classifier", "kind": "classifier" }
+      { "label": "Classifier", "kind": "classifier" },
+      { "label": "Regressor", "kind": "regressor" },
+      { "label": "Ranker", "kind": "ranker" },
+      { "label": "Intent Detection", "kind": "intent-detection" }
+    ]
+  },
+  {
+    "label": "Additional Inputs",
+    "description": "Gather Additional Context",
+    "items": [
+      { "label": "API", "kind": "api" },
+      { "label": "Transformation", "kind": "transformation" },
+      { "label": "Context", "kind": "context" },
+      { "label": "Table", "kind": "table" }
+    ]
+  },
+  {
+    "label": "Specialized Inputs",
+    "description": "Process specialized inputs",
+    "items": [
+      { "label": "BME Cat", "kind": "bmecat" },
+      { "label": "CIF", "kind": "cif" },
+      { "label": "cXML", "kind": "cxml" },
+      { "label": "Reviews", "kind": "reviews" },
+      { "label": "SQL", "kind": "sql" },
+      { "label": "SparQL", "kind": "sparql" },
+      { "label": "Sheet", "kind": "sheet" }
+    ]
+  },
+  {
+    "label": "Sinks",
+    "description": "Persist the output",
+    "items": [
+      { "label": "Context Out", "kind": "context-out" },
+      { "label": "Visualization", "kind": "visualization" },
+      { "label": "Variables", "kind": "variables" },
+      { "label": "Table Out", "kind": "table-out" }
+    ]
+  },
+  {
+    "label": "Flow Control",
+    "description": "Control execution flow",
+    "items": [
+      { "label": "Loop", "kind": "loop" },
+      { "label": "Condition", "kind": "condition" },
+      { "label": "Try/Catch", "kind": "trycatch" },
+      { "label": "Delay", "kind": "delay" }
     ]
   }
 ]

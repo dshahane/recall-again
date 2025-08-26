@@ -3,7 +3,9 @@
 'use client'
 
 import React from 'react';
-import { AnyNode, Edge, Vec2, PortName, NodeKind, snap, completeNode, nodePortPos, defaultBezierPoints } from './types';
+import { Vec2 } from '@/app/types/app';
+import {AnyNode, Edge, PortName, NodeKind, snap, Workflow} from './types';
+import { completeNode, nodePortPos, defaultBezierPoints } from './workflow-utils';
 import { v4 as uuidv4 } from "uuid";
 import NodeView from './node-view';
 import EdgeView from './edge-view';
@@ -73,7 +75,7 @@ const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                         pos: snappedPos,
                     });
 
-                    setWf(w => ({
+                    setWf( (w: Workflow) => ({
                         ...w,
                         nodes: [...w.nodes, newNode],
                         startId: isTriggerNode(newNode.kind) ? newNode.id : w.startId

@@ -27,8 +27,8 @@ import NodeConfig from './node-config';
 import Palette from './palette';
 import EdgeConfig from './edge-config';
 import WorkflowCanvas from './workflow-canvas';
-import { useMouseDrag } from '@/hooks/useMouseDrag';
-import { useConnection } from '@/hooks/useConnection';
+import { useMouseDrag } from '@/hooks/use-mouse-drag';
+import { useConnection } from '@/hooks/use-connection';
 import {
     deleteNode,
     deleteEdge,
@@ -36,6 +36,7 @@ import {
     updateNodeName,
 } from './workflow-manager';
 import { PortName } from "./types";
+import {usePalette} from "@/hooks/use-palette";
 
 export default function WorkflowBuilder() {
     const [wf, setWf] = useState<WorkflowType>(() => createStarterWorkflow());
@@ -48,7 +49,7 @@ export default function WorkflowBuilder() {
     const [modalMessage, setModalMessage] = useState("");
     const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
     const [loadString, setLoadString] = useState("");
-
+    const paletteData = usePalette('standalone');
     const canvasRef = useRef<HTMLDivElement | null>(null);
 
     const { onPortMouseDown, connectingFrom, connectingTo, onCanvasMouseMove, onCanvasMouseUp, resetConnection: resetHookConnection } = useConnection(canvasRef);
@@ -219,7 +220,7 @@ export default function WorkflowBuilder() {
 
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
-            <Palette setDraggedNode={setDraggedNode} />
+            <Palette setDraggedNode={setDraggedNode} paletteData={paletteData} />
             <div className="flex-1 flex flex-col relative">
                 <div className="flex justify-center items-center py-2 px-4 border-b border-gray-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
                     <Button variant="ghost" className="mr-2" onClick={handleSave}>

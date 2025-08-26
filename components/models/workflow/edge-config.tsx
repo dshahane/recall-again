@@ -2,7 +2,7 @@
 'use client'
 
 import React from 'react';
-import { Edge, PortName } from './types';
+import { Edge } from './types';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 

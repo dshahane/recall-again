@@ -1,6 +1,6 @@
 // ./hooks/useDataAssets.js
 import { useState, useEffect } from 'react';
-import { fetchAndEnrichAssets, createAsset, updateAsset, deleteAsset } from '../../components/dataplane/AssetAPIClient';
+import { fetchAndEnrichAssets, createAsset, updateAsset, deleteAsset } from '/@/components/dataplane/AssetAPIClient';
 
 const useDataAssets = () => {
   const [dataAssets, setDataAssets] = useState([]);

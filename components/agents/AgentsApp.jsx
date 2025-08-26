@@ -3,7 +3,7 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import AgentForm from './AgentForm'; // Import the unified form
 import AgentCard from './AgentCard';
-import useResource from '../../hooks/useResource';
+import useResource from '../../hooks/use-resource';
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 export default function AgentsApp() {

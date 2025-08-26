@@ -1,12 +1,11 @@
 // File: components/workflow/NodeConfig.tsx
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { AnyNode } from './types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { WorkflowIcon, Rocket, FileText, MessageSquare, Monitor, Table, ImageIcon, SearchIcon, Cog } from 'lucide-react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {AnyNode, _nodeIcons} from './types';
+import {Label} from '@/components/ui/label';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
 
 // Defines the props for the NodeConfig component
 interface NodeConfigProps {
@@ -14,17 +13,6 @@ interface NodeConfigProps {
     onChange: (id: string, newConfig: any) => void;
     onNameChange: (id: string, newName: string) => void;
 }
-
-const nodeIcons: Record<AnyNode['kind'], React.ElementType> = {
-    "query": SearchIcon,
-    "document": FileText,
-    "session": MessageSquare,
-    "text-generation": Rocket,
-    "image-generation": ImageIcon,
-    "action": Cog,
-    "table": Table,
-    "output-context": Monitor,
-};
 
 /**
  * A component to configure the properties of a selected node.

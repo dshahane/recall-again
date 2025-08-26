@@ -2,15 +2,9 @@
 'use client'
 
 import React from 'react';
-import {PALETTE_DATA} from "@/components/models/workflow/types";
-
-import { WorkflowIcon, ChevronDown, Rocket, FileText, MessageSquare, Monitor, Table, ImageIcon, SearchIcon, Cog } from 'lucide-react';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
+import {WorkflowIcon} from 'lucide-react';
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from '@/components/ui/accordion';
+import {AnyNode} from "@/components/models/workflow/types";
 
 // Defines the properties for a draggable node type in the palette
 interface NodePaletteItem {
@@ -18,24 +12,24 @@ interface NodePaletteItem {
     label: string;
 }
 
-// Defines the props for the Palette component
 interface PaletteProps {
-    setDraggedNode: (node: NodePaletteItem | null) => void;
+    setDraggedNode: (node: any) => void;
+    paletteData: any[]; // Now accepts palette data as a prop
 }
-
 /**
+ *
  * The Palette component provides a draggable list of node types.
  * @param props - The component props.
  * @returns A React component for the node palette.
  */
-export default function Palette({ setDraggedNode }: PaletteProps) {
+export default function Palette({ setDraggedNode,paletteData }: PaletteProps) {
     return (
         <div className="w-80 flex-shrink-0 p-4 border-r border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 overflow-y-auto">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <WorkflowIcon className="w-5 h-5" /> Node Palette
             </h2>
             <Accordion type="single" collapsible defaultValue="Triggers">
-                {PALETTE_DATA.map((group) => (
+                {paletteData.map((group) => (
                     <AccordionItem key={group.label} value={group.label}>
                         <AccordionTrigger className="text-sm font-medium">{group.label}</AccordionTrigger>
                         <AccordionContent>

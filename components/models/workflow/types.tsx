@@ -1,5 +1,28 @@
 // File: components/workflow/types.ts
-import { PlaySquare, FileText, Bot, List, Rocket, Wand, MessageSquare, Plus, Minus, Table, LayoutDashboard, Database, Repeat, Split, Code, Timer, GitBranch, Lightbulb, AlarmClock, Columns4 } from 'lucide-react';
+import {
+    PlaySquare,
+    FileText,
+    Bot,
+    List,
+    Rocket,
+    Wand,
+    MessageSquare,
+    Plus,
+    Minus,
+    Table,
+    LayoutDashboard,
+    Database,
+    Repeat,
+    Split,
+    Code,
+    Timer,
+    GitBranch,
+    Lightbulb,
+    AlarmClock,
+    Columns4,
+    SearchIcon, ImageIcon, Cog, Monitor
+} from 'lucide-react';
+import React from "react";
 
 export type NodeKind =
     | "query"
@@ -34,11 +57,23 @@ export type NodeKind =
     ;
 
 
+export const nodeIcons: Record<AnyNode['kind'], React.ElementType> = {
+    "query": SearchIcon,
+    "document": FileText,
+    "session": MessageSquare,
+    "text-generation": Rocket,
+    "image-generation": ImageIcon,
+    "action": Cog,
+    "table": Table,
+    "output-context": Monitor,
+};
 
 export interface Vec2 {
     x: number;
     y: number;
 }
+export type PortName = "in" | "out" | "true" | "false" | "try" | "catch" | "out1" | "out2" | "out3";
+
 
 export type AnyNode = {
     id: string;
@@ -48,12 +83,11 @@ export type AnyNode = {
     config?: any;
 };
 
-export type PortName = "in" | "out" | "true" | "false" | "try" | "catch" | "out1" | "out2" | "out3";
 
 export interface Edge {
     id: string;
     from: { nodeId: string; port: PortName; };
-    to: { nodeId: string; };
+    to: { nodeId: string; port: PortName; };
     c1?: Vec2;
     c2?: Vec2;
 }
@@ -64,8 +98,6 @@ export interface Workflow {
     edges: Edge[];
 }
 
-// Node dimensions for consistent calculations
-const nodeRect = { w: 224, h: 96 };
 
 export const PALETTE_DATA = [
     {

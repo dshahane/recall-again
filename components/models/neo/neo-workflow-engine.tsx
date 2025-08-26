@@ -3,8 +3,8 @@
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useMouseDrag } from '@/hooks/useMouseDrag';
-import { useConnection } from '@/hooks/useConnection';
+import { useMouseDrag } from '@/hooks/use-mouse-drag';
+import { useConnection } from '@/hooks/use-connection';
 import {
     AnyNode,
     Edge,

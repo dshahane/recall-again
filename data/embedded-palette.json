@@ -1,0 +1,21 @@
+[
+  {
+    "label": "EMB Context Inputs",
+    "description": "Nodes for gathering context.",
+    "items": [
+      { "label": "Query", "kind": "query" },
+      { "label": "Context", "kind": "context" },
+      { "label": "Session", "kind": "session" }
+    ]
+  },
+  {
+    "label": "EMB LLM Flow",
+    "description": "Nodes for LLM generation.",
+    "items": [
+      { "label": "Transformation", "kind": "transformation" },
+      { "label": "LLM", "kind": "llm" },
+      { "label": "Variables", "kind": "variables" },
+      { "label": "Text Generation", "kind": "text-generation" }
+    ]
+  }
+]

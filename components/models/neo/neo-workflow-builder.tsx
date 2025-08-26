@@ -15,15 +15,19 @@ import NodeConfig from '@/components/models/workflow//node-config';
 import Palette from '@/components/models/workflow//palette';
 import EdgeConfig from '@/components/models/workflow//edge-config';
 import WorkflowCanvas from '@/components/models/workflow//workflow-canvas';
+import {usePalette} from "@/hooks/use-palette";
 
 interface NeoWorkflowBuilderProps {
     api: any;
+    mode: 'standalone' | 'embedded';
 }
 
-export default function NeoWorkflowBuilder({ api }: NeoWorkflowBuilderProps) {
+export default function NeoWorkflowBuilder({ api, mode }: NeoWorkflowBuilderProps) {
+    const paletteData = usePalette(mode);
+
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
-            <Palette setDraggedNode={api.setDraggedNode} />
+            <Palette setDraggedNode={api.setDraggedNode} paletteData={paletteData} />
             <div className="flex-1 flex flex-col relative">
                 <div className="flex justify-center items-center py-2 px-4 border-b border-gray-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
                     <Button variant="ghost" className="mr-2" onClick={api.handleSave}>

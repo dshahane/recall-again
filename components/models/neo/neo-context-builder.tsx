@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Workflow as WorkflowType } from '@/components/models/workflow/types';
+import {NodeKind, Workflow as WorkflowType} from '@/components/models/workflow/types';
 import NeoWorkflowEngine from './neo-workflow-engine';
 import NeoWorkflowBuilder from './neo-workflow-builder';
 
@@ -27,9 +27,10 @@ export default function NeoContextBuilder() {
 
     const initialWorkflowData = {
         // This is an example of a workflow passed from the host application
-        nodes: [{ id: '1', kind: 'query', name: 'Initial Query', pos: { x: 100, y: 100 } }],
+        nodes: [{ id: '1', kind: 'query' as NodeKind, name: 'Initial Query', pos: { x: 100, y: 100 }, config: {}}],
         edges: []
     };
+
 
     return (
         <div className="flex h-screen flex-col">
@@ -44,7 +45,7 @@ export default function NeoContextBuilder() {
                     initialWorkflow={initialWorkflowData}
                     onCommit={handleCommit}
                 >
-                    {(api) => <NeoWorkflowBuilder api={api} />}
+                    {(api) => <NeoWorkflowBuilder api={api} mode={"embedded"} />}
                 </NeoWorkflowEngine>
             </main>
         </div>

@@ -1,0 +1,20 @@
+[
+  {
+    "label": "SA Triggers",
+    "description": "Start a workflow with these nodes.",
+    "items": [
+      { "label": "Query", "kind": "query" },
+      { "label": "Document", "kind": "document" },
+      { "label": "Session", "kind": "session" },
+      { "label": "Timer", "kind": "timer" }
+    ]
+  },
+  {
+    "label": "SA Models",
+    "description": "Connect to ML/LLM models.",
+    "items": [
+      { "label": "LLM", "kind": "llm" },
+      { "label": "Classifier", "kind": "classifier" }
+    ]
+  }
+]

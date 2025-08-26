@@ -49,8 +49,8 @@ export default function NodeView({
                 "w-56 h-24 flex flex-col justify-between"
             )}
             style={{
-                left: position.x,
-                top: position.y,
+                // Position the node using CSS `transform` for better performance
+                transform: `translate(${position?.x}px, ${position?.y}px)`,
             }}
             onMouseDown={(e) => {
                 e.stopPropagation();
@@ -58,7 +58,8 @@ export default function NodeView({
             }}
             onClick={(e) => onNodeClick(node.id, e)}
         >
-            {/* Node Header with name and delete button */}
+
+        {/* Node Header with name and delete button */}
             <div className="flex justify-between items-center p-2 border-b border-gray-200 dark:border-zinc-700 bg-gray-100/50 dark:bg-zinc-900/50 rounded-t-lg">
                 <span className="font-semibold text-sm flex items-center gap-2 truncate">
                     {NodeIcon && React.createElement(NodeIcon, { className: "h-4 w-4 text-gray-500 dark:text-zinc-400" })}

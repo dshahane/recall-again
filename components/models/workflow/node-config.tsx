@@ -6,7 +6,7 @@ import {getNodeMetadata} from './node-config-types';
 import {Label} from '@/components/ui/label';
 import {Input} from '@/components/ui/input';
 import AutoForm from '@/components/ui/auto-form';
-import { nodeSchemas } from '@/data/node-schemas';
+import {getNodeSchema,} from '@/data/node-schemas';
 import { z } from 'zod';
 import {
     Card,
@@ -35,7 +35,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
 
     // Get the schema for the current node kind.
     // @ts-ignore Ignore error until all node types are covered with a schema.
-    const schema = nodeSchemas[node.kind];
+    const schema = getNodeSchema(node.kind);
     if (!schema) {
         return (
             <div className="text-center text-gray-400 dark:text-zinc-500 text-sm py-8">
@@ -43,7 +43,7 @@ export default function NodeConfig({ node, onChange, onNameChange }: NodeConfigP
             </div>
         );
     }
-
+    //console.log('Using schema for node kind:', node.kind, 'Schema:', JSON.stringify(schema, null, 2));
     // Handle changes to the node's display name
     const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newName = e.target.value;

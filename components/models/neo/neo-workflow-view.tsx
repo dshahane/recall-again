@@ -18,7 +18,7 @@ import WorkflowCanvas from '@/components/models/workflow/workflow-canvas';
 
 import {usePalette} from "@/hooks/use-palette";
 import { useWorkflow } from '@/components/models/context/workflow-context';
-import { nodeSchemas } from '@/data/node-schemas'; // Import nodeSchemas
+import { getNodeSchema } from '@/data/node-schemas'; // Import nodeSchemas
 
 interface NeoWorkflowViewProps {
     mode: 'standalone' | 'embedded';
@@ -82,7 +82,7 @@ export default function NeoWorkflowView({ mode }: NeoWorkflowViewProps) {
                     <div className="flex-1 mt-4">
                         <TabsContent value="configure" className="space-y-4">
                             {/* Correctly handle conditional rendering here */}
-                            {selectedNode && nodeSchemas[selectedNode.kind] ? (
+                            {selectedNode && getNodeSchema(selectedNode.kind) ? (
                                 <NodeConfig node={selectedNode} onChange={api.handleConfigChange} onNameChange={api.handleNameChange} />
                             ) : selectedEdge ? (
                                 <EdgeConfig edge={selectedEdge} onDelete={api.onDeleteEdge} />

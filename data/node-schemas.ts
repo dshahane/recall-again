@@ -204,37 +204,3 @@ export const getNodeSchema = (kind: NodeKind): z.ZodTypeAny => {
     }
 };
 
-
-// Create a mapping object to easily access schemas by node 'kind'.
-export const nodeSchemas = {
-    [NodeKind.Llm]: llmNodeSchema,
-    [NodeKind.QueryTrigger]: queryNodeSchema,
-    [NodeKind.Api]: apiNodeSchema,
-    [NodeKind.Table]: queryNodeSchema,
-    [NodeKind.Catalog]: queryNodeSchema,
-    [NodeKind.ApiSink]: queryNodeSchema,
-    [NodeKind.ContextSink]: queryNodeSchema,
-    [NodeKind.Delay]: queryNodeSchema,
-    [NodeKind.VisualizationSink]: queryNodeSchema,
-    [NodeKind.TimerTrigger]: queryNodeSchema,
-    [NodeKind.DocumentTrigger]: queryNodeSchema,
-    [NodeKind.SessionTrigger]: queryNodeSchema,
-    [NodeKind.TryCatch]: queryNodeSchema,
-    [NodeKind.Condition]: queryNodeSchema,
-    [NodeKind.Ranker]: queryNodeSchema,
-    [NodeKind.Context]: queryNodeSchema,
-    [NodeKind.Regressor]: queryNodeSchema,
-    [NodeKind.Classifier]: queryNodeSchema,
-    [NodeKind.Transformation]: queryNodeSchema,
-    [NodeKind.IntentDetection]: queryNodeSchema,
-    [NodeKind.Loop]: queryNodeSchema,
-    [NodeKind.Variables]: queryNodeSchema,
-    [NodeKind.Reviews]: queryNodeSchema,
-    [NodeKind.Sql]: queryNodeSchema,
-    [NodeKind.Sheet]: queryNodeSchema,
-    [NodeKind.Sparql]: queryNodeSchema,
-    // Add more schemas here as you define them for other node kinds
-    // For example:
-    // 'classifier': classifierNodeSchema,
-    // 'sql': sqlNodeSchema
-};

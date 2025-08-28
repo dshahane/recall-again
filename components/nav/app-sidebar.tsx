@@ -1,14 +1,6 @@
 'use client'
 
-import * as React from 'react'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/ui/sidebar'
-
+import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from '@/components/ui/sidebar'
 import { TeamSwitcher } from '../team-switcher'
 import { NavUser } from './nav-user'
 import { SidebarNavList, type NavItem } from './app-sidebar-nav-section'
@@ -22,15 +14,10 @@ import {
   Settings2,
   SquareTerminal,
 } from 'lucide-react'
-import {NavSettings} from "@/components/nav/nav-settings";
+import { NavSettings } from './nav-settings'
 
 const data = {
   user: { name: 'dinesh', email: 'dinesh@trl.com', avatar: '/avatars/shadcn.jpg' },
-  teams: [
-    { name: 'Acme Inc', logo: GalleryVerticalEnd, plan: 'Enterprise' },
-    { name: 'Bee Boulevard.', logo: AudioWaveform, plan: 'Startup' },
-    { name: 'Cool Corp.', logo: Command, plan: 'Free' },
-  ],
   navMain: [
     {
       title: 'Applications',
@@ -59,18 +46,6 @@ const data = {
       ],
     },
   ] satisfies NavItem[],
-  projects: [
-    {
-      title: 'Projects',
-      url: '#',
-      icon: ProjectorIcon,
-      items: [
-        { title: 'Growth Engineering', icon: ProjectorIcon, url: '/projects/project-1' },
-        { title: 'SEO', icon: ProjectorIcon, url: '/projects/project-2' },
-      ],
-    },
-  ] satisfies NavItem[],
-
   navBottom: [
     {
       title: 'Documentation',
@@ -85,32 +60,24 @@ const data = {
 }
 
 const navSettings = {
-      title: 'Settings',
-      url: '/settings',
-      icon: Settings2,
+  title: 'Settings',
+  url: '/settings',
+  icon: Settings2,
 }
 
 export function AppSidebar({ className }: { className?: string }) {
   return (
-      <Sidebar collapsible="icon" className={`flex flex-col ${className || ''}`}>
-        <SidebarHeader>
-          <TeamSwitcher teams={data.teams} />
-        </SidebarHeader>
-
+      <Sidebar
+          className={`fixed top-[var(--header-height)] left-0 h-[calc(100vh-var(--header-height))] w-[var(--sidebar-width)] z-20 bg-sidebar ${className || ''}`}
+      >
         <SidebarContent>
-          {/* Top sections */}
           <SidebarNavList sections={data.navMain} />
-          {/* Projects
-          <SidebarNavList sections={data.projects} />
-          */}
         </SidebarContent>
 
-        <SidebarFooter>
-          {/* Bottom sections expand upwards */}
+        <SidebarFooter className="mt-auto">
           <NavSettings settings={navSettings} />
           <SidebarNavList sections={data.navBottom} direction="up" />
           <NavUser user={data.user} />
-          <SidebarNavList sections={data.navBottom} direction="up" />
         </SidebarFooter>
 
         <SidebarRail />

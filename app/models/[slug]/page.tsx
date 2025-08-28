@@ -11,6 +11,7 @@ import {ModelTeacher} from "@/components/models/yoda";
 import ContextManagerApp from "@/components/models/context/context-manager";
 import NeoContextBuilder from "@/components/models/neo/neo-context-builder";
 import SchemaEditor from "@/components/schema-mapper/schema-editor";
+import MetaFlow from "@/components/models/skills/meta-flow";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params;
@@ -64,7 +65,8 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
             break;
         case 'yoda':
             // pageContent = <ModelTraining/>;
-            pageContent = <NeoContextBuilder/>
+            //pageContent = <NeoContextBuilder/>
+            pageContent = <MetaFlow/>
             break;
         default:
             pageContent = <div>Unknown Page check app-sidebar</div>

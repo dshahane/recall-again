@@ -2,15 +2,16 @@
 
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { usePageInfo } from '@/app/context/page-context'
-import { LayoutDashboard } from 'lucide-react'
+import {AudioWaveform, Command, GalleryVerticalEnd, LayoutDashboard} from 'lucide-react'
 import { TeamSwitcher } from '@/components/team-switcher'
 import { NavUser } from '@/components/nav/nav-user'
 import { Separator } from '@radix-ui/react-menu'
 
 const user = { name: 'dinesh', email: 'dinesh@trl.com', avatar: '/avatars/shadcn.jpg' }
 const teams = [
-    { name: 'Acme Inc', logo: LayoutDashboard, plan: 'Enterprise' },
-    { name: 'Bee Boulevard.', logo: LayoutDashboard, plan: 'Startup' },
+    { name: 'Acme Inc', logo: GalleryVerticalEnd, plan: 'Enterprise' },
+    { name: 'Bee Boulevard.', logo: AudioWaveform, plan: 'Startup' },
+    { name: 'Cool Corp.', logo: Command, plan: 'Free' },
 ]
 
 interface SiteHeaderProps {

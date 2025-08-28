@@ -5,6 +5,7 @@ import { AppSidebar } from '@/components/nav/app-sidebar'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { MainContent } from './main-content'
+import {DynamicBreadcrumb} from "@/components/dynamic-breadcrumb";
 
 
     export function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,6 @@ import { MainContent } from './main-content'
                     <SiteHeader />
                     <AppSidebar />
                     <MainContent>
-                        {/* <AppBreadCrump /> */}
                         {children}
                     </MainContent>
                 </div>

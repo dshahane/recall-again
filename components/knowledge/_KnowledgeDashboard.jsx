@@ -20,6 +20,8 @@ const knowledgeSources = [
 ];
 
 export default function KnowledgeDashboard() {
+    const [activeTab, setActiveTab] = React.useState(0);
+
     return (
         <Card className="space-y-6">
             <CardHeader className="flex justify-between items-center">

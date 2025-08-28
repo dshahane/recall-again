@@ -10,6 +10,7 @@ import WorkflowBuilder from "@/components/models/neo/workflow-builder";
 import {ModelTeacher} from "@/components/models/yoda";
 import ContextManagerApp from "@/components/models/context/context-manager";
 import NeoContextBuilder from "@/components/models/neo/neo-context-builder";
+import SchemaEditor from "@/components/schema-mapper/schema-editor";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params;
@@ -39,32 +40,35 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
 
     let pageContent;
     switch (slug) {
-        case 'context':
-            pageContent = <ContextManagerApp/>;
+        case 'schema-editor':
+            pageContent = <SchemaEditor/>
             break;
-        case 'actions':
-            pageContent = <WorkflowBuilder/>;
-            break;
-        case 'skills':
-            pageContent = <ModelSkills/>;
-            break;
-        case 'training':
-            pageContent = <ModelTraining/>;
-            break;
-        case 'yoda':
-            pageContent = <NeoContextBuilder/>
-            break;
-        default:
+        case 'schema-mapper':
             pageContent = <SchemaMapper
                 sourceSchemas={sourceSchemas}
                 destinationSchema={destinationSchema}
                 onChange={(state) => console.log('Mapping JSON for', slug, state)}
             />
             break;
+        case 'context':
+            pageContent = <ContextManagerApp/>;
+            break;
+        case 'skills':
+            pageContent = <ModelSkills/>;
+            break;
+        case 'actions':
+            pageContent = <WorkflowBuilder/>;
+            break;
+        case 'training':
+            pageContent = <ModelTraining/>;
+            break;
+        case 'yoda':
+            // pageContent = <ModelTraining/>;
+            pageContent = <NeoContextBuilder/>
+            break;
+        default:
+            pageContent = <div>Unknown Page check app-sidebar</div>
+            break;
     }
-    return (
-        <div>
-            {pageContent}
-        </div>
-    )
+    return pageContent;
 }

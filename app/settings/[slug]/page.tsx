@@ -6,7 +6,7 @@ import { SchemaMapper } from '@/components/schema-mapper/mapper';
 import ProfileSettings from "@/components/settings/ProfileSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import NotificationsSettings from "@/components/settings/NotificationsSettings";
-import KnowledgeDashboard from "@/components/knowledge/KnowledgeDashboard";
+import KnowledgeDashboard from "@/components/knowledge/knowledge-dashboard";
 import IntegrationsSettings from "@/components/settings/IntegrationsSettings";
 import Workbench from "@/components/settings/ingestion/Workbench";
 import AssetManager from "@/components/settings/dataplane/AssetManager";

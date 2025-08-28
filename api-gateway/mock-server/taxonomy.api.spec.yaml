@@ -1,0 +1,296 @@
+openapi: 3.0.3
+info:
+  title: Resource Type Builder API
+  description: A REST API for managing resource types and their schemas.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: Local server
+
+tags:
+  - name: Resource Types
+    description: API for managing resource type schemas.
+
+paths:
+  /resource-types:
+    get:
+      tags:
+        - Resource Types
+      summary: Get all resource types
+      description: Retrieves a list of all available resource type schemas.
+      operationId: listResourceTypes
+      responses:
+        '200':
+          description: A list of resource types.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceType'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Resource Types
+      summary: Create a new resource type
+      description: Creates a new resource type with an optional initial set of fields.
+      operationId: createResourceType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewResourceType'
+      responses:
+        '201':
+          description: Resource type created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceType'
+        '400':
+          description: Invalid input or resource type already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /resource-types/{name}:
+    get:
+      tags:
+        - Resource Types
+      summary: Get a resource type by name
+      description: Retrieves a single resource type schema by its unique name.
+      operationId: getResourceTypeByName
+      parameters:
+        - name: name
+          in: path
+          description: The name of the resource type to retrieve.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single resource type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceType'
+        '404':
+          description: Resource type not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Resource Types
+      summary: Delete a resource type
+      description: Deletes a resource type and all its associated fields.
+      operationId: deleteResourceType
+      parameters:
+        - name: name
+          in: path
+          description: The name of the resource type to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Resource type deleted successfully.
+        '404':
+          description: Resource type not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /resource-types/{name}/fields:
+    post:
+      tags:
+        - Resource Types
+      summary: Add a field to a resource type
+      description: Adds a new field to an existing resource type schema.
+      operationId: addFieldToResourceType
+      parameters:
+        - name: name
+          in: path
+          description: The name of the resource type to add the field to.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+      responses:
+        '200':
+          description: Field added successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceType'
+        '400':
+          description: Invalid input or field already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource type not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /resource-types/{name}/fields/{fieldId}:
+    put:
+      tags:
+        - Resource Types
+      summary: Update a field in a resource type
+      description: Updates an existing field within a resource type schema.
+      operationId: updateFieldInResourceType
+      parameters:
+        - name: name
+          in: path
+          description: The name of the resource type.
+          required: true
+          schema:
+            type: string
+        - name: fieldId
+          in: path
+          description: The unique ID of the field to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+      responses:
+        '200':
+          description: Field updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceType'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource type or field not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Resource Types
+      summary: Delete a field from a resource type
+      description: Deletes a field from an existing resource type schema.
+      operationId: deleteFieldFromResourceType
+      parameters:
+        - name: name
+          in: path
+          description: The name of the resource type.
+          required: true
+          schema:
+            type: string
+        - name: fieldId
+          in: path
+          description: The unique ID of the field to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Field deleted successfully.
+        '404':
+          description: Resource type or field not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ResourceType:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The unique name of the resource type.
+          example: 'Article'
+        fields:
+          type: array
+          description: An array of fields in the resource type.
+          items:
+            $ref: '#/components/schemas/Field'
+      required:
+        - name
+        - fields
+
+    NewResourceType:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The unique name of the new resource type.
+          example: 'Product'
+        fields:
+          type: array
+          description: Optional initial fields for the new resource type.
+          items:
+            $ref: '#/components/schemas/Field'
+      required:
+        - name
+
+    Field:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique ID for the field (e.g., nanoid).
+          example: 'a1b2c3d4'
+        name:
+          type: string
+          description: The name of the field.
+          example: 'title'
+        type:
+          type: string
+          description: The data type of the field.
+          example: 'https://schema.org/Text'
+        required:
+          type: boolean
+          description: Indicates if the field is required.
+          example: true
+      required:
+        - id
+        - name
+        - type
+        - required
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: A unique error code.
+          example: 400
+        message:
+          type: string
+          description: A human-readable error message.
+          example: 'Invalid input provided.'

@@ -1,6 +1,7 @@
 import {SelectItem} from "@/components/ui/select";
 import {useState} from "react";
 import {Concept, Field} from "@/components/concept-editor/proptypes";
+import {SchemaSpec} from "@/app/types/mapper";
 
 export const initialConcepts = [
     {
@@ -68,4 +69,15 @@ export const mockFieldsForConcept = (url: string) => {
     }
     // Default fallback
     return [{ name: 'name', type: 'Text', description: '' }];
+};
+export const mockSourceSchemas: SchemaSpec[] = [
+    { label: 'Customer', fields: ['firstName', 'lastName', 'email'], version: '1.0.0', color: 'bg-blue-50' },
+    { label: 'Orders', fields: ['price', 'tax'], version: '2.1.0', color: 'bg-green-50' },
+];
+
+export const mockDestinationSchema: SchemaSpec = {
+    label: 'Target',
+    fields: ['full_name', 'order_total'],
+    version: '3.0.0',
+    color: 'bg-slate-50'
 };

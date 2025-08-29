@@ -34,6 +34,7 @@ export interface WizardGuideProps {
 export interface SchemaTreeViewProps {
     source: string;
     selectedConcept: string;
+    newConcept: string;
     onSelectConcept: (parent: string, derived: string) => void;
 }
 

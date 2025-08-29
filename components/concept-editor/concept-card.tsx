@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -8,12 +8,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMe
 import { Edit, Trash2, FileText, Library, Link, Plus, Filter } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ConceptCardProps } from "@/components/concept-editor/proptypes"
+import {Separator} from "@/components/ui/separator";
 
 export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDelete }) => {
     return (
-        <Card className="flex flex-col bg-white dark:bg-gray-800 hover:shadow-md transition-shadow duration-300 rounded-lg h-[220px]">
+        <Card>
             {/* Header actions */}
-            <CardHeader className="flex flex-row items-center justify-end py-2 px-3">
+            <CardHeader className="flex flex-row items-center justify-end py-2 px-3 p-2">
                 <div className="flex gap-1.5">
                     <Button
                         variant="ghost"
@@ -35,11 +36,12 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
             </CardHeader>
 
             {/* Body */}
-            <CardContent className="flex-1 px-4 py-2">
-                <CardTitle className="text-base font-semibold text-gray-800 dark:text-gray-100 truncate">
+            <CardContent className="flex-1 px-2 py-2">
+                <CardTitle className="text-base font-semibold text-gray-800 dark:text-gray-100 truncate p-2">
                     {concept.name}
                 </CardTitle>
-                <p className="text-sm mt-1 text-gray-600 dark:text-gray-400 line-clamp-2">
+                <Separator/>
+                <p className="text-sm mt-1 text-gray-600 dark:text-gray-400 line-clamp-2 p-2">
                     {concept.description}
                 </p>
 
@@ -65,6 +67,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
             </CardContent>
 
             {/* Footer */}
+            <CardFooter>
             <div className="flex justify-end px-4 pb-2">
                 <Badge
                     className={cn(
@@ -77,11 +80,12 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
                     {concept.published ? "Published" : "Draft"}
                 </Badge>
             </div>
+            </CardFooter>
         </Card>
     )
 }
 
-export const AddNewCard = ({ onAdd }: { onAdd: () => void }) => (
+const AddNewCard = ({ onAdd }: { onAdd: () => void }) => (
     <Card
         className="flex flex-col items-center justify-center h-[220px] bg-gray-50 dark:bg-gray-900 border-2 border-dashed rounded-lg hover:border-indigo-400 cursor-pointer transition"
         onClick={onAdd}
@@ -91,7 +95,7 @@ export const AddNewCard = ({ onAdd }: { onAdd: () => void }) => (
     </Card>
 )
 
-export const ConceptToolbar = () => (
+const ConceptToolbar = () => (
     <div className="flex items-center justify-between mb-4">
         {/* Search */}
         <Input
@@ -119,7 +123,7 @@ export const ConceptToolbar = () => (
     </div>
 )
 
-export const ConceptGrid = ({ children }: { children: React.ReactNode }) => (
+const ConceptGrid = ({ children }: { children: React.ReactNode }) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
         {children}
     </div>

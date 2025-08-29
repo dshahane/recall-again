@@ -12,6 +12,7 @@ import {useState} from "react";
 
 export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
     const {concept, updateConcept } = useConcept();
+    const [newConcept, setNewConcept] = useState<string>('');
     const [selectedSource, setSelectedSource] = useState(concept.source || 'schema.org');
 
 
@@ -23,6 +24,8 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
     const handleSelectConcept = (parentName:string, derivedName:string) => {
         const fullUrl = `http://${selectedSource}/${parentName}/${derivedName}`; // FIXME
         const fields = mockFieldsForConcept(fullUrl);
+        console.log(parentName, derivedName);
+        console.log(fullUrl);
         updateConcept({ name: derivedName, source: fullUrl, fields });
     };
 
@@ -48,8 +51,8 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
                 <Label htmlFor="concept-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Concept Name</Label>
                 <Input
                     id="concept-name"
-                    value={concept.name || ''}
-                    onChange={(e) => updateConcept({ name: e.target.value })}
+                    value={newConcept || ''}
+                    onChange={(e) => setNewConcept( e.target.value )}
                     className="rounded-lg p-2 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
             </div>
@@ -59,6 +62,7 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
                     <SchemaTreeView
                         source={concept.source}
                         selectedConcept={concept.name || ''}
+                        newConcept={newConcept}
                         onSelectConcept={handleSelectConcept}
                     />
                 </div>

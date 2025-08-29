@@ -9,9 +9,8 @@ import ModelSkills from "@/components/models/skills";
 import WorkflowBuilder from "@/components/models/neo/workflow-builder";
 import {ModelTeacher} from "@/components/models/yoda";
 import ContextManagerApp from "@/components/models/context/context-manager";
-import NeoContextBuilder from "@/components/models/neo/neo-context-builder";
-import SchemaEditor from "@/components/schema-mapper/schema-editor";
 import MetaFlow from "@/components/models/skills/meta-flow";
+import ConceptEditorApp from "@/components/concept-editor/concept-editor-app";
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params;
@@ -41,8 +40,8 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
 
     let pageContent;
     switch (slug) {
-        case 'schema-editor':
-            pageContent = <SchemaEditor/>
+        case 'taxonomy':
+            pageContent = <ConceptEditorApp/>
             break;
         case 'schema-mapper':
             pageContent = <SchemaMapper

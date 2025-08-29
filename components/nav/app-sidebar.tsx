@@ -36,7 +36,7 @@ const data = {
       url: '#',
       icon: Bot,
       items: [
-        { title: 'Taxonomy', url: '/models/schema-editor' },
+        { title: 'Taxonomy', url: '/models/taxonomy' },
         { title: 'Data Mapping', url: '/models/schema-mapper' },
         { title: 'Context', url: '/models/context' },
         { title: 'Skills', url: '/models/skills' },

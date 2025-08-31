@@ -1,4 +1,4 @@
-import { NodeKind } from '@/components/models/workflow/types';
+import { NodeKind } from '@/components/workflow-editor/workflow/types';
 import { z } from 'zod';
 
 // Define the configuration schema for an 'llm' node.

@@ -10,14 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast, Toaster } from 'sonner';
 
-import { isTriggerNode } from '@/components/models/workflow/node-config-types';
-import NodeConfig from '@/components/models/workflow/node-config';
-import Palette from '@/components/models/workflow/palette';
-import EdgeConfig from '@/components/models/workflow/edge-config';
-import WorkflowCanvas from '@/components/models/workflow/workflow-canvas';
+import { isTriggerNode } from '@/components/workflow-editor/workflow/node-config-types';
+import NodeConfig from '@/components/workflow-editor/workflow/node-config';
+import Palette from '@/components/workflow-editor/workflow/palette';
+import EdgeConfig from '@/components/workflow-editor/workflow/edge-config';
+import WorkflowCanvas from '@/components/workflow-editor/workflow/workflow-canvas';
 
 import {usePalette} from "@/hooks/use-palette";
-import { useWorkflow } from '@/components/models/context/workflow-context';
+import { useWorkflow } from '@/components/workflow-editor/context/workflow-context';
 import { getNodeSchema } from '@/data/node-schemas'; // Import nodeSchemas
 
 interface NeoWorkflowViewProps {
@@ -35,7 +35,7 @@ export default function NeoWorkflowView({ mode }: NeoWorkflowViewProps) {
 
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 overflow-hidden font-sans">
-            <Palette setDraggedNode={api.setDraggedNode} paletteData={paletteData} />
+            <Palette paletteData={paletteData} />
             <div className="flex-1 flex flex-col relative">
                 <div className="flex justify-center items-center py-2 px-4 border-b border-gray-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
                     <Button variant="ghost" className="mr-2" onClick={api.handleSave}>
@@ -62,7 +62,6 @@ export default function NeoWorkflowView({ mode }: NeoWorkflowViewProps) {
                     onPortMouseUp={api.onPortMouseUp}
                     handleEdgeClick={api.handleEdgeClick}
                     handleDragControlPoint={api.handleDragControlPoint}
-                    isTriggerNode={isTriggerNode}
                     draggedNode={api.draggedNode}
                     setDraggedNode={api.setDraggedNode}
                     setModalMessage={api.setModalMessage}

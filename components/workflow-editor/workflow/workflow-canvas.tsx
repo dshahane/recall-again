@@ -6,11 +6,11 @@ import { Vec2 } from '@/app/types/app';
 import { AnyNode, Edge, NodeKind, Workflow } from './types';
 import NodeView from './node-view';
 import EdgeView from './edge-view';
-import { completeNode, defaultBezierPoints, nodePortPos, snap } from "@/components/models/workflow/workflow-utils";
+import { completeNode, defaultBezierPoints, nodePortPos, snap } from "@/components/workflow-editor/workflow/workflow-utils";
 import { isTriggerNode } from './node-config-types';
 import { v4 as uuidv4 } from "uuid";
 import { toast, Toaster } from "sonner";
-import { nodeRect} from "@/components/models/workflow/workflow-utils";
+import { nodeRect} from "@/components/workflow-editor/workflow/workflow-utils";
 
 // Define the props interface for clarity and type-safety
 interface WorkflowCanvasProps {

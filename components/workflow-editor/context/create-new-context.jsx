@@ -25,7 +25,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { toast } from 'sonner';
 
 // Use React.lazy to lazy-load the WorkflowBuilder component.
-const LazyWorkflowBuilder = React.lazy(() => import('@/components/models/neo/neo-context-builder'));
+const LazyWorkflowBuilder = React.lazy(() => import('@/components/workflow-editor/neo/neo-context-builder'));
 
 // Mocked MultiSelect component for demonstration
 const MultiSelect = ({ options, selected, onSelect, placeholder, disabled }) => {

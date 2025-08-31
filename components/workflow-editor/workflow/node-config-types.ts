@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import React from "react";
 import {NodeKind, PortName,} from './types';
-import {PortConfig} from "@/components/models/workflow/port-config-types";
+import {PortConfig} from "@/components/workflow-editor/workflow/port-config-types";
 
 // Map each NodeKind to its properties
 const COMMON_COLORS = {

@@ -3,11 +3,11 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {NodeKind, Workflow as WorkflowType} from '@/components/models/workflow/types';
+import {NodeKind, Workflow as WorkflowType} from '@/components/workflow-editor/workflow/types';
 import NeoWorkflowEngine from './neo-workflow-engine';
 import NeoWorkflowView from './neo-workflow-view';
 import {useWorkflowPersistence} from "@/hooks/use-workflow-persistance";
-import {WorkflowProvider} from "@/components/models/context/workflow-context";
+import {WorkflowProvider} from "@/components/workflow-editor/context/workflow-context";
 
 const initialWorkflowData: WorkflowType = {
     nodes: [{

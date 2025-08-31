@@ -11,10 +11,11 @@ export const WizardGuide: React.FC<WizardGuideProps> = ({ step, newConcept }) =>
     ];
 
     return (
-        <div className="w-full bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between">
+        <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between">
+            {/*
             <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mr-4 mb-4 md:mb-0">
                 Create new {newConcept.name || 'Concept'}
-            </h2>
+            </h2>*/}
             <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2">
                 {steps.map((s, index) => (
                     <div key={index} className={cn(

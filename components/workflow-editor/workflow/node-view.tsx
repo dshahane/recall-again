@@ -2,12 +2,12 @@
 'use client'
 
 import React, {MouseEvent, useCallback} from 'react';
-import {AnyNode, PortName} from '@/components/models/workflow/types';
+import {AnyNode, PortName} from '@/components/workflow-editor/workflow/types';
 import {Vec2} from '@/app/types/app';
 import {XCircle} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
-import { nodeRect} from "@/components/models/workflow/workflow-utils";
+import {getNodeMetadata} from "@/components/workflow-editor/workflow/node-config-types";
+import { nodeRect} from "@/components/workflow-editor/workflow/workflow-utils";
 
 // Define the props interface for clarity
 interface NodeViewProps {

@@ -4,13 +4,15 @@ import React, {useEffect} from "react";
 import {usePageInfo} from "@/app/context/page-context";
 import {SchemaMapper} from "@/components/schema-mapper/mapper";
 import {SchemaSpec} from "@/app/types/mapper"
-import {ModelTraining} from "@/components/models/training";
-import ModelSkills from "@/components/models/skills";
-import WorkflowBuilder from "@/components/models/neo/workflow-builder";
-import {ModelTeacher} from "@/components/models/yoda";
-import ContextManagerApp from "@/components/models/context/context-manager";
-import MetaFlow from "@/components/models/skills/meta-flow";
+import {ModelTraining} from "@/components/workflow-editor/training";
+import ModelSkills from "@/components/workflow-editor/skills";
+import WorkflowBuilder from "@/components/workflow-editor/neo/workflow-builder";
+import {ModelTeacher} from "@/components/workflow-editor/yoda";
+import ContextManagerApp from "@/components/workflow-editor/context/context-manager";
+import MetaFlow from "@/components/workflow-editor/skills/meta-flow";
 import ConceptEditorApp from "@/components/concept-editor/concept-editor-app";
+import {WorkflowInstanceWidget} from "@/components/workflow-instance/workflow-instance-widget";
+
 
 export default function ModelsPage({params}: { params: { slug: string } }) {
     const {slug} = params;
@@ -65,7 +67,11 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
         case 'yoda':
             // pageContent = <ModelTraining/>;
             //pageContent = <NeoContextBuilder/>
-            pageContent = <MetaFlow/>
+            //pageContent = <MetaFlow/>
+            pageContent =   <div className={`flex min-h-screen flex-col items-center justify-between bg-gray-50 text-gray-900`}>
+                                <WorkflowInstanceWidget />
+                            </div>
+
             break;
         default:
             pageContent = <div>Unknown Page check app-sidebar</div>

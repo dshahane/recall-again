@@ -4,8 +4,8 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {toast} from 'sonner';
-import SavedContexts from "@/components/models/context/saved-context";
-import CreateNewContext from "@/components/models/context/create-new-context";
+import SavedContexts from "@/components/workflow-editor/context/saved-context";
+import CreateNewContext from "@/components/workflow-editor/context/create-new-context";
 
 // Main App Component
 const ContextManagerApp = () => {

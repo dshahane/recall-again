@@ -1,7 +1,7 @@
 import {useState, createContext, useContext, ReactNode} from 'react';
 import React from 'react';
 import {Concept, ConceptContextType} from "@/components/concept-editor/proptypes";
-
+import { v4 as uuidv4 } from 'uuid';
 
 // 1. Create a Context.
 // This context will hold our state and state-updating function.
@@ -10,7 +10,7 @@ const ConceptContext = createContext<ConceptContextType | null>(null);
 // 2. Create a custom hook to encapsulate the state logic.
 const useConceptState = () => {
     const [concept, setConcept] = useState<Concept>({
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: 'Initial Concept Name',
         description: 'This is the initial description.',
         source: 'Default Source',

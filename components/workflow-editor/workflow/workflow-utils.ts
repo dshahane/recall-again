@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { Vec2 } from '@/app/types/app';
 import { AnyNode, NodeKind } from './types';
-import {getPortPositions} from "@/components/models/workflow/port-config-types";
-import {getNodeMetadata} from "@/components/models/workflow/node-config-types";
+import {getPortPositions} from "@/components/workflow-editor/workflow/port-config-types";
+import {getNodeMetadata} from "@/components/workflow-editor/workflow/node-config-types";
 import {log} from "node:util";
 
 export const completeNode = (incompleteNode: any): AnyNode => {

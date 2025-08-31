@@ -36,7 +36,7 @@ export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ onCancel, on
     };
 
     return (
-        <div className="flex flex-col items-center p-10 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+        <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
             <div className="w-full max-w-4xl">
                 <h1 className="text-2xl mb-10 text-left">New Concept Wizard</h1>
                 <WizardGuide step={wizardStep} newConcept={concept} />

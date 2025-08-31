@@ -1,0 +1,263 @@
+{
+  "workflow": {
+    "name": "Query Understanding Workflow",
+    "steps": [
+      {
+        "id": "query_input_1",
+        "name": "Query Input",
+        "type": "input"
+      },
+      {
+        "id": "response_analysis_2",
+        "name": "Response Analysis",
+        "type": "analysis"
+      },
+      {
+        "id": "classification_3",
+        "name": "Classification",
+        "type": "model"
+      },
+      {
+        "id": "model_evaluation_4",
+        "name": "Model Evaluation",
+        "type": "evaluation"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1-2",
+        "source": "query_input_1",
+        "target": "response_analysis_2"
+      },
+      {
+        "id": "e2-3",
+        "source": "response_analysis_2",
+        "target": "classification_3"
+      },
+      {
+        "id": "e3-4",
+        "source": "classification_3",
+        "target": "model_evaluation_4"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "query_input_1",
+        "type": "default",
+        "data": {
+          "label": "Query Input"
+        },
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      },
+      {
+        "id": "response_analysis_2",
+        "type": "default",
+        "data": {
+          "label": "Response Analysis"
+        },
+        "position": {
+          "x": 250,
+          "y": 50
+        }
+      },
+      {
+        "id": "classification_3",
+        "type": "default",
+        "data": {
+          "label": "Classification"
+        },
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      },
+      {
+        "id": "model_evaluation_4",
+        "type": "default",
+        "data": {
+          "label": "Model Evaluation"
+        },
+        "position": {
+          "x": 650,
+          "y": 50
+        }
+      }
+    ]
+  },
+  "step_results": [
+    {
+      "id": "query_input_1",
+      "input": {
+        "widgetType": "form",
+        "data": {
+          "fields": [
+            {
+              "id": "query",
+              "label": "Search Query",
+              "type": "text",
+              "placeholder": "Enter your query..."
+            },
+            {
+              "id": "start_date",
+              "label": "Start Date",
+              "type": "date",
+              "placeholder": "YYYY-MM-DD"
+            },
+            {
+              "id": "end_date",
+              "label": "End Date",
+              "type": "date",
+              "placeholder": "YYYY-MM-DD"
+            }
+          ]
+        }
+      },
+      "output": {
+        "widgetType": "chat",
+        "data": {
+          "messages": [
+            {
+              "type": "bot",
+              "text": "Hello, I am a query understanding assistant. How can I help you today?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "response_analysis_2",
+      "input": {
+        "widgetType": "chat",
+        "data": {
+          "messages": [
+            {
+              "type": "bot",
+              "text": "Analyzing the search results. Would you like to proceed with the analysis?"
+            },
+            {
+              "type": "user",
+              "text": "Yes, please analyze the sentiment of the top 10 results."
+            }
+          ]
+        }
+      },
+      "output": {
+        "widgetType": "visualization",
+        "data": {
+          "chart_data": [
+            {
+              "name": "Page A",
+              "uv": 4000,
+              "pv": 2400,
+              "amt": 2400
+            },
+            {
+              "name": "Page B",
+              "uv": 3000,
+              "pv": 1398,
+              "amt": 2210
+            },
+            {
+              "name": "Page C",
+              "uv": 2000,
+              "pv": 9800,
+              "amt": 2290
+            },
+            {
+              "name": "Page D",
+              "uv": 2780,
+              "pv": 3908,
+              "amt": 2000
+            },
+            {
+              "name": "Page E",
+              "uv": 1890,
+              "pv": 4800,
+              "amt": 2181
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "classification_3",
+      "input": {
+        "widgetType": "markdown",
+        "data": {
+          "content": "# Input Markdown\nThis is a sample markdown input. It can be used to display formatted text, tables, or code."
+        }
+      },
+      "output": {
+        "widgetType": "table",
+        "data": {
+          "headers": [
+            "ID",
+            "Classification",
+            "Confidence"
+          ],
+          "rows": [
+            [
+              "doc-1",
+              "Positive",
+              "98%"
+            ],
+            [
+              "doc-2",
+              "Negative",
+              "75%"
+            ],
+            [
+              "doc-3",
+              "Neutral",
+              "92%"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "model_evaluation_4",
+      "input": {
+        "widgetType": "table",
+        "data": {
+          "headers": [
+            "Metric",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Accuracy",
+              "0.95"
+            ],
+            [
+              "F1 Score",
+              "0.88"
+            ]
+          ]
+        }
+      },
+      "output": {
+        "widgetType": "visualization",
+        "data": {
+          "chart_data": [
+            {
+              "name": "Precision",
+              "value": 0.92
+            },
+            {
+              "name": "Recall",
+              "value": 0.85
+            },
+            {
+              "name": "F1",
+              "value": 0.88
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

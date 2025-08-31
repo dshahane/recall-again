@@ -1,4 +1,4 @@
-import { NodeKind } from '@/components/models/workflow/types';
+import { NodeKind } from '@/components/workflow-editor/workflow/types';
 
 export const PALETTE_DATA = [
     {

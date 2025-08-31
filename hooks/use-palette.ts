@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react';
-import {getNodeMetadata} from '@/components/models/workflow/node-config-types';
+import {getNodeMetadata} from '@/components/workflow-editor/workflow/node-config-types';
 // Import the data files directly
 import {PALETTE_DATA as PALETTE_DATA_STANDALONE} from '@/data/standalone-palette';
 import {PALETTE_DATA as PALETTE_DATA_EMBEDDED} from '@/data/embedded-palette';
 
-import {processPaletteData} from '@/components/models/workflow/palette-utils';
-import {NodeKind} from "@/components/models/workflow/types";
+import {processPaletteData} from '@/components/workflow-editor/workflow/palette-utils';
+import {NodeKind} from "@/components/workflow-editor/workflow/types";
 
 export function usePalette(mode: 'standalone' | 'embedded') {
     const rawPaletteData = mode === 'standalone' ? PALETTE_DATA_STANDALONE : PALETTE_DATA_EMBEDDED;

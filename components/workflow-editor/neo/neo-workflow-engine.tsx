@@ -7,11 +7,11 @@ import {useMouseDrag} from '@/hooks/use-mouse-drag';
 import {useConnection} from '@/hooks/use-connection';
 import {Vec2} from '@/app/types/app';
 
-import {PortName, Workflow as WorkflowType} from '@/components/models/workflow/types';
-import {getNodeMetadata, isSinkNode, isTriggerNode} from '@/components/models/workflow/node-config-types';
-import {createStarterWorkflow, nodeRect, snap} from '@/components/models/workflow/workflow-utils';
-import {deleteEdge, deleteNode, updateNodeConfig, updateNodeName} from '@/components/models/workflow//workflow-manager';
-import {getPortPositions} from "@/components/models/workflow/port-config-types";
+import {PortName, Workflow as WorkflowType} from '@/components/workflow-editor/workflow/types';
+import {getNodeMetadata, isSinkNode, isTriggerNode} from '@/components/workflow-editor/workflow/node-config-types';
+import {createStarterWorkflow, nodeRect, snap} from '@/components/workflow-editor/workflow/workflow-utils';
+import {deleteEdge, deleteNode, updateNodeConfig, updateNodeName} from '@/components/workflow-editor/workflow//workflow-manager';
+import {getPortPositions} from "@/components/workflow-editor/workflow/port-config-types";
 
 interface NeoWorkflowEngineProps {
     initialWorkflow?: WorkflowType;

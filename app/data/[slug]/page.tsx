@@ -4,17 +4,12 @@ import React, {useEffect} from "react";
 import {usePageInfo} from "@/app/context/page-context";
 import {SchemaMapper} from "@/components/schema-mapper/mapper";
 import {SchemaSpec} from "@/app/types/mapper"
-import {ModelTraining} from "@/components/workflow-editor/training";
-import ModelSkills from "@/components/workflow-editor/skills";
-import WorkflowBuilder from "@/components/workflow-editor/neo/workflow-builder";
-import {ModelTeacher} from "@/components/workflow-editor/yoda";
 import ContextManagerApp from "@/components/workflow-editor/context/context-manager";
-import MetaFlow from "@/components/workflow-editor/skills/meta-flow";
 import ConceptEditorApp from "@/components/concept-editor/concept-editor-app";
-import {WorkflowInstanceWidget} from "@/components/workflow-instance/workflow-instance-widget";
+import AssetManager2 from "@/components/settings/dataplane/AssetManager2";
 
 
-export default function ModelsPage({params}: { params: { slug: string } }) {
+export default function DataPage({params}: { params: { slug: string } }) {
     const {slug} = params;
     const {setPageInfo} = usePageInfo();
 
@@ -22,7 +17,7 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
         const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
         const pageBreadcrumbs = [
             { children: 'Home', href: '/' },
-            { children: 'Models', href: '/models' },
+            { children: 'Data', href: '/data' },
             { children: pageTitle },
         ]
         setPageInfo(pageTitle, pageBreadcrumbs);
@@ -42,22 +37,21 @@ export default function ModelsPage({params}: { params: { slug: string } }) {
 
     let pageContent;
     switch (slug) {
-        case 'skills':
-            pageContent = <ModelSkills/>;
+        case 'taxonomy':
+            pageContent = <ConceptEditorApp/>
             break;
-        case 'actions':
-            pageContent = <WorkflowBuilder/>;
+        case 'data-assets':
+            pageContent = <AssetManager2 />;
             break;
-        case 'training':
-            pageContent = <ModelTraining/>;
+        case 'schema-mapper':
+            pageContent = <SchemaMapper
+                sourceSchemas={sourceSchemas}
+                destinationSchema={destinationSchema}
+                onChange={(state) => console.log('Mapping JSON for', slug, state)}
+            />
             break;
-        case 'yoda':
-            // pageContent = <ModelTraining/>;
-            //pageContent = <NeoContextBuilder/>
-            //pageContent = <MetaFlow/>
-            pageContent =   <div className={`flex min-h-screen flex-col items-center justify-between bg-gray-50 text-gray-900`}>
-                                <WorkflowInstanceWidget />
-                            </div>
+        case 'context':
+            pageContent = <ContextManagerApp/>;
             break;
         default:
             pageContent = <div>Unknown Page check app-sidebar</div>

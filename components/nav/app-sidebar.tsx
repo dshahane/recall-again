@@ -20,7 +20,7 @@ const data = {
   user: { name: 'dinesh', email: 'dinesh@trl.com', avatar: '/avatars/shadcn.jpg' },
   navMain: [
     {
-      title: 'Applications',
+      title: 'Showcase Applications',
       url: '#',
       icon: SquareTerminal,
       items: [
@@ -32,17 +32,25 @@ const data = {
       ],
     },
     {
+      title: 'Data Management',
+      url: '#',
+      icon: Bot,
+      items: [
+        { title: 'Taxonomy', url: '/data/taxonomy' },
+        { title: 'Data Assets', url: '/data/data-assets' },
+        { title: 'Data Mapping', url: '/data/schema-mapper' },
+        { title: 'Context', url: '/data/context' },
+      ],
+    },
+    {
       title: 'Model Gym',
       url: '#',
       icon: Bot,
       items: [
-        { title: 'Taxonomy', url: '/models/taxonomy' },
-        { title: 'Data Mapping', url: '/models/schema-mapper' },
-        { title: 'Context', url: '/models/context' },
         { title: 'Skills', url: '/models/skills' },
         { title: 'Actions', url: '/models/actions' },
-        { title: 'Teachers', url: '/models/yoda' },
         { title: 'Training', url: '/models/training' },
+        { title: 'Workflow', url: '/models/yoda' },
       ],
     },
   ] satisfies NavItem[],

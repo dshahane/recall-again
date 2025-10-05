@@ -25,7 +25,7 @@ export default function AgentsPage({ params }: { params: { slug: string } }) {
         const pageTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
         const pageBreadcrumbs = [
             { children: 'Home', href: '/' },
-            { children: 'Settings', href: '/settings' },
+            { children: 'Showcase', href: '/agents' },
             { children: pageTitle },
         ];
 

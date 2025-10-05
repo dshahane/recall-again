@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {Concept} from "@/components/concept-editor/proptypes";
-import {initialConcepts} from "@/components/concept-editor/types";
+// import {initialConcepts} from "@/components/concept-editor/types";
+import { useFetchConcepts } from '@/hooks/use-concepts';
 import {toast, Toaster} from "sonner";
 import {NewConceptWizard} from "@/components/concept-editor/new-concept-wizard";
 import {ConceptGrid} from "@/components/concept-editor/concept-grid";
@@ -8,7 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import {ConceptProvider, useConcept} from "@/components/concept-editor/concept-context";
 
 export default function ConceptEditorApp() {
-    const [concepts, setConcepts] = useState<Concept[]>(initialConcepts);
+    //const [concepts, setConcepts] = useState<Concept[]>(initialConcepts);
+    const { concepts, isLoading, error, setConcepts } = useFetchConcepts();
     const [isCreating, setIsCreating] = useState<boolean>(false);
     const [newConcept, setNewConcept] = useState<Partial<Concept>>({
         id: '',
@@ -29,7 +31,11 @@ export default function ConceptEditorApp() {
             const matchesFilter = filterSource === 'All' || concept.source === filterSource;
             return matchesSearch && matchesFilter;
         });
-    }, [concepts, searchTerm, filterSource]);
+    }, [concepts, searchTerm, filterSource]);    // 2. Handle the different states
+
+    if (isLoading) {
+        return <p>Loading concepts... ⏳</p>;
+    }
 
     const startNewConcept = () => {
         setNewConcept({
@@ -90,6 +96,8 @@ export default function ConceptEditorApp() {
                     />
                 </ConceptProvider>
             ) : (
+                <div>
+                <p> Loaded {concepts.length} concepts</p>
                 <ConceptGrid
                     concepts={filteredConcepts}
                     searchTerm={searchTerm}
@@ -100,6 +108,8 @@ export default function ConceptEditorApp() {
                     onDelete={handleDelete}
                     onEdit={handleEdit}
                 />
+                </div>
+
             )}
             <Toaster />
         </>

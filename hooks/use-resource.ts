@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL_BASE;
 
-function useResource(resourceName) {
+function useResource(resourceName: any) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);

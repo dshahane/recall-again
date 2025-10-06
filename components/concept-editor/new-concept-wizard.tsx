@@ -20,21 +20,21 @@ export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ newConcept, 
     // Get the Context state and setter
     const { concept, updateConcept } = useConceptContext();
 
-    // Initialize/Synchronize Context State from Props
-    // When 'newConcept' changes (i.e., when edit is started), update the context.
     useEffect(() => {
-        // Ensure we only update if newConcept has data (like an ID) and we are not already synced
-        if (newConcept && newConcept.id && newConcept.id !== concept.id) {
-            // Push the initial data from the parent state (the prop) into the Context
-            updateConcept(newConcept as Concept);
-        }
+        // We only synchronize the context when entering edit mode, which is when newConcept.id is present.
+        if (newConcept && newConcept.id) {
 
-        // When editing starts, we usually go straight to step 1
-        if (newConcept.id) {
-            setWizardStep(1);
-        }
+            // CRITICAL FIX: Only update the context if the context's ID does NOT match the incoming prop's ID.
+            if (concept.id !== newConcept.id) {
+                // Push the initial data from the parent state (the prop) into the Context
+                updateConcept(newConcept as Concept);
 
-    }, [newConcept, updateConcept, concept.id]);
+                // Set the step ONLY when new data is successfully loaded into the context.
+                setWizardStep(1);
+            }
+        }
+    }, [newConcept?.id, updateConcept, concept.id]);
+
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -73,6 +73,9 @@ export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ newConcept, 
         }, 300);
     };
 
+    // New Check: Determine if the context is fully synchronized with the incoming edit data.
+    const isContextSynchronized = !newConcept.id || (newConcept.id && concept.id === newConcept.id);
+
     return (
         <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
             <div className="w-full max-w-4xl">
@@ -81,42 +84,46 @@ export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ newConcept, 
                 </h1>
                 <WizardGuide step={wizardStep} newConcept={concept} />
                 <Card className="w-full bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8">
-                    {/* The wizard steps must now read and write using the 'useConcept()' hook's values */}
-                    {wizardStep === 1 && (
-                        <WizardStep1
-                            onNext={() => setWizardStep(2)}
-                            // Ensure WizardStep1 uses the context's concept and handleInputChange logic
-                            concept={concept}
-                            onInputChange={handleInputChange}
-                        />
-                    )}
-                    {/* ... (other steps are similar, ensuring they use context data) */}
-                    {wizardStep === 2 && (
-                        <WizardStep2
-                            onNext={(updatedConcept) => {
-                                setWizardStep(3);
-                            }}
-                            onBack={() => setWizardStep(1)}
-                            concept={concept}
-                            onInputChange={handleInputChange}
-                        />
-                    )}
-                    {/* ... (remaining steps) */}
-                    {wizardStep === 3 && (
-                        <WizardStep3
-                            onNext={() => setWizardStep(4)}
-                            onBack={() => setWizardStep(2)}
-                            onInfer={handleInferMappings}
-                            loading={loading}
-                            progress={progress}
-                            inferredMappings={inferredMappings}
-                        />
-                    )}
-                    {wizardStep === 4 && (
-                        <WizardStep4
-                            onAccept={onAccept}
-                            onBack={() => setWizardStep(3)}
-                        />
+                    {/* Only render the steps if the context is synchronized with the new/edit concept data */}
+                    {isContextSynchronized ? (
+                        <>
+                            {wizardStep === 1 && (
+                                <WizardStep1
+                                    onNext={() => setWizardStep(2)}
+                                    onInputChange={handleInputChange}
+                                />
+                            )}
+                            {wizardStep === 2 && (
+                                <WizardStep2
+                                    onNext={(updatedConcept: Partial<Concept>) => {
+                                        setWizardStep(3);
+                                    }}
+                                    onBack={() => setWizardStep(1)}
+                                    onInputChange={handleInputChange}
+                                />
+                            )}
+                            {/* ... (remaining steps) */}
+                            {wizardStep === 3 && (
+                                <WizardStep3
+                                    onNext={() => setWizardStep(4)}
+                                    onBack={() => setWizardStep(2)}
+                                    onInfer={handleInferMappings}
+                                    loading={loading}
+                                    progress={progress}
+                                    inferredMappings={inferredMappings}
+                                />
+                            )}
+                            {wizardStep === 4 && (
+                                <WizardStep4
+                                    onAccept={onAccept}
+                                    onBack={() => setWizardStep(3)}
+                                />
+                            )}
+                        </>
+                    ) : (
+                        <div className="flex items-center justify-center p-12 text-gray-500 dark:text-gray-400">
+                            Loading concept data...
+                        </div>
                     )}
                 </Card>
                 <div className="flex justify-end mt-4">

@@ -1,5 +1,5 @@
 import {useMemo, useState} from "react";
-import { Concept } from "@/components/concept-editor/proptypes";
+import {Concept, Field} from "@/components/concept-editor/proptypes";
 // import {initialConcepts} from "@/components/concept-editor/types";
 import { useFetchConcepts } from '@/hooks/use-concepts';
 import {toast, Toaster} from "sonner";
@@ -150,19 +150,19 @@ export default function ConceptEditorApp() {
 
             // The response is the full ConceptDetails object, including schema_json
             const conceptDetails = await response.data;
+            const properties = conceptDetails.schema_json?.properties;
+            const fieldData = mapPropertiesToFields(properties);
 
+            console.log("Concept Editor: Data passed to Wizard:", conceptDetails);
             // Step 2: Merge the summary data with the fetched schema data
             const fullConceptData = {
                 ...conceptSummary, // Contains id, name, source
-                // CRITICAL: The API response nests the schema under 'schema_json'
-                // We map it to 'schemaJson' for our internal state property
+                fields: fieldData,
                 schemaJson: conceptDetails.schema_json,
-                // You might also need to parse the schema to populate 'fields'
-                // if 'fields' is a specialized format for your wizard component.
-                // fields: parseSchemaForWizard(conceptDetails.schema_json)
             };
 
             setNewConcept(fullConceptData);
+
             setIsEditing(true);
 
         } catch (error) {
@@ -171,6 +171,42 @@ export default function ConceptEditorApp() {
         } finally {
             setIsActionLoading(false);
         }
+    };
+
+    const mapPropertiesToFields = (properties: Record<string, any>): Field[] => {
+        if (!properties) return [];
+
+        return Object.entries(properties).map(([name, definition]) => {
+            let type = 'Concept'; // Default type for complex concepts/references
+            let description = definition.description || '';
+
+            // 1. Determine the primary type (simple type, reference, or anyOf)
+            if (definition.type) {
+                // Handle simple types like "string"
+                type = Array.isArray(definition.type) ? definition.type[0] : definition.type;
+            } else if (definition.$ref) {
+                // Handle references (e.g., "#/definitions/schema:PostalAddress")
+                const parts = definition.$ref.split(':');
+                type = parts.length > 1 ? parts[1] : definition.$ref;
+            } else if (definition.anyOf && definition.anyOf.length > 0) {
+                // Handle combined types by examining the first option
+                const firstAnyOfType = definition.anyOf.find((d: any) => d.type || d.$ref);
+                if (firstAnyOfType) {
+                    if (firstAnyOfType.type) {
+                        type = firstAnyOfType.type;
+                    } else if (firstAnyOfType.$ref) {
+                        const parts = firstAnyOfType.$ref.split(':');
+                        type = parts.length > 1 ? parts[1] : firstAnyOfType.$ref;
+                    }
+                }
+            }
+
+            return {
+                name,
+                type: type,
+                description: description,
+            } as Field;
+        });
     };
 
     return (

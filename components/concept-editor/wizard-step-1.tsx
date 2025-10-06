@@ -8,14 +8,16 @@ import {Button} from "@/components/ui/button";
 import {ChevronRight} from "lucide-react";
 import {mockFieldsForConcept, schemaNamespaces} from "@/components/concept-editor/types";
 import {useConceptContext} from "@/components/concept-editor/concept-context";
-import {useState} from "react"; // Assuming this is the correct import
+import {useState} from "react";
 
-export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, concept, onInputChange}) => {
-    // We still need updateConcept for the complex schema selection logic below.
+// FIX: Removed the redundant 'concept' prop from the signature.
+export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, onInputChange}) => {
+    // We get the concept data exclusively from the Context.
     const { concept: contextConcept, updateConcept } = useConceptContext();
 
-    // Use the name from the passed concept prop for initial selection, or 'schema.org' if new.
-    const [selectedSource, setSelectedSource] = useState(concept?.source || 'schema.org');
+    // Use the name from the context concept for initial selection.
+    // If contextConcept.source is undefined (new concept), default to 'schema.org'.
+    const [selectedSource, setSelectedSource] = useState(contextConcept.source || 'schema.org');
 
 
     const handleSelectSchema = (source: string) => {
@@ -56,20 +58,18 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, concept, onInpu
                 <Input
                     id="concept-name"
                     name="name" // Required for generic onInputChange to work
-                    value={concept?.name || ''}
+                    value={contextConcept.name || ''} // FIX: Use contextConcept
                     onChange={onInputChange}
                     className="rounded-lg p-2 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
             </div>
-            {concept?.source && (
+            {contextConcept.source && ( // FIX: Use contextConcept
                 <div className="grid gap-3">
                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Derived Concepts</Label>
                     <SchemaTreeView
-                        // Use non-null assertion (!) here. Since we checked {concept?.source},
-                        // TypeScript knows concept.source MUST be defined in this block.
-                        source={concept.source!}
-                        selectedConcept={concept.name || ''}
-                        newConcept={concept.name || ''} // Use the passed concept name here
+                        source={contextConcept.source!} // FIX: Use contextConcept
+                        selectedConcept={contextConcept.name || ''} // FIX: Use contextConcept
+                        newConcept={contextConcept.name || ''} // FIX: Use contextConcept
                         onSelectConcept={handleSelectConcept}
                     />
                 </div>
@@ -79,7 +79,7 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, concept, onInpu
                 <Textarea
                     id="concept-description"
                     name="description" // Required for generic onInputChange to work
-                    value={concept?.description || ''}
+                    value={contextConcept.description || ''} // FIX: Use contextConcept
                     onChange={onInputChange}
                     placeholder="Enter a detailed description of your concept..."
                     className="rounded-lg p-3 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
@@ -88,8 +88,8 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, concept, onInpu
             <div className="flex justify-end">
                 <Button
                     onClick={onNext}
-                    // Cleaned up and correctly positioned 'disabled' attribute
-                    disabled={!concept?.name || !concept?.source}
+                    // FIX: Use contextConcept for disabled check
+                    disabled={!contextConcept.name || !contextConcept.source}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full px-6 py-3 transition-colors duration-300"
                 >
                     Next <ChevronRight className="h-4 w-4 ml-2" />

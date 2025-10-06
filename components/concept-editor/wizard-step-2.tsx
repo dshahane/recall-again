@@ -10,8 +10,9 @@ import {Textarea} from "@/components/ui/textarea";
 import {primitiveConceptTyps} from "@/components/concept-editor/types";
 import {useConceptContext} from "@/components/concept-editor/concept-context";
 
-export const WizardStep2: React.FC<WizardStep2Props> = ({onNext, onBack, concept, onInputChange}) => {
-    // Rename context concept to avoid shadowing the prop.
+// FIX: Removed the redundant 'concept' prop from the signature.
+export const WizardStep2: React.FC<WizardStep2Props> = ({onNext, onBack, onInputChange}) => {
+    // Rename context concept to avoid shadowing the prop 'concept' which is now removed.
     const { concept: contextConcept, updateConcept } = useConceptContext();
 
     // Initialize fields state to empty array for safety
@@ -22,12 +23,14 @@ export const WizardStep2: React.FC<WizardStep2Props> = ({onNext, onBack, concept
     const [newFieldDescription, setNewFieldDescription] = useState<string>('');
 
     // 1. Synchronize local fields state with context fields when the concept object changes
+    // FIX: Use JSON.stringify for deep comparison of the fields array to ensure the effect runs when content changes.
     useEffect(() => {
         // Ensure that local state reflects the context state when navigating or editing starts
         if (contextConcept.fields) {
+            console.log(contextConcept.fields);
             setFields(contextConcept.fields);
         }
-    }, [contextConcept.fields]);
+    }, [JSON.stringify(contextConcept.fields)]); // CRITICAL FIX for reliable initialization
 
     // Helper function to update both local state and context
     const updateFields = (newFields: Field[]) => {
@@ -65,7 +68,7 @@ export const WizardStep2: React.FC<WizardStep2Props> = ({onNext, onBack, concept
                 <div className="flex flex-col gap-2 p-4 border rounded-xl bg-gray-50 dark:bg-gray-800 max-h-[300px] overflow-y-auto shadow-inner">
                     {/* Render fields from the local state which is synchronized with context */}
                     {fields.map((field, index) => (
-                        <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                        <div key={field.name || index}  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
                             <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2">
                                 <Badge className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200">
                                     <Tag className="w-3 h-3 mr-1" />

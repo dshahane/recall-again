@@ -47,10 +47,14 @@ export const ConceptGrid: React.FC<ConceptGridProps> = ({ concepts, searchTerm, 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
                 <Card
-                    className="flex flex-col items-center justify-center p-8 h-[300px] cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-400 transition-colors duration-300 rounded-3xl shadow-md hover:shadow-lg"
+                    className="flex flex-col items-center justify-center p-8 h-[300px] rounded-3xl bg-white dark:bg-gray-800 shadow-md transition-shadow duration-300 hover:shadow-xl
+                   border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-400
+                   cursor-pointer"
                     onClick={startNewConcept}
                 >
-                    <Plus className="h-10 w-10 text-gray-400 dark:text-gray-500" />
+                    {/* HERE IS THE CHANGE: increased from h-10 w-10 to h-20 w-20 */}
+                    <Plus className="h-20 w-20 text-gray-400 dark:text-gray-500" />
+
                     <p className="mt-4 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Add new concept</p>
                 </Card>
 

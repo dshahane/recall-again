@@ -17,6 +17,7 @@ const useConceptState = () => {
         published: false,
         related: [],
         fields: [],
+        schemaJson: {},
     });
 
     // Correctly typed with Partial<Concept> to allow for partial updates.
@@ -45,7 +46,7 @@ export const ConceptProvider = ({ children }: ConceptProviderProps) => {
 };
 
 // 4. Custom hook to use the context.
-export const useConcept = () => {
+export const useConceptContext = () => {
     const context = useContext(ConceptContext);
     if (!context) {
         throw new Error('useConcept must be used within a ConceptProvider');

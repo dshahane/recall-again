@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../lib/api';
 
 interface Concept {
     id: string;
@@ -9,38 +10,39 @@ interface Concept {
     related: string[];
 }
 
-const API_ENDPOINT = process.env.NEXT_PUBLIC_CONCEPT_API_URL_BASE+"/concepts/summary";
-
 export const useFetchConcepts = () => {
     const [concepts, setConcepts] = useState<Concept[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // 1. Define the async fetch function inside the effect
+        let isMounted = true;
+
         const fetchConcepts = async () => {
             try {
-                const response = await fetch(API_ENDPOINT);
+                const response = await api.get<Concept[]>('/concepts/list');
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (isMounted) {
+                    setConcepts(response.data);
                 }
-
-                const data: Concept[] = await response.json();
-                console.log(data);
-                setConcepts(data);
-                setError(null);
             } catch (err) {
-                console.error("Error fetching concepts:", err);
-                setError('Failed to load concepts. Please try again.');
+                if (isMounted) {
+                    setError("Failed to fetch concepts.");
+                    console.error(err);
+                }
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchConcepts();
-    }, []); // Empty dependency array means it runs once on mount
 
-    // 2. Return the data and status variables
-    return { concepts, isLoading, error, setConcepts };
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    return { concepts, isLoading, error, setConcepts, api };
 };

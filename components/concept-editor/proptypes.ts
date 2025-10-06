@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface Field {
     name: string;
     type: string | number | boolean;
@@ -12,6 +14,7 @@ export interface Concept {
     published: boolean;
     related: string[];
     fields?: Field[];
+    schemaJson?: object;
 }
 
 export interface ConceptContextType {
@@ -39,12 +42,16 @@ export interface SchemaTreeViewProps {
 }
 
 export interface WizardStep1Props {
-    onNext: () => void;
+    onNext: () => void,
+    concept?: Concept,
+    onInputChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 export interface WizardStep2Props {
-    onNext: (updatedConcept: Partial<Concept>) => void;
-    onBack: () => void;
+    onNext: (updatedConcept: Partial<Concept>) => void,
+    onBack: () => void,
+    concept?: Concept,
+    onInputChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 export interface WizardStep3Props {

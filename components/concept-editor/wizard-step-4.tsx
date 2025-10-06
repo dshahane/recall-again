@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {ChevronLeft} from "lucide-react";
 import {Card, CardContent, CardHeader, CardTitle} from "../ui/card";
 import {WizardStep4Props} from "@/components/concept-editor/proptypes";
-import {useConcept} from "@/components/concept-editor/concept-context";
+import {useConceptContext} from "@/components/concept-editor/concept-context";
 import {SchemaMapper} from "@/components/schema-mapper/mapper";
 import {mockDestinationSchema, mockSourceSchemas} from "@/components/concept-editor/types";
 
@@ -12,7 +12,7 @@ export const WizardStep4: React.FC<WizardStep4Props> = ({ onAccept, onBack }) =>
         name: 'Inferred Schema',
         fields: ['firstName', 'lastName', 'birthDate', 'city'],
     };
-    const {concept, updateConcept } = useConcept();
+    const {concept, updateConcept } = useConceptContext();
 
     return (
         <div className="grid gap-6">

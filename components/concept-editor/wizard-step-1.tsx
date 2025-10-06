@@ -7,18 +7,21 @@ import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {ChevronRight} from "lucide-react";
 import {mockFieldsForConcept, schemaNamespaces} from "@/components/concept-editor/types";
-import {useConcept} from "@/components/concept-editor/concept-context";
-import {useState} from "react";
+import {useConceptContext} from "@/components/concept-editor/concept-context";
+import {useState} from "react"; // Assuming this is the correct import
 
-export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
-    const {concept, updateConcept } = useConcept();
-    const [newConcept, setNewConcept] = useState<string>('');
-    const [selectedSource, setSelectedSource] = useState(concept.source || 'schema.org');
+export const WizardStep1: React.FC<WizardStep1Props> = ({onNext, concept, onInputChange}) => {
+    // We still need updateConcept for the complex schema selection logic below.
+    const { concept: contextConcept, updateConcept } = useConceptContext();
+
+    // Use the name from the passed concept prop for initial selection, or 'schema.org' if new.
+    const [selectedSource, setSelectedSource] = useState(concept?.source || 'schema.org');
 
 
     const handleSelectSchema = (source: string) => {
         setSelectedSource(source);
-        updateConcept({ source });
+        // We use the direct updateConcept here because it's a structural change, not a simple input change.
+        updateConcept({ source: source, name: undefined, description: undefined, fields: [] });
     };
 
     const handleSelectConcept = (parentName:string, derivedName:string) => {
@@ -26,6 +29,7 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
         const fields = mockFieldsForConcept(fullUrl);
         console.log(parentName, derivedName);
         console.log(fullUrl);
+        // We use the direct updateConcept here because it's a structural change.
         updateConcept({ name: derivedName, source: fullUrl, fields });
     };
 
@@ -51,18 +55,21 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
                 <Label htmlFor="concept-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Concept Name</Label>
                 <Input
                     id="concept-name"
-                    value={newConcept || ''}
-                    onChange={(e) => setNewConcept( e.target.value )}
+                    name="name" // Required for generic onInputChange to work
+                    value={concept?.name || ''}
+                    onChange={onInputChange}
                     className="rounded-lg p-2 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
             </div>
-            {concept.source && (
+            {concept?.source && (
                 <div className="grid gap-3">
                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Derived Concepts</Label>
                     <SchemaTreeView
-                        source={concept.source}
+                        // Use non-null assertion (!) here. Since we checked {concept?.source},
+                        // TypeScript knows concept.source MUST be defined in this block.
+                        source={concept.source!}
                         selectedConcept={concept.name || ''}
-                        newConcept={newConcept}
+                        newConcept={concept.name || ''} // Use the passed concept name here
                         onSelectConcept={handleSelectConcept}
                     />
                 </div>
@@ -71,14 +78,20 @@ export const WizardStep1: React.FC<WizardStep1Props> = ({ onNext }) => {
                 <Label htmlFor="concept-description" className="text-sm font-medium text-gray-700 dark:text-gray-300">Detailed Description</Label>
                 <Textarea
                     id="concept-description"
-                    value={concept.description || ''}
-                    onChange={(e) => updateConcept({ description: e.target.value })}
+                    name="description" // Required for generic onInputChange to work
+                    value={concept?.description || ''}
+                    onChange={onInputChange}
                     placeholder="Enter a detailed description of your concept..."
                     className="rounded-lg p-3 transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
             </div>
             <div className="flex justify-end">
-                <Button onClick={onNext} disabled={!concept.name || !concept.source} className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full px-6 py-3 transition-colors duration-300">
+                <Button
+                    onClick={onNext}
+                    // Cleaned up and correctly positioned 'disabled' attribute
+                    disabled={!concept?.name || !concept?.source}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full px-6 py-3 transition-colors duration-300"
+                >
                     Next <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
             </div>

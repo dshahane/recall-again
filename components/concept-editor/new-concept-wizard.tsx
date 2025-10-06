@@ -6,17 +6,55 @@ import {WizardStep2} from "@/components/concept-editor/wizard-step-2";
 import {WizardStep1} from "@/components/concept-editor/wizard-step-1";
 import {WizardGuide} from "@/components/concept-editor/wizard-guide";
 import {toast} from "sonner";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {NewConceptWizardProps} from "@/components/concept-editor/proptypes";
-import {useConcept} from "@/components/concept-editor/concept-context";
+import {useConceptContext} from "@/components/concept-editor/concept-context";
+import {Concept} from "./proptypes";
 
-
-export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ onCancel, onAccept }) => {
+export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ newConcept, setNewConcept, onCancel, onAccept }) => {
     const [wizardStep, setWizardStep] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
     const [progress, setProgress] = useState<number>(0);
     const [inferredMappings, setInferredMappings] = useState<string[]>([]);
-    const {concept, updateConcept } = useConcept();
+
+    // Get the Context state and setter
+    const { concept, updateConcept } = useConceptContext();
+
+    // Initialize/Synchronize Context State from Props
+    // When 'newConcept' changes (i.e., when edit is started), update the context.
+    useEffect(() => {
+        // Ensure we only update if newConcept has data (like an ID) and we are not already synced
+        if (newConcept && newConcept.id && newConcept.id !== concept.id) {
+            // Push the initial data from the parent state (the prop) into the Context
+            updateConcept(newConcept as Concept);
+        }
+
+        // When editing starts, we usually go straight to step 1
+        if (newConcept.id) {
+            setWizardStep(1);
+        }
+
+    }, [newConcept, updateConcept, concept.id]);
+
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+
+        // 1. Calculate the new data object based on the current context state (concept)
+        // This is safe because 'concept' from context is guaranteed to be the latest value.
+        const updatedData = {
+            ...concept,
+            [name]: value,
+        };
+
+        // 2. Update the Context directly with the new object.
+        // This resolves the TypeScript error, as updateConcept now receives the object it expects.
+        updateConcept(updatedData as Concept);
+
+        // 3. Still update the parent state setter for consistency and eventual acceptance
+        // We use the new object here, which is compatible with Partial<Concept>
+        setNewConcept(updatedData);
+    };
 
     const handleInferMappings = () => {
         setLoading(true);
@@ -38,22 +76,32 @@ export const NewConceptWizard: React.FC<NewConceptWizardProps> = ({ onCancel, on
     return (
         <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
             <div className="w-full max-w-4xl">
-                <h1 className="text-2xl mb-10 text-left">New Concept Wizard</h1>
+                <h1 className="text-2xl mb-10 text-left">
+                    {newConcept.id ? 'Edit Concept Wizard' : 'New Concept Wizard'}
+                </h1>
                 <WizardGuide step={wizardStep} newConcept={concept} />
                 <Card className="w-full bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8">
+                    {/* The wizard steps must now read and write using the 'useConcept()' hook's values */}
                     {wizardStep === 1 && (
                         <WizardStep1
                             onNext={() => setWizardStep(2)}
+                            // Ensure WizardStep1 uses the context's concept and handleInputChange logic
+                            concept={concept}
+                            onInputChange={handleInputChange}
                         />
                     )}
+                    {/* ... (other steps are similar, ensuring they use context data) */}
                     {wizardStep === 2 && (
                         <WizardStep2
                             onNext={(updatedConcept) => {
                                 setWizardStep(3);
                             }}
                             onBack={() => setWizardStep(1)}
+                            concept={concept}
+                            onInputChange={handleInputChange}
                         />
                     )}
+                    {/* ... (remaining steps) */}
                     {wizardStep === 3 && (
                         <WizardStep3
                             onNext={() => setWizardStep(4)}

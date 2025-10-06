@@ -3,9 +3,7 @@
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Edit, Trash2, FileText, Library, Link, Plus, Filter } from "lucide-react"
+import { Edit, Trash2, Library,} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ConceptCardProps } from "@/components/concept-editor/proptypes"
 import {Separator} from "@/components/ui/separator";
@@ -15,7 +13,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
         <Card>
             {/* Header actions */}
             <CardHeader className="flex flex-row items-center justify-end py-2 px-3 p-2">
-                <div className="flex gap-1.5">
+                <div className="flex">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -41,7 +39,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
                     {concept.name}
                 </CardTitle>
                 <Separator/>
-                <p className="text-sm mt-1 text-gray-600 dark:text-gray-400 line-clamp-2 p-2">
+                <p className="text-sm mt-1 text-gray-600 dark:text-gray-400 line-clamp-5 p-2">
                     {concept.description}
                 </p>
 
@@ -85,46 +83,3 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({ concept, onEdit, onDel
     )
 }
 
-const AddNewCard = ({ onAdd }: { onAdd: () => void }) => (
-    <Card
-        className="flex flex-col items-center justify-center h-[220px] bg-gray-50 dark:bg-gray-900 border-2 border-dashed rounded-lg hover:border-indigo-400 cursor-pointer transition"
-        onClick={onAdd}
-    >
-        <Plus className="h-8 w-8 text-gray-400" />
-        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">Add New</p>
-    </Card>
-)
-
-const ConceptToolbar = () => (
-    <div className="flex items-center justify-between mb-4">
-        {/* Search */}
-        <Input
-            type="text"
-            placeholder="Search..."
-            className="w-64 rounded-md"
-        />
-
-        {/* Filter */}
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 rounded-md">
-                    <Filter className="h-4 w-4" /> Filter
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem checked>Schema Namespace</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Source</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Published</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    </div>
-)
-
-const ConceptGrid = ({ children }: { children: React.ReactNode }) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {children}
-    </div>
-)
